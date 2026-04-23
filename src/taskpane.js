@@ -124,10 +124,22 @@ function insertAccordion() {
 function addAccordionItem() {
   run(async function (context) {
     const selection = context.document.getSelection();
-    const t = selection.insertParagraph("Título do item", "End");
+    const cc = selection.parentContentControlOrNullObject;
+    cc.load("tag, isNullObject");
+    await context.sync();
+
+    if (cc.isNullObject) {
+      showStatus(
+        "Coloque o cursor dentro de um acordeão antes de adicionar um item.",
+      );
+      return;
+    }
+
+    const t = cc.insertParagraph("Título do item", "End");
     t.style = "DN-Accordion-Titulo";
-    const c = selection.insertParagraph("Texto do item aqui...", "End");
+    const c = cc.insertParagraph("Texto do item aqui...", "End");
     c.style = "DN-Accordion-Conteudo";
+
     await context.sync();
     showStatus("Novo item de acordeão adicionado.");
   });
@@ -156,10 +168,22 @@ function insertTabs() {
 function addTabItem() {
   run(async function (context) {
     const selection = context.document.getSelection();
-    const t = selection.insertParagraph("Título da aba", "End");
+    const cc = selection.parentContentControlOrNullObject;
+    cc.load("tag, isNullObject");
+    await context.sync();
+
+    if (cc.isNullObject) {
+      showStatus(
+        "Coloque o cursor dentro de um bloco de Abas antes de adicionar uma aba.",
+      );
+      return;
+    }
+
+    const t = cc.insertParagraph("Título da aba", "End");
     t.style = "DN-Tab-Titulo";
-    const c = selection.insertParagraph("Conteúdo da aba aqui...", "End");
+    const c = cc.insertParagraph("Conteúdo da aba aqui...", "End");
     c.style = "DN-Tab-Conteudo";
+
     await context.sync();
     showStatus("Nova aba adicionada.");
   });
