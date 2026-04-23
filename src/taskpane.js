@@ -111,9 +111,10 @@ function insertAccordion() {
     cc.cannotDelete = false;
     cc.cannotEdit = false;
 
-    cc.insertParagraph("Título do item", "Start").style = "DN-Accordion-Titulo";
-    cc.insertParagraph("Texto do item aqui...", "End").style =
-      "DN-Accordion-Conteudo";
+    const at = cc.insertParagraph("Título do item", "Start");
+    at.style = "DN-Accordion-Titulo";
+    const ac = cc.insertParagraph("Texto do item aqui...", "End");
+    ac.style = "DN-Accordion-Conteudo";
 
     await context.sync();
     showStatus("Acordeão inserido.");
@@ -123,10 +124,10 @@ function insertAccordion() {
 function addAccordionItem() {
   run(async function (context) {
     const selection = context.document.getSelection();
-    selection.insertParagraph("Título do item", "End").style =
-      "DN-Accordion-Titulo";
-    selection.insertParagraph("Texto do item aqui...", "End").style =
-      "DN-Accordion-Conteudo";
+    const t = selection.insertParagraph("Título do item", "End");
+    t.style = "DN-Accordion-Titulo";
+    const c = selection.insertParagraph("Texto do item aqui...", "End");
+    c.style = "DN-Accordion-Conteudo";
     await context.sync();
     showStatus("Novo item de acordeão adicionado.");
   });
@@ -142,9 +143,10 @@ function insertTabs() {
     cc.cannotDelete = false;
     cc.cannotEdit = false;
 
-    cc.insertParagraph("Título da aba", "Start").style = "DN-Tab-Titulo";
-    cc.insertParagraph("Conteúdo da aba aqui...", "End").style =
-      "DN-Tab-Conteudo";
+    const tt = cc.insertParagraph("Título da aba", "Start");
+    tt.style = "DN-Tab-Titulo";
+    const tc = cc.insertParagraph("Conteúdo da aba aqui...", "End");
+    tc.style = "DN-Tab-Conteudo";
 
     await context.sync();
     showStatus("Bloco de Abas inserido.");
@@ -154,9 +156,10 @@ function insertTabs() {
 function addTabItem() {
   run(async function (context) {
     const selection = context.document.getSelection();
-    selection.insertParagraph("Título da aba", "End").style = "DN-Tab-Titulo";
-    selection.insertParagraph("Conteúdo da aba aqui...", "End").style =
-      "DN-Tab-Conteudo";
+    const t = selection.insertParagraph("Título da aba", "End");
+    t.style = "DN-Tab-Titulo";
+    const c = selection.insertParagraph("Conteúdo da aba aqui...", "End");
+    c.style = "DN-Tab-Conteudo";
     await context.sync();
     showStatus("Nova aba adicionada.");
   });
