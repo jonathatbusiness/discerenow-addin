@@ -14,12 +14,12 @@
   <DisplayName DefaultValue="DiscereNow" />
   <Description DefaultValue="Ferramenta de autoria de cursos para Designers Instrucionais." />
 
-  <IconUrl DefaultValue="https://SEU-USUARIO.github.io/discerenow-addin/assets/icon-80.png" />
-  <HighResolutionIconUrl DefaultValue="https://SEU-USUARIO.github.io/discerenow-addin/assets/icon-80.png" />
-  <SupportUrl DefaultValue="https://github.com/SEU-USUARIO/discerenow-addin" />
+  <IconUrl DefaultValue="https://jonathatbusiness.github.io/discerenow-addin/assets/icon-80.png" />
+  <HighResolutionIconUrl DefaultValue="https://jonathatbusiness.github.io/discerenow-addin/assets/icon-80.png" />
+  <SupportUrl DefaultValue="https://github.com/jonathatbusiness/discerenow-addin" />
 
   <AppDomains>
-    <AppDomain>https://SEU-USUARIO.github.io</AppDomain>
+    <AppDomain>https://jonathatbusiness.github.io</AppDomain>
   </AppDomains>
 
   <Hosts>
@@ -27,7 +27,7 @@
   </Hosts>
 
   <DefaultSettings>
-    <SourceLocation DefaultValue="https://SEU-USUARIO.github.io/discerenow-addin/src/taskpane.html" />
+    <SourceLocation DefaultValue="https://jonathatbusiness.github.io/discerenow-addin/src/taskpane.html" />
   </DefaultSettings>
 
   <Permissions>ReadWriteDocument</Permissions>
