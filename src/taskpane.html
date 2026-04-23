@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DiscereNow</title>
+    <link rel="stylesheet" href="taskpane.css" />
+  </head>
+  <body>
+    <div id="app">
+      <header class="dn-header">
+        <span class="dn-logo">DiscereNow</span>
+      </header>
+
+      <section class="dn-section">
+        <h3>Estrutura</h3>
+        <button class="dn-btn dn-btn--outline" onclick="applyStyle('DN-Capitulo')">
+          📁 Marcar como Capítulo
+        </button>
+        <button class="dn-btn dn-btn--outline" onclick="applyStyle('DN-Licao')">
+          📄 Marcar como Lição
+        </button>
+      </section>
+
+      <section class="dn-section">
+        <h3>Blocos simples</h3>
+        <button class="dn-btn dn-btn--outline" onclick="applyStyle('Normal')">
+          ¶ Parágrafo
+        </button>
+      </section>
+
+      <section class="dn-section">
+        <h3>Blocos compostos</h3>
+        <button class="dn-btn dn-btn--primary" onclick="insertAccordion()">
+          ＋ Inserir Acordeão
+        </button>
+        <button class="dn-btn dn-btn--primary" onclick="insertTabs()">
+          ＋ Inserir Abas (Tabs)
+        </button>
+        <button class="dn-btn dn-btn--primary" onclick="insertImgText()">
+          ＋ Inserir Imagem + Texto
+        </button>
+      </section>
+
+      <section class="dn-section">
+        <h3>Dentro do Acordeão / Abas</h3>
+        <button class="dn-btn dn-btn--outline" onclick="addAccordionItem()">
+          ＋ Adicionar item de acordeão
+        </button>
+        <button class="dn-btn dn-btn--outline" onclick="addTabItem()">
+          ＋ Adicionar aba
+        </button>
+      </section>
+
+      <div id="dn-status" class="dn-status"></div>
+    </div>
+
+    <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+    <script src="taskpane.js"></script>
+  </body>
+</html>
