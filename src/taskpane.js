@@ -109,7 +109,7 @@ function insertAccordion() {
     const ccOpen = selection.insertContentControl();
     ccOpen.tag = "DN-BLOCK-START";
     ccOpen.title = "accordion";
-    ccOpen.appearance = Hidden;
+    ccOpen.appearance = "Hidden";
 
     _insertAccordionItem(context, selection);
 
@@ -117,7 +117,7 @@ function insertAccordion() {
     const ccClose = range.insertContentControl();
     ccClose.tag = "DN-BLOCK-END";
     ccClose.title = "accordion";
-    ccClose.appearance = Hidden;
+    ccClose.appearance = "Hidden";
 
     await context.sync();
     showStatus("Acordeão inserido.");
@@ -150,7 +150,7 @@ function insertTabs() {
     const ccOpen = selection.insertContentControl();
     ccOpen.tag = "DN-BLOCK-START";
     ccOpen.title = "tabs";
-    ccOpen.appearance = Hidden;
+    ccOpen.appearance = "Hidden";
 
     _insertTabItem(context, selection);
 
@@ -158,7 +158,7 @@ function insertTabs() {
     const ccClose = range.insertContentControl();
     ccClose.tag = "DN-BLOCK-END";
     ccClose.title = "tabs";
-    ccClose.appearance = Hidden;
+    ccClose.appearance = "Hidden";
 
     await context.sync();
     showStatus("Bloco de Abas inserido.");
@@ -191,7 +191,7 @@ function insertImgText() {
     const cc = selection.insertContentControl();
     cc.tag = "DN-BLOCK-START";
     cc.title = "imgText";
-    cc.appearance = Hidden;
+    cc.appearance = "Hidden";
 
     const table = selection.insertTable(1, 2, "End", [
       ["[Inserir imagem aqui]", "Texto ao lado da imagem..."],
@@ -202,7 +202,7 @@ function insertImgText() {
     const ccClose = range.insertContentControl();
     ccClose.tag = "DN-BLOCK-END";
     ccClose.title = "imgText";
-    ccClose.appearance = Hidden;
+    ccClose.appearance = "Hidden";
 
     await context.sync();
     showStatus("Bloco Imagem+Texto inserido.");
