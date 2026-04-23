@@ -105,78 +105,58 @@ function applyNormal() {
 function insertAccordion() {
   run(async function (context) {
     const selection = context.document.getSelection();
+    const cc = selection.insertContentControl();
+    cc.tag = "DN-accordion";
+    cc.title = "Acordeão";
+    cc.cannotDelete = false;
+    cc.cannotEdit = false;
 
-    const ccOpen = selection.insertContentControl();
-    ccOpen.tag = "DN-BLOCK-START";
-    ccOpen.title = "accordion";
-    ccOpen.appearance = Word.ContentControlAppearance.hidden;
-
-    _insertAccordionItem(context, selection);
-
-    const range = selection.getRange("End");
-    const ccClose = range.insertContentControl();
-    ccClose.tag = "DN-BLOCK-END";
-    ccClose.title = "accordion";
-    ccClose.appearance = Word.ContentControlAppearance.hidden;
+    cc.insertParagraph("Título do item", "Start").style = "DN-Accordion-Titulo";
+    cc.insertParagraph("Texto do item aqui...", "End").style =
+      "DN-Accordion-Conteudo";
 
     await context.sync();
     showStatus("Acordeão inserido.");
   });
 }
 
-function _insertAccordionItem(context, range) {
-  const titlePara = range.insertParagraph("Título do item", "End");
-  titlePara.style = "DN-Accordion-Titulo";
-
-  const contentPara = range.insertParagraph("Texto do item aqui...", "End");
-  contentPara.style = "DN-Accordion-Conteudo";
-}
-
 function addAccordionItem() {
   run(async function (context) {
     const selection = context.document.getSelection();
-    _insertAccordionItem(context, selection);
+    selection.insertParagraph("Título do item", "End").style =
+      "DN-Accordion-Titulo";
+    selection.insertParagraph("Texto do item aqui...", "End").style =
+      "DN-Accordion-Conteudo";
     await context.sync();
     showStatus("Novo item de acordeão adicionado.");
   });
 }
-
 // ─── Inserir Tabs ────────────────────────────────────────────
 
 function insertTabs() {
   run(async function (context) {
     const selection = context.document.getSelection();
+    const cc = selection.insertContentControl();
+    cc.tag = "DN-tabs";
+    cc.title = "Abas";
+    cc.cannotDelete = false;
+    cc.cannotEdit = false;
 
-    const ccOpen = selection.insertContentControl();
-    ccOpen.tag = "DN-BLOCK-START";
-    ccOpen.title = "tabs";
-    ccOpen.appearance = Word.ContentControlAppearance.hidden;
-
-    _insertTabItem(context, selection);
-
-    const range = selection.getRange("End");
-    const ccClose = range.insertContentControl();
-    ccClose.tag = "DN-BLOCK-END";
-    ccClose.title = "tabs";
-    ccClose.appearance = Word.ContentControlAppearance.hidden;
+    cc.insertParagraph("Título da aba", "Start").style = "DN-Tab-Titulo";
+    cc.insertParagraph("Conteúdo da aba aqui...", "End").style =
+      "DN-Tab-Conteudo";
 
     await context.sync();
     showStatus("Bloco de Abas inserido.");
   });
 }
 
-function _insertTabItem(context, range) {
-  const titlePara = range.insertParagraph("Título da aba", "End");
-  titlePara.style = "DN-Tab-Titulo";
-
-  const contentPara = range.insertParagraph("Conteúdo da aba aqui...", "End");
-  contentPara.style = "DN-Tab-Conteudo";
-}
-
 function addTabItem() {
   run(async function (context) {
     const selection = context.document.getSelection();
-    _insertTabItem(context, selection);
+    selection.insertParagraph("Título da aba", "End").style = "DN-Tab-Titulo";
+    selection.insertParagraph("Conteúdo da aba aqui...", "End").style =
+      "DN-Tab-Conteudo";
     await context.sync();
     showStatus("Nova aba adicionada.");
   });
@@ -187,22 +167,16 @@ function addTabItem() {
 function insertImgText() {
   run(async function (context) {
     const selection = context.document.getSelection();
-
     const cc = selection.insertContentControl();
-    cc.tag = "DN-BLOCK-START";
-    cc.title = "imgText";
-    cc.appearance = Word.ContentControlAppearance.hidden;
+    cc.tag = "DN-imgText";
+    cc.title = "Imagem + Texto";
+    cc.cannotDelete = false;
+    cc.cannotEdit = false;
 
-    const table = selection.insertTable(1, 2, "End", [
+    const table = cc.insertTable(1, 2, "End", [
       ["[Inserir imagem aqui]", "Texto ao lado da imagem..."],
     ]);
     table.style = "Table Grid";
-
-    const range = selection.getRange("End");
-    const ccClose = range.insertContentControl();
-    ccClose.tag = "DN-BLOCK-END";
-    ccClose.title = "imgText";
-    ccClose.appearance = Word.ContentControlAppearance.hidden;
 
     await context.sync();
     showStatus("Bloco Imagem+Texto inserido.");
