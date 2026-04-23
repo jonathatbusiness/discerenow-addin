@@ -27,70 +27,40 @@ function run(fn) {
 async function ensureStyles() {
   return run(async function (context) {
     const stylesNeeded = [
-      {
-        name: "DN-Capitulo",
-        basedOn: "Heading 1",
-        fontSize: 22,
-        bold: true,
-        color: "1e3c72",
-      },
-      {
-        name: "DN-Licao",
-        basedOn: "Heading 2",
-        fontSize: 16,
-        bold: true,
-        color: "2a5298",
-      },
+      { name: "DN-Capitulo", fontSize: 22, bold: true, color: "1e3c72" },
+      { name: "DN-Licao", fontSize: 16, bold: true, color: "2a5298" },
       {
         name: "DN-Accordion-Titulo",
-        basedOn: "Normal",
         fontSize: 13,
         bold: true,
         color: "333333",
       },
       {
         name: "DN-Accordion-Conteudo",
-        basedOn: "Normal",
         fontSize: 12,
         bold: false,
         color: "555555",
       },
-      {
-        name: "DN-Tab-Titulo",
-        basedOn: "Normal",
-        fontSize: 13,
-        bold: true,
-        color: "1e3c72",
-      },
-      {
-        name: "DN-Tab-Conteudo",
-        basedOn: "Normal",
-        fontSize: 12,
-        bold: false,
-        color: "555555",
-      },
+      { name: "DN-Tab-Titulo", fontSize: 13, bold: true, color: "1e3c72" },
+      { name: "DN-Tab-Conteudo", fontSize: 12, bold: false, color: "555555" },
     ];
 
     for (const s of stylesNeeded) {
       try {
-        // Tenta carregar o estilo — se não existir, cria
-        const existing = context.document.getStyles();
-        existing.load("items/name");
-        await context.sync();
-
-        const found = existing.items.find((i) => i.name === s.name);
-        if (!found) {
-          const newStyle = context.document.addStyle(
-            s.name,
-            Word.StyleType.paragraph,
-          );
-          newStyle.font.size = s.fontSize;
-          newStyle.font.bold = s.bold;
-          newStyle.font.color = s.color;
+        let style;
+        try {
+          style = context.document.getStyles().getByName(s.name);
+          style.load("name");
+          await context.sync();
+        } catch (e) {
+          style = context.document.addStyle(s.name, Word.StyleType.paragraph);
           await context.sync();
         }
+        style.font.size = s.fontSize;
+        style.font.bold = s.bold;
+        style.font.color = s.color;
+        await context.sync();
       } catch (e) {
-        // Se falhar silenciosamente, não bloqueia o add-in
         console.warn("Estilo não criado:", s.name, e);
       }
     }
@@ -106,13 +76,11 @@ function applyStyle(styleName) {
     await context.sync();
 
     selection.paragraphs.items.forEach(function (p) {
-      // Usa styleBuiltIn para reset — funciona em qualquer idioma
-      p.styleBuiltIn = Word.BuiltInStyleName.normal;
       p.style = styleName;
     });
 
     await context.sync();
-    showStatus('Estilo "' + styleName + '" aplicado.');
+    showStatus('Style "' + styleName + '" applied.');
   });
 }
 
@@ -125,14 +93,13 @@ function applyNormal() {
     await context.sync();
 
     selection.paragraphs.items.forEach(function (p) {
-      p.styleBuiltIn = Word.BuiltInStyleName.normal;
+      p.style = "Normal";
     });
 
     await context.sync();
-    showStatus("Estilo Normal aplicado.");
+    showStatus("Normal style applied.");
   });
 }
-
 // ─── Inserir Acordeão ────────────────────────────────────────
 
 function insertAccordion() {
@@ -142,7 +109,7 @@ function insertAccordion() {
     const ccOpen = selection.insertContentControl();
     ccOpen.tag = "DN-BLOCK-START";
     ccOpen.title = "accordion";
-    ccOpen.appearance = Word.ContentControlAppearance.hidden;
+    ccOpen.appearance = Hidden;
 
     _insertAccordionItem(context, selection);
 
@@ -150,7 +117,7 @@ function insertAccordion() {
     const ccClose = range.insertContentControl();
     ccClose.tag = "DN-BLOCK-END";
     ccClose.title = "accordion";
-    ccClose.appearance = Word.ContentControlAppearance.hidden;
+    ccClose.appearance = Hidden;
 
     await context.sync();
     showStatus("Acordeão inserido.");
@@ -183,7 +150,7 @@ function insertTabs() {
     const ccOpen = selection.insertContentControl();
     ccOpen.tag = "DN-BLOCK-START";
     ccOpen.title = "tabs";
-    ccOpen.appearance = Word.ContentControlAppearance.hidden;
+    ccOpen.appearance = Hidden;
 
     _insertTabItem(context, selection);
 
@@ -191,7 +158,7 @@ function insertTabs() {
     const ccClose = range.insertContentControl();
     ccClose.tag = "DN-BLOCK-END";
     ccClose.title = "tabs";
-    ccClose.appearance = Word.ContentControlAppearance.hidden;
+    ccClose.appearance = Hidden;
 
     await context.sync();
     showStatus("Bloco de Abas inserido.");
@@ -224,18 +191,18 @@ function insertImgText() {
     const cc = selection.insertContentControl();
     cc.tag = "DN-BLOCK-START";
     cc.title = "imgText";
-    cc.appearance = Word.ContentControlAppearance.hidden;
+    cc.appearance = Hidden;
 
     const table = selection.insertTable(1, 2, "End", [
       ["[Inserir imagem aqui]", "Texto ao lado da imagem..."],
     ]);
-    table.styleBuiltIn = Word.BuiltInStyleName.tableGrid;
+    table.style = "Table Grid";
 
     const range = selection.getRange("End");
     const ccClose = range.insertContentControl();
     ccClose.tag = "DN-BLOCK-END";
     ccClose.title = "imgText";
-    ccClose.appearance = Word.ContentControlAppearance.hidden;
+    ccClose.appearance = Hidden;
 
     await context.sync();
     showStatus("Bloco Imagem+Texto inserido.");
