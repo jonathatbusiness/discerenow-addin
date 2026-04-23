@@ -2,7 +2,9 @@
 
 Office.onReady(function (info) {
   if (info.host === Office.HostType.Word) {
-    showStatus("DiscereNow pronto.");
+    ensureStyles().then(function () {
+      showStatus("DiscereNow pronto.");
+    });
   }
 });
 
@@ -20,6 +22,81 @@ function run(fn) {
   });
 }
 
+// ─── Criação automática de estilos DN ───────────────────────
+
+async function ensureStyles() {
+  return run(async function (context) {
+    const stylesNeeded = [
+      {
+        name: "DN-Capitulo",
+        basedOn: "Heading 1",
+        fontSize: 22,
+        bold: true,
+        color: "1e3c72",
+      },
+      {
+        name: "DN-Licao",
+        basedOn: "Heading 2",
+        fontSize: 16,
+        bold: true,
+        color: "2a5298",
+      },
+      {
+        name: "DN-Accordion-Titulo",
+        basedOn: "Normal",
+        fontSize: 13,
+        bold: true,
+        color: "333333",
+      },
+      {
+        name: "DN-Accordion-Conteudo",
+        basedOn: "Normal",
+        fontSize: 12,
+        bold: false,
+        color: "555555",
+      },
+      {
+        name: "DN-Tab-Titulo",
+        basedOn: "Normal",
+        fontSize: 13,
+        bold: true,
+        color: "1e3c72",
+      },
+      {
+        name: "DN-Tab-Conteudo",
+        basedOn: "Normal",
+        fontSize: 12,
+        bold: false,
+        color: "555555",
+      },
+    ];
+
+    for (const s of stylesNeeded) {
+      try {
+        // Tenta carregar o estilo — se não existir, cria
+        const existing = context.document.getStyles();
+        existing.load("items/name");
+        await context.sync();
+
+        const found = existing.items.find((i) => i.name === s.name);
+        if (!found) {
+          const newStyle = context.document.addStyle(
+            s.name,
+            Word.StyleType.paragraph,
+          );
+          newStyle.font.size = s.fontSize;
+          newStyle.font.bold = s.bold;
+          newStyle.font.color = s.color;
+          await context.sync();
+        }
+      } catch (e) {
+        // Se falhar silenciosamente, não bloqueia o add-in
+        console.warn("Estilo não criado:", s.name, e);
+      }
+    }
+  });
+}
+
 // ─── Aplicar estilo de parágrafo ────────────────────────────
 
 function applyStyle(styleName) {
@@ -29,12 +106,30 @@ function applyStyle(styleName) {
     await context.sync();
 
     selection.paragraphs.items.forEach(function (p) {
-      p.styleBuiltIn = Word.Style.normal; // reset antes
+      // Usa styleBuiltIn para reset — funciona em qualquer idioma
+      p.styleBuiltIn = Word.BuiltInStyleName.normal;
       p.style = styleName;
     });
 
     await context.sync();
     showStatus('Estilo "' + styleName + '" aplicado.');
+  });
+}
+
+// ─── Parágrafo simples ───────────────────────────────────────
+
+function applyNormal() {
+  run(async function (context) {
+    const selection = context.document.getSelection();
+    selection.paragraphs.load("items");
+    await context.sync();
+
+    selection.paragraphs.items.forEach(function (p) {
+      p.styleBuiltIn = Word.BuiltInStyleName.normal;
+    });
+
+    await context.sync();
+    showStatus("Estilo Normal aplicado.");
   });
 }
 
@@ -44,16 +139,13 @@ function insertAccordion() {
   run(async function (context) {
     const selection = context.document.getSelection();
 
-    // Marcador de abertura
     const ccOpen = selection.insertContentControl();
     ccOpen.tag = "DN-BLOCK-START";
     ccOpen.title = "accordion";
     ccOpen.appearance = Word.ContentControlAppearance.hidden;
 
-    // Primeiro item do acordeão
     _insertAccordionItem(context, selection);
 
-    // Marcador de fechamento — inserimos após o selection atual
     const range = selection.getRange("End");
     const ccClose = range.insertContentControl();
     ccClose.tag = "DN-BLOCK-END";
@@ -61,16 +153,14 @@ function insertAccordion() {
     ccClose.appearance = Word.ContentControlAppearance.hidden;
 
     await context.sync();
-    showStatus("Acordeão inserido. Preencha o título e o conteúdo.");
+    showStatus("Acordeão inserido.");
   });
 }
 
 function _insertAccordionItem(context, range) {
-  // Título do item
   const titlePara = range.insertParagraph("Título do item", "End");
   titlePara.style = "DN-Accordion-Titulo";
 
-  // Conteúdo do item
   const contentPara = range.insertParagraph("Texto do item aqui...", "End");
   contentPara.style = "DN-Accordion-Conteudo";
 }
@@ -104,7 +194,7 @@ function insertTabs() {
     ccClose.appearance = Word.ContentControlAppearance.hidden;
 
     await context.sync();
-    showStatus("Bloco de Abas inserido. Preencha o título e o conteúdo.");
+    showStatus("Bloco de Abas inserido.");
   });
 }
 
@@ -136,11 +226,10 @@ function insertImgText() {
     cc.title = "imgText";
     cc.appearance = Word.ContentControlAppearance.hidden;
 
-    // Tabela com 2 colunas: imagem | texto
     const table = selection.insertTable(1, 2, "End", [
       ["[Inserir imagem aqui]", "Texto ao lado da imagem..."],
     ]);
-    table.styleBuiltIn = Word.Style.tableGrid;
+    table.styleBuiltIn = Word.BuiltInStyleName.tableGrid;
 
     const range = selection.getRange("End");
     const ccClose = range.insertContentControl();
@@ -149,8 +238,6 @@ function insertImgText() {
     ccClose.appearance = Word.ContentControlAppearance.hidden;
 
     await context.sync();
-    showStatus(
-      "Bloco Imagem+Texto inserido. Coluna esquerda = imagem, direita = texto.",
-    );
+    showStatus("Bloco Imagem+Texto inserido.");
   });
 }
