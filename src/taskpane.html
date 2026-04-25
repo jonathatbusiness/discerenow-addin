@@ -10,52 +10,136 @@
     <div id="app">
       <header class="dn-header">
         <span class="dn-logo">DiscereNow</span>
+        <span class="dn-version">v1.0</span>
       </header>
 
-      <section class="dn-section">
-        <h3>Estrutura</h3>
-        <button
-          class="dn-btn dn-btn--outline"
-          onclick="applyStyle('DN-Capitulo')"
-        >
-          📁 Marcar como Capítulo
-        </button>
-        <button class="dn-btn dn-btn--outline" onclick="applyStyle('DN-Licao')">
-          📄 Marcar como Lição
-        </button>
-      </section>
+      <div class="dn-scroll">
+        <section class="dn-section">
+          <h3>Estrutura</h3>
+          <div class="dn-row" data-action="apply-chapter">
+            <div class="dn-icon dn-icon--accent">C</div>
+            <span class="dn-row-name">Capítulo</span>
+            <span class="dn-row-hint">marcar</span>
+          </div>
+          <div class="dn-row" data-action="apply-lesson">
+            <div class="dn-icon dn-icon--accent">L</div>
+            <span class="dn-row-name">Lição</span>
+            <span class="dn-row-hint">marcar</span>
+          </div>
+        </section>
 
-      <section class="dn-section">
-        <h3>Blocos simples</h3>
-        <button class="dn-btn dn-btn--outline" onclick="applyNormal()">
-          ¶ Parágrafo
-        </button>
-      </section>
+        <section class="dn-section">
+          <h3>Texto</h3>
+          <div class="dn-row" data-action="apply-paragraph">
+            <div class="dn-icon">¶</div>
+            <span class="dn-row-name">Parágrafo</span>
+          </div>
+          <div class="dn-row" data-action="insert-callout">
+            <div class="dn-icon">!</div>
+            <span class="dn-row-name">Callout</span>
+          </div>
+        </section>
 
-      <section class="dn-section">
-        <h3>Blocos compostos</h3>
-        <button class="dn-btn dn-btn--primary" onclick="insertAccordion()">
-          ＋ Inserir Acordeão
-        </button>
-        <button class="dn-btn dn-btn--primary" onclick="insertTabs()">
-          ＋ Inserir Abas (Tabs)
-        </button>
-        <button class="dn-btn dn-btn--primary" onclick="insertImgText()">
-          ＋ Inserir Imagem + Texto
-        </button>
-      </section>
+        <section class="dn-section">
+          <h3>Mídia</h3>
+          <div class="dn-row" data-action="insert-imgtext">
+            <div class="dn-icon">IT</div>
+            <span class="dn-row-name">Imagem + Texto</span>
+          </div>
+          <div class="dn-row" data-action="insert-video">
+            <div class="dn-icon">▶</div>
+            <span class="dn-row-name">Vídeo</span>
+          </div>
+        </section>
 
-      <section class="dn-section">
-        <h3>Dentro do Acordeão / Abas</h3>
-        <button class="dn-btn dn-btn--outline" onclick="addAccordionItem()">
-          ＋ Adicionar item de acordeão
-        </button>
-        <button class="dn-btn dn-btn--outline" onclick="addTabItem()">
-          ＋ Adicionar aba
-        </button>
-      </section>
+        <section class="dn-section">
+          <h3>Interação</h3>
+          <div
+            class="dn-row"
+            data-action="insert-accordion"
+            data-context-tag="DN-accordion"
+          >
+            <div class="dn-icon">A</div>
+            <span class="dn-row-name">Acordeão</span>
+            <button
+              class="dn-add"
+              data-add="accordion-item"
+              title="Adicionar item de acordeão"
+            >
+              +
+            </button>
+          </div>
+          <div
+            class="dn-row"
+            data-action="insert-tabs"
+            data-context-tag="DN-tabs"
+          >
+            <div class="dn-icon">Ab</div>
+            <span class="dn-row-name">Abas</span>
+            <button class="dn-add" data-add="tab-item" title="Adicionar aba">
+              +
+            </button>
+          </div>
+          <div
+            class="dn-row"
+            data-action="insert-cards"
+            data-context-tag="DN-cards"
+          >
+            <div class="dn-icon">Cd</div>
+            <span class="dn-row-name">Cards</span>
+            <button class="dn-add" data-add="card-item" title="Adicionar card">
+              +
+            </button>
+          </div>
+          <div
+            class="dn-row"
+            data-action="insert-flipcard"
+            data-context-tag="DN-flipcard"
+          >
+            <div class="dn-icon">Fc</div>
+            <span class="dn-row-name">FlipCard</span>
+            <button
+              class="dn-add"
+              data-add="flipcard-item"
+              title="Adicionar flipcard"
+            >
+              +
+            </button>
+          </div>
+        </section>
 
-      <div id="dn-status" class="dn-status"></div>
+        <section class="dn-section">
+          <h3>Avaliação</h3>
+          <div
+            class="dn-row"
+            data-action="insert-quiz"
+            data-context-tag="DN-quiz"
+          >
+            <div class="dn-icon">?</div>
+            <span class="dn-row-name">Quiz</span>
+            <button
+              class="dn-add"
+              data-add="quiz-item"
+              title="Adicionar item ao quiz"
+            >
+              +
+            </button>
+          </div>
+        </section>
+
+        <section class="dn-section">
+          <h3>Navegação</h3>
+          <div class="dn-row" data-action="insert-continue">
+            <div class="dn-icon">→</div>
+            <span class="dn-row-name">Botão Continuar</span>
+          </div>
+        </section>
+      </div>
+
+      <div id="dn-status-bar" class="dn-status-bar">
+        <span class="dn-status-dot"></span>
+        <span id="dn-status-text">DiscereNow pronto.</span>
+      </div>
     </div>
 
     <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>

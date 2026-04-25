@@ -1,28 +1,189 @@
 /* global Office, Word */
 
+// ─── Bootstrap ────────────────────────────────────────────────────────
+
 Office.onReady(function (info) {
-  if (info.host === Office.HostType.Word) {
-    ensureStyles().then(function () {
-      showStatus("DiscereNow pronto.");
-    });
-  }
+  if (info.host !== Office.HostType.Word) return;
+
+  ensureStyles().then(function () {
+    setStatus("DiscereNow pronto.", "ok");
+  });
+
+  // Liga os handlers de clique nas linhas de bloco e nos [+]
+  attachUiHandlers();
+
+  // Liga o listener de SelectionChanged pra contextualidade
+  attachSelectionListener();
 });
 
-// ─── Utilitários ────────────────────────────────────────────
+// ─── Status bar ───────────────────────────────────────────────────────
 
-function showStatus(msg) {
-  const el = document.getElementById("dn-status");
-  if (el) el.textContent = msg;
+function setStatus(msg, kind) {
+  const text = document.getElementById("dn-status-text");
+  const bar = document.getElementById("dn-status-bar");
+  if (text) text.textContent = msg;
+  if (bar) {
+    bar.classList.remove("is-warning", "is-error", "is-info");
+    if (kind === "warning") bar.classList.add("is-warning");
+    else if (kind === "error") bar.classList.add("is-error");
+    else if (kind === "info") bar.classList.add("is-info");
+  }
 }
 
 function run(fn) {
   return Word.run(fn).catch(function (err) {
-    showStatus("Erro: " + err.message);
+    setStatus("Erro: " + err.message, "error");
     console.error(err);
   });
 }
 
-// ─── Criação automática de estilos DN ───────────────────────
+// ─── UI: bind dos cliques ─────────────────────────────────────────────
+
+function attachUiHandlers() {
+  document.querySelectorAll(".dn-row").forEach(function (row) {
+    row.addEventListener("click", function (ev) {
+      // se o clique foi no [+], não dispara a ação principal
+      if (ev.target.classList.contains("dn-add")) return;
+      const action = row.getAttribute("data-action");
+      if (action) handleAction(action);
+    });
+  });
+
+  document.querySelectorAll(".dn-add").forEach(function (btn) {
+    btn.addEventListener("click", function (ev) {
+      ev.stopPropagation();
+      const add = btn.getAttribute("data-add");
+      if (add) handleAddItem(add);
+    });
+  });
+}
+
+// ─── Despachador de ações principais ──────────────────────────────────
+
+function handleAction(action) {
+  switch (action) {
+    // ─ Estrutura ─
+    case "apply-chapter":
+      return applyStyle("DN-Capitulo");
+    case "apply-lesson":
+      return applyStyle("DN-Licao");
+    // ─ Texto ─
+    case "apply-paragraph":
+      return applyNormal();
+    case "insert-callout":
+      return placeholder("Callout");
+    // ─ Mídia ─
+    case "insert-imgtext":
+      return insertImgText();
+    case "insert-video":
+      return placeholder("Vídeo");
+    // ─ Interação ─
+    case "insert-accordion":
+      return insertAccordion();
+    case "insert-tabs":
+      return insertTabs();
+    case "insert-cards":
+      return placeholder("Cards");
+    case "insert-flipcard":
+      return placeholder("FlipCard");
+    // ─ Avaliação ─
+    case "insert-quiz":
+      return placeholder("Quiz");
+    // ─ Navegação ─
+    case "insert-continue":
+      return placeholder("Botão Continuar");
+  }
+}
+
+// ─── Despachador de "+ adicionar item" ────────────────────────────────
+
+function handleAddItem(kind) {
+  switch (kind) {
+    case "accordion-item":
+      return addAccordionItem();
+    case "tab-item":
+      return addTabItem();
+    case "card-item":
+      return placeholder("Adicionar card");
+    case "flipcard-item":
+      return placeholder("Adicionar flipcard");
+    case "quiz-item":
+      return placeholder("Adicionar item de quiz");
+  }
+}
+
+function placeholder(label) {
+  setStatus(label + ": em breve.", "info");
+}
+
+// ─── Listener de seleção (contextualidade) ────────────────────────────
+
+function attachSelectionListener() {
+  Word.run(function (context) {
+    return context.sync().then(function () {
+      try {
+        Office.context.document.addHandlerAsync(
+          Office.EventType.DocumentSelectionChanged,
+          updateContextHighlight,
+        );
+      } catch (e) {
+        console.warn("addHandlerAsync falhou:", e);
+      }
+    });
+  });
+  // chamada inicial pra já refletir o estado atual
+  updateContextHighlight();
+}
+
+function updateContextHighlight() {
+  Word.run(function (context) {
+    const sel = context.document.getSelection();
+    const cc = sel.parentContentControlOrNullObject;
+    cc.load("tag, isNullObject");
+    return context.sync().then(function () {
+      const tag = cc.isNullObject ? null : cc.tag;
+      applyContextualState(tag);
+    });
+  }).catch(function () {
+    applyContextualState(null);
+  });
+}
+
+function applyContextualState(tag) {
+  document.querySelectorAll(".dn-row").forEach(function (row) {
+    const rowTag = row.getAttribute("data-context-tag");
+    if (rowTag && rowTag === tag) row.classList.add("is-contextual");
+    else row.classList.remove("is-contextual");
+  });
+
+  if (tag) {
+    const friendly = friendlyTagName(tag);
+    setStatus("Cursor em: " + friendly, "info");
+  } else {
+    setStatus("DiscereNow pronto.", "ok");
+  }
+}
+
+function friendlyTagName(tag) {
+  switch (tag) {
+    case "DN-accordion":
+      return "Acordeão";
+    case "DN-tabs":
+      return "Abas";
+    case "DN-imgText":
+      return "Imagem + Texto";
+    case "DN-cards":
+      return "Cards";
+    case "DN-flipcard":
+      return "FlipCard";
+    case "DN-quiz":
+      return "Quiz";
+    default:
+      return tag;
+  }
+}
+
+// ─── Criação automática de estilos DN ─────────────────────────────────
 
 async function ensureStyles() {
   return run(async function (context) {
@@ -67,40 +228,35 @@ async function ensureStyles() {
   });
 }
 
-// ─── Aplicar estilo de parágrafo ────────────────────────────
+// ─── Aplicar estilo de parágrafo ──────────────────────────────────────
 
 function applyStyle(styleName) {
   run(async function (context) {
     const selection = context.document.getSelection();
     selection.paragraphs.load("items");
     await context.sync();
-
     selection.paragraphs.items.forEach(function (p) {
       p.style = styleName;
     });
-
     await context.sync();
-    showStatus('Style "' + styleName + '" applied.');
+    setStatus('Estilo "' + styleName + '" aplicado.', "ok");
   });
 }
-
-// ─── Parágrafo simples ───────────────────────────────────────
 
 function applyNormal() {
   run(async function (context) {
     const selection = context.document.getSelection();
     selection.paragraphs.load("items");
     await context.sync();
-
     selection.paragraphs.items.forEach(function (p) {
       p.style = "Normal";
     });
-
     await context.sync();
-    showStatus("Normal style applied.");
+    setStatus("Parágrafo normal aplicado.", "ok");
   });
 }
-// ─── Inserir Acordeão ────────────────────────────────────────
+
+// ─── Acordeão ─────────────────────────────────────────────────────────
 
 function insertAccordion() {
   run(async function (context) {
@@ -117,7 +273,7 @@ function insertAccordion() {
     ac.style = "DN-Accordion-Conteudo";
 
     await context.sync();
-    showStatus("Acordeão inserido.");
+    setStatus("Acordeão inserido.", "ok");
   });
 }
 
@@ -129,8 +285,9 @@ function addAccordionItem() {
     await context.sync();
 
     if (cc.isNullObject) {
-      showStatus(
+      setStatus(
         "Coloque o cursor dentro de um acordeão antes de adicionar um item.",
+        "warning",
       );
       return;
     }
@@ -141,10 +298,11 @@ function addAccordionItem() {
     c.style = "DN-Accordion-Conteudo";
 
     await context.sync();
-    showStatus("Novo item de acordeão adicionado.");
+    setStatus("Novo item de acordeão adicionado.", "ok");
   });
 }
-// ─── Inserir Tabs ────────────────────────────────────────────
+
+// ─── Tabs ─────────────────────────────────────────────────────────────
 
 function insertTabs() {
   run(async function (context) {
@@ -161,7 +319,7 @@ function insertTabs() {
     tc.style = "DN-Tab-Conteudo";
 
     await context.sync();
-    showStatus("Bloco de Abas inserido.");
+    setStatus("Bloco de Abas inserido.", "ok");
   });
 }
 
@@ -173,8 +331,9 @@ function addTabItem() {
     await context.sync();
 
     if (cc.isNullObject) {
-      showStatus(
+      setStatus(
         "Coloque o cursor dentro de um bloco de Abas antes de adicionar uma aba.",
+        "warning",
       );
       return;
     }
@@ -185,11 +344,11 @@ function addTabItem() {
     c.style = "DN-Tab-Conteudo";
 
     await context.sync();
-    showStatus("Nova aba adicionada.");
+    setStatus("Nova aba adicionada.", "ok");
   });
 }
 
-// ─── Inserir Imagem + Texto ──────────────────────────────────
+// ─── Imagem + Texto ───────────────────────────────────────────────────
 
 function insertImgText() {
   run(async function (context) {
@@ -206,6 +365,6 @@ function insertImgText() {
     table.style = "Table Grid";
 
     await context.sync();
-    showStatus("Bloco Imagem+Texto inserido.");
+    setStatus("Bloco Imagem+Texto inserido.", "ok");
   });
 }
