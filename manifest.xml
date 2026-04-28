@@ -11,8 +11,8 @@
   <ProviderName>DiscereNow</ProviderName>
   <DefaultLocale>pt-BR</DefaultLocale>
 
-  <DisplayName DefaultValue="DiscereNow" />
-  <Description DefaultValue="Ferramenta de autoria de cursos para Designers Instrucionais." />
+ <DisplayName DefaultValue="DiscereNow Template Builder for Word"/>
+  <Description DefaultValue="Structure learning content in Microsoft Word using a standardized format designed for scalable e-learning production workflows." />
 
   <IconUrl DefaultValue="https://jonathatbusiness.github.io/discerenow-addin/assets/icon-80.png" />
   <HighResolutionIconUrl DefaultValue="https://jonathatbusiness.github.io/discerenow-addin/assets/icon-80.png" />
