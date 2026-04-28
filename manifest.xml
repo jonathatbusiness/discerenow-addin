@@ -14,7 +14,7 @@
  <DisplayName DefaultValue="DiscereNow Template Builder for Word"/>
   <Description DefaultValue="Structure learning content in Microsoft Word using a standardized format designed for scalable e-learning production workflows." />
 
-  <IconUrl DefaultValue="https://jonathatbusiness.github.io/discerenow-addin/assets/icon-80.png" />
+  <IconUrl DefaultValue="https://jonathatbusiness.github.io/discerenow-addin/assets/icon-32.png" />
   <HighResolutionIconUrl DefaultValue="https://jonathatbusiness.github.io/discerenow-addin/assets/icon-80.png" />
   <SupportUrl DefaultValue="https://github.com/jonathatbusiness/discerenow-addin" />
 
