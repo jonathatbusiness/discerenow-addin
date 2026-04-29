@@ -11,7 +11,7 @@
   <ProviderName>DiscereNow</ProviderName>
   <DefaultLocale>pt-BR</DefaultLocale>
 
- <DisplayName DefaultValue="DiscereNow Template Builder for Word"/>
+  <DisplayName DefaultValue="DiscereNow Template Builder for Word"/>
   <Description DefaultValue="Structure learning content in Microsoft Word using a standardized format designed for scalable e-learning production workflows." />
 
   <IconUrl DefaultValue="https://jonathatbusiness.github.io/discerenow-addin/assets/icon-32.png" />
@@ -31,5 +31,67 @@
   </DefaultSettings>
 
   <Permissions>ReadWriteDocument</Permissions>
+
+  <VersionOverrides
+    xmlns="http://schemas.microsoft.com/office/taskpaneappversionoverrides"
+    xsi:type="VersionOverridesV1_0">
+
+    <Hosts>
+      <Host xsi:type="Document">
+        <DesktopFormFactor>
+          <ExtensionPoint xsi:type="PrimaryCommandSurface">
+            <OfficeTab id="TabHome">
+              <Group id="DiscereNow.Group">
+                <Label resid="DiscereNow.GroupLabel" />
+                <Icon>
+                  <bt:Image size="16" resid="DiscereNow.Icon16" />
+                  <bt:Image size="32" resid="DiscereNow.Icon32" />
+                  <bt:Image size="80" resid="DiscereNow.Icon80" />
+                </Icon>
+
+                <Control xsi:type="Button" id="DiscereNow.OpenTaskpaneButton">
+                  <Label resid="DiscereNow.ButtonLabel" />
+                  <Supertip>
+                    <Title resid="DiscereNow.ButtonLabel" />
+                    <Description resid="DiscereNow.ButtonDescription" />
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="DiscereNow.Icon16" />
+                    <bt:Image size="32" resid="DiscereNow.Icon32" />
+                    <bt:Image size="80" resid="DiscereNow.Icon80" />
+                  </Icon>
+                  <Action xsi:type="ShowTaskpane">
+                    <TaskpaneId>DiscereNow.Taskpane</TaskpaneId>
+                    <SourceLocation resid="DiscereNow.TaskpaneUrl" />
+                  </Action>
+                </Control>
+              </Group>
+            </OfficeTab>
+          </ExtensionPoint>
+        </DesktopFormFactor>
+      </Host>
+    </Hosts>
+
+    <Resources>
+      <bt:Images>
+        <bt:Image id="DiscereNow.Icon16" DefaultValue="https://jonathatbusiness.github.io/discerenow-addin/assets/icon-16.png?v=2" />
+        <bt:Image id="DiscereNow.Icon32" DefaultValue="https://jonathatbusiness.github.io/discerenow-addin/assets/icon-32.png?v=2" />
+        <bt:Image id="DiscereNow.Icon80" DefaultValue="https://jonathatbusiness.github.io/discerenow-addin/assets/icon-80.png?v=2" />
+      </bt:Images>
+
+      <bt:Urls>
+        <bt:Url id="DiscereNow.TaskpaneUrl" DefaultValue="https://jonathatbusiness.github.io/discerenow-addin/src/taskpane.html" />
+      </bt:Urls>
+
+      <bt:ShortStrings>
+        <bt:String id="DiscereNow.GroupLabel" DefaultValue="DiscereNow" />
+        <bt:String id="DiscereNow.ButtonLabel" DefaultValue="DiscereNow" />
+      </bt:ShortStrings>
+
+      <bt:LongStrings>
+        <bt:String id="DiscereNow.ButtonDescription" DefaultValue="Abrir o painel do DiscereNow Template Builder." />
+      </bt:LongStrings>
+    </Resources>
+  </VersionOverrides>
 
 </OfficeApp>
