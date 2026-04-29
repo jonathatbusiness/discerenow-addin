@@ -52,6 +52,14 @@ function attachUiHandlers() {
       if (add) handleAddItem(add);
     });
   });
+
+  document.querySelectorAll(".dn-quiz-action").forEach(function (btn) {
+    btn.addEventListener("click", function (ev) {
+      ev.stopPropagation();
+      const action = btn.getAttribute("data-action");
+      if (action) handleAction(action);
+    });
+  });
 }
 
 // ─── Despachadores ────────────────────────────────────────────────────
@@ -80,6 +88,12 @@ function handleAction(action) {
       return insertFlipCard();
     case "insert-quiz":
       return insertQuiz();
+    case "quiz-type-single":
+      return setQuizType("single");
+    case "quiz-type-multiple":
+      return setQuizType("multiple");
+    case "quiz-mark-correct":
+      return markQuizCorrectAnswer();
     case "insert-continue":
       return insertContinue();
   }
@@ -756,30 +770,35 @@ function insertQuiz() {
     cc.cannotDelete = false;
     cc.cannotEdit = false;
 
-    const tipo = cc.insertParagraph("single", "Start");
-    tipo.style = "DN-Quiz-Tipo";
+    const table = cc.insertTable(7, 2, "End", [
+      ["Tipo do quiz", "single"],
+      ["Pergunta", "Pergunta do quiz?"],
+      ["Opção", "Opção 1"],
+      ["Opção", "Opção 2"],
+      ["Opção", "Opção 3"],
+      ["Feedback correto", "Resposta correta! Parabéns."],
+      ["Feedback incorreto", "Não foi dessa vez. Tente de novo!"],
+    ]);
 
-    const pergunta = cc.insertParagraph("Pergunta do quiz?", "End");
-    pergunta.style = "DN-Quiz-Pergunta";
+    table.style = "Table Grid";
 
-    const op1 = cc.insertParagraph("Opção 1 (errada)", "End");
-    op1.style = "DN-Quiz-Opcao";
+    table.getCell(0, 0).value =
+      'Tipo do quiz — use "single" para resposta única ou "multiple" para múltiplas respostas.';
+    table.getCell(0, 1).body.paragraphs.getFirst().style = "DN-Quiz-Tipo";
 
-    const op2 = cc.insertParagraph("Opção 2 (certa)", "End");
-    op2.style = "DN-Quiz-OpcaoCerta";
+    table.getCell(1, 1).body.paragraphs.getFirst().style = "DN-Quiz-Pergunta";
 
-    const op3 = cc.insertParagraph("Opção 3 (errada)", "End");
-    op3.style = "DN-Quiz-Opcao";
+    table.getCell(2, 1).body.paragraphs.getFirst().style = "DN-Quiz-Opcao";
+    table.getCell(3, 1).body.paragraphs.getFirst().style = "DN-Quiz-OpcaoCerta";
+    table.getCell(4, 1).body.paragraphs.getFirst().style = "DN-Quiz-Opcao";
 
-    const fOk = cc.insertParagraph("Resposta correta! Parabéns.", "End");
-    fOk.style = "DN-Quiz-FeedbackOk";
-
-    const fErr = cc.insertParagraph("Não foi dessa vez. Tente de novo!", "End");
-    fErr.style = "DN-Quiz-FeedbackErro";
+    table.getCell(5, 1).body.paragraphs.getFirst().style = "DN-Quiz-FeedbackOk";
+    table.getCell(6, 1).body.paragraphs.getFirst().style =
+      "DN-Quiz-FeedbackErro";
 
     await context.sync();
     setStatus(
-      'Quiz inserido. (1ª linha: "single" ou "multi"; marque a certa com o estilo "DN-Quiz-OpcaoCerta")',
+      "Quiz inserido. Tipo padrão: single. Use os botões Single, Multiple e Resposta certa para configurar.",
       "ok",
     );
   });
@@ -795,11 +814,157 @@ function addQuizOption() {
       );
       return;
     }
-    const op = cc.insertParagraph("Nova opção", "End");
-    op.style = "DN-Quiz-Opcao";
+
+    const tables = cc.tables;
+    tables.load("items");
+    await context.sync();
+
+    if (tables.items.length === 0) {
+      const op = cc.insertParagraph("Nova opção", "End");
+      op.style = "DN-Quiz-Opcao";
+      await context.sync();
+      setStatus("Nova opção adicionada.", "ok");
+      return;
+    }
+
+    const table = tables.items[0];
+    const feedbackCorrectCell = table
+      .search("Feedback correto")
+      .getFirstOrNullObject();
+    feedbackCorrectCell.load("isNullObject");
+
+    await context.sync();
+
+    if (!feedbackCorrectCell.isNullObject) {
+      const row = feedbackCorrectCell.parentTable.getCell(5, 0);
+      row.insertRows("Before", 1, [["Opção", "Nova opção"]]);
+    } else {
+      table.getCell(0, 0).insertRows("After", 1, [["Opção", "Nova opção"]]);
+    }
+
+    await context.sync();
+
+    const rows = table.rows;
+    rows.load("items");
+    await context.sync();
+
+    const optionRowIndex = Math.max(2, rows.items.length - 3);
+    table.getCell(optionRowIndex, 1).body.paragraphs.getFirst().style =
+      "DN-Quiz-Opcao";
+
+    await context.sync();
+    setStatus("Nova opção adicionada ao Quiz.", "ok");
+  });
+}
+
+function setQuizType(quizType) {
+  run(async function (context) {
+    const cc = await getParentCCByTag(context, "DN-quiz");
+    if (!cc) {
+      setStatus(
+        "Coloque o cursor dentro de um Quiz antes de alterar o tipo.",
+        "warning",
+      );
+      return;
+    }
+
+    const paragraphs = cc.paragraphs;
+    paragraphs.load("items/style,text");
+    await context.sync();
+
+    let typeParagraph = null;
+
+    for (let i = 0; i < paragraphs.items.length; i++) {
+      if (paragraphs.items[i].style === "DN-Quiz-Tipo") {
+        typeParagraph = paragraphs.items[i];
+        break;
+      }
+    }
+
+    if (!typeParagraph) {
+      setStatus("Não encontrei a linha de tipo do Quiz.", "warning");
+      return;
+    }
+
+    typeParagraph.getRange().insertText(quizType, "Replace");
+
     await context.sync();
     setStatus(
-      'Nova opção adicionada. (use o estilo "DN-Quiz-OpcaoCerta" se for a correta)',
+      quizType === "single"
+        ? "Quiz configurado como Single: apenas uma resposta correta."
+        : "Quiz configurado como Multiple: permite mais de uma resposta correta.",
+      "ok",
+    );
+  });
+}
+
+function markQuizCorrectAnswer() {
+  run(async function (context) {
+    const cc = await getParentCCByTag(context, "DN-quiz");
+    if (!cc) {
+      setStatus(
+        "Coloque o cursor sobre uma opção dentro de um Quiz.",
+        "warning",
+      );
+      return;
+    }
+
+    const selection = context.document.getSelection();
+    const selectedParagraphs = selection.paragraphs;
+    selectedParagraphs.load("items/style,text");
+
+    const quizParagraphs = cc.paragraphs;
+    quizParagraphs.load("items/style,text");
+
+    await context.sync();
+
+    if (selectedParagraphs.items.length === 0) {
+      setStatus(
+        "Selecione ou posicione o cursor sobre uma opção do Quiz.",
+        "warning",
+      );
+      return;
+    }
+
+    const selectedParagraph = selectedParagraphs.items[0];
+
+    if (
+      selectedParagraph.style !== "DN-Quiz-Opcao" &&
+      selectedParagraph.style !== "DN-Quiz-OpcaoCerta"
+    ) {
+      setStatus("O cursor precisa estar em uma opção do Quiz.", "warning");
+      return;
+    }
+
+    let quizType = "single";
+
+    for (let i = 0; i < quizParagraphs.items.length; i++) {
+      const p = quizParagraphs.items[i];
+      if (p.style === "DN-Quiz-Tipo") {
+        const value = (p.text || "").trim().toLowerCase();
+        quizType =
+          value === "multiple" || value === "multi" ? "multiple" : "single";
+        break;
+      }
+    }
+
+    if (quizType === "single") {
+      for (let i = 0; i < quizParagraphs.items.length; i++) {
+        const p = quizParagraphs.items[i];
+        if (p.style === "DN-Quiz-OpcaoCerta") {
+          p.style = "DN-Quiz-Opcao";
+        }
+      }
+    }
+
+    selectedParagraph.style = "DN-Quiz-OpcaoCerta";
+
+    await context.sync();
+
+    setStatus(
+      quizType === "single"
+        ? "Resposta certa definida. As outras opções foram marcadas como incorretas."
+        : "Resposta certa adicionada. As outras respostas certas foram mantidas.",
       "ok",
     );
   });
