@@ -326,23 +326,32 @@ function applyNormal() {
 }
 
 // ─── Helper: garante estar dentro de um CC com tag esperada ───────────
-// CORRIGIDO: Busca na hierarquia caso não ache imediatamente
+
 async function getParentCCByTag(context, expectedTag) {
   const selection = context.document.getSelection();
-  const parentCCs = selection.getContentControls();
-  parentCCs.load("tag, items");
+
+  const directParent = selection.parentContentControlOrNullObject;
+  directParent.load("isNullObject, tag");
   await context.sync();
 
-  for (let i = 0; i < parentCCs.items.length; i++) {
-    if (parentCCs.items[i].tag === expectedTag) {
-      return parentCCs.items[i];
+  if (!directParent.isNullObject && directParent.tag === expectedTag) {
+    return directParent;
+  }
+
+  const containedCCs = selection.getContentControls();
+  containedCCs.load("items/tag");
+  await context.sync();
+
+  for (let i = 0; i < containedCCs.items.length; i++) {
+    if (containedCCs.items[i].tag === expectedTag) {
+      return containedCCs.items[i];
     }
   }
 
   const surroundingCCs = selection.getContentControls({
     selectionMode: "Surrounding",
   });
-  surroundingCCs.load("tag, items");
+  surroundingCCs.load("items/tag");
   await context.sync();
 
   for (let i = 0; i < surroundingCCs.items.length; i++) {
