@@ -354,9 +354,8 @@ async function getParentCCByTag(context, expectedTag) {
   return null;
 }
 
-// ─── MODIFICAÇÃO AQUI: getSafeBlockInsertionTarget ────────────────────
-// Esta função foi alterada para retornar o Content Control pai (se houver)
-// ou a seleção, para que a lógica de inserção possa ser tratada externamente.
+// ─── getSafeBlockInsertionTarget ────────────────────
+
 async function getSafeBlockInsertionTarget(context) {
   const selection = context.document.getSelection();
   const parentCc = selection.parentContentControlOrNullObject;
@@ -365,16 +364,11 @@ async function getSafeBlockInsertionTarget(context) {
   await context.sync();
 
   if (!parentCc.isNullObject) {
-    // Se houver um CC pai, retornamos o próprio CC pai.
-    // A lógica de inserção "After" será feita na função que chama.
     return { target: parentCc, type: "ContentControl", position: "After" };
   }
 
-  // Se não houver CC pai, retornamos a seleção.
-  // A lógica de inserção será feita na seleção.
   return { target: selection, type: "Selection", position: "Replace" };
 }
-// ─── FIM DA MODIFICAÇÃO: getSafeBlockInsertionTarget ──────────────────
 
 // ─── CONSTANTE PADRÃO ────────────────────────────────────────────────
 
@@ -385,23 +379,17 @@ const IMG_PLACEHOLDER =
 
 function insertAccordion() {
   run(async function (context) {
-    // MODIFICAÇÃO AQUI: Como usar o retorno de getSafeBlockInsertionTarget
     const { target, type, position } =
       await getSafeBlockInsertionTarget(context);
     let cc;
 
     if (type === "ContentControl" && position === "After") {
-      // Se o target é um ContentControl e queremos inserir After,
-      // precisamos usar o ContentControlCollection do documento.
-      cc = context.document.contentControls.add(
-        Word.ContentControlType.richText,
-        target.range.insertContentControl(position),
-      );
+      const paragraphAfter = target.insertParagraph("", "After");
+      const insertionRange = paragraphAfter.getRange();
+      cc = insertionRange.insertContentControl();
     } else {
-      // Caso contrário, o target é uma Selection ou queremos inserir no lugar.
       cc = target.insertContentControl();
     }
-    // FIM DA MODIFICAÇÃO
 
     cc.tag = "DN-accordion";
     cc.title = "Acordeão";
@@ -448,20 +436,17 @@ function addAccordionItem() {
 
 function insertTabs() {
   run(async function (context) {
-    // MODIFICAÇÃO AQUI: Como usar o retorno de getSafeBlockInsertionTarget
     const { target, type, position } =
       await getSafeBlockInsertionTarget(context);
     let cc;
 
     if (type === "ContentControl" && position === "After") {
-      cc = context.document.contentControls.add(
-        Word.ContentControlType.richText,
-        target.range.insertContentControl(position),
-      );
+      const paragraphAfter = target.insertParagraph("", "After");
+      const insertionRange = paragraphAfter.getRange();
+      cc = insertionRange.insertContentControl();
     } else {
       cc = target.insertContentControl();
     }
-    // FIM DA MODIFICAÇÃO
 
     cc.tag = "DN-tabs";
     cc.title = "Abas";
@@ -508,20 +493,17 @@ function addTabItem() {
 
 function insertImgText() {
   run(async function (context) {
-    // MODIFICAÇÃO AQUI: Como usar o retorno de getSafeBlockInsertionTarget
     const { target, type, position } =
       await getSafeBlockInsertionTarget(context);
     let cc;
 
     if (type === "ContentControl" && position === "After") {
-      cc = context.document.contentControls.add(
-        Word.ContentControlType.richText,
-        target.range.insertContentControl(position),
-      );
+      const paragraphAfter = target.insertParagraph("", "After");
+      const insertionRange = paragraphAfter.getRange();
+      cc = insertionRange.insertContentControl();
     } else {
       cc = target.insertContentControl();
     }
-    // FIM DA MODIFICAÇÃO
 
     cc.tag = "DN-imgText";
     cc.title = "Imagem + Texto";
@@ -542,20 +524,17 @@ function insertImgText() {
 
 function insertCallout() {
   run(async function (context) {
-    // MODIFICAÇÃO AQUI: Como usar o retorno de getSafeBlockInsertionTarget
     const { target, type, position } =
       await getSafeBlockInsertionTarget(context);
     let cc;
 
     if (type === "ContentControl" && position === "After") {
-      cc = context.document.contentControls.add(
-        Word.ContentControlType.richText,
-        target.range.insertContentControl(position),
-      );
+      const paragraphAfter = target.insertParagraph("", "After");
+      const insertionRange = paragraphAfter.getRange();
+      cc = insertionRange.insertContentControl();
     } else {
       cc = target.insertContentControl();
     }
-    // FIM DA MODIFICAÇÃO
 
     cc.tag = "DN-callout";
     cc.title = "Callout";
@@ -564,8 +543,10 @@ function insertCallout() {
 
     const tipo = cc.insertParagraph("info", "Start");
     tipo.style = "DN-Callout-Tipo";
+
     const titulo = cc.insertParagraph("Título do destaque", "End");
     titulo.style = "DN-Callout-Titulo";
+
     const conteudo = cc.insertParagraph("Conteúdo do destaque...", "End");
     conteudo.style = "DN-Callout-Conteudo";
 
@@ -581,20 +562,17 @@ function insertCallout() {
 
 function insertVideo() {
   run(async function (context) {
-    // MODIFICAÇÃO AQUI: Como usar o retorno de getSafeBlockInsertionTarget
     const { target, type, position } =
       await getSafeBlockInsertionTarget(context);
     let cc;
 
     if (type === "ContentControl" && position === "After") {
-      cc = context.document.contentControls.add(
-        Word.ContentControlType.richText,
-        target.range.insertContentControl(position),
-      );
+      const paragraphAfter = target.insertParagraph("", "After");
+      const insertionRange = paragraphAfter.getRange();
+      cc = insertionRange.insertContentControl();
     } else {
       cc = target.insertContentControl();
     }
-    // FIM DA MODIFICAÇÃO
 
     cc.tag = "DN-video";
     cc.title = "Vídeo";
@@ -606,6 +584,7 @@ function insertVideo() {
       "Start",
     );
     url.style = "DN-Video-Url";
+
     const legenda = cc.insertParagraph("Legenda do vídeo (opcional)", "End");
     legenda.style = "DN-Video-Legenda";
 
@@ -621,20 +600,17 @@ function insertVideo() {
 
 function insertCards() {
   run(async function (context) {
-    // MODIFICAÇÃO AQUI: Como usar o retorno de getSafeBlockInsertionTarget
     const { target, type, position } =
       await getSafeBlockInsertionTarget(context);
     let cc;
 
     if (type === "ContentControl" && position === "After") {
-      cc = context.document.contentControls.add(
-        Word.ContentControlType.richText,
-        target.range.insertContentControl(position),
-      );
+      const paragraphAfter = target.insertParagraph("", "After");
+      const insertionRange = paragraphAfter.getRange();
+      cc = insertionRange.insertContentControl();
     } else {
       cc = target.insertContentControl();
     }
-    // FIM DA MODIFICAÇÃO
 
     cc.tag = "DN-cards";
     cc.title = "Cards";
@@ -681,20 +657,17 @@ function addCardItem() {
 
 function insertFlipCard() {
   run(async function (context) {
-    // MODIFICAÇÃO AQUI: Como usar o retorno de getSafeBlockInsertionTarget
     const { target, type, position } =
       await getSafeBlockInsertionTarget(context);
     let cc;
 
     if (type === "ContentControl" && position === "After") {
-      cc = context.document.contentControls.add(
-        Word.ContentControlType.richText,
-        target.range.insertContentControl(position),
-      );
+      const paragraphAfter = target.insertParagraph("", "After");
+      const insertionRange = paragraphAfter.getRange();
+      cc = insertionRange.insertContentControl();
     } else {
       cc = target.insertContentControl();
     }
-    // FIM DA MODIFICAÇÃO
 
     cc.tag = "DN-flipcard";
     cc.title = "FlipCard";
@@ -757,20 +730,17 @@ function addFlipCardItem() {
 
 function insertQuiz() {
   run(async function (context) {
-    // MODIFICAÇÃO AQUI: Como usar o retorno de getSafeBlockInsertionTarget
     const { target, type, position } =
       await getSafeBlockInsertionTarget(context);
     let cc;
 
     if (type === "ContentControl" && position === "After") {
-      cc = context.document.contentControls.add(
-        Word.ContentControlType.richText,
-        target.range.insertContentControl(position),
-      );
+      const paragraphAfter = target.insertParagraph("", "After");
+      const insertionRange = paragraphAfter.getRange();
+      cc = insertionRange.insertContentControl();
     } else {
       cc = target.insertContentControl();
     }
-    // FIM DA MODIFICAÇÃO
 
     cc.tag = "DN-quiz";
     cc.title = "Quiz";
@@ -779,16 +749,22 @@ function insertQuiz() {
 
     const tipo = cc.insertParagraph("single", "Start");
     tipo.style = "DN-Quiz-Tipo";
+
     const pergunta = cc.insertParagraph("Pergunta do quiz?", "End");
     pergunta.style = "DN-Quiz-Pergunta";
+
     const op1 = cc.insertParagraph("Opção 1 (errada)", "End");
     op1.style = "DN-Quiz-Opcao";
+
     const op2 = cc.insertParagraph("Opção 2 (certa)", "End");
     op2.style = "DN-Quiz-OpcaoCerta";
+
     const op3 = cc.insertParagraph("Opção 3 (errada)", "End");
     op3.style = "DN-Quiz-Opcao";
+
     const fOk = cc.insertParagraph("Resposta correta! Parabéns.", "End");
     fOk.style = "DN-Quiz-FeedbackOk";
+
     const fErr = cc.insertParagraph("Não foi dessa vez. Tente de novo!", "End");
     fErr.style = "DN-Quiz-FeedbackErro";
 
@@ -824,20 +800,17 @@ function addQuizOption() {
 
 function insertContinue() {
   run(async function (context) {
-    // MODIFICAÇÃO AQUI: Como usar o retorno de getSafeBlockInsertionTarget
     const { target, type, position } =
       await getSafeBlockInsertionTarget(context);
     let cc;
 
     if (type === "ContentControl" && position === "After") {
-      cc = context.document.contentControls.add(
-        Word.ContentControlType.richText,
-        target.range.insertContentControl(position),
-      );
+      const paragraphAfter = target.insertParagraph("", "After");
+      const insertionRange = paragraphAfter.getRange();
+      cc = insertionRange.insertContentControl();
     } else {
       cc = target.insertContentControl();
     }
-    // FIM DA MODIFICAÇÃO
 
     cc.tag = "DN-continue";
     cc.title = "Botão Continuar";
