@@ -316,12 +316,28 @@ async function getParentCCByTag(context, expectedTag) {
   return cc;
 }
 
+async function getSafeBlockInsertionTarget(context) {
+  const selection = context.document.getSelection();
+  const parentCc = selection.parentContentControlOrNullObject;
+
+  parentCc.load("isNullObject");
+  await context.sync();
+
+  if (parentCc.isNullObject) {
+    return selection;
+  }
+
+  const paragraphAfterBlock = parentCc.insertParagraph("", "After");
+  return paragraphAfterBlock;
+}
+
 // ─── Acordeão ─────────────────────────────────────────────────────────
 
 function insertAccordion() {
   run(async function (context) {
-    const selection = context.document.getSelection();
-    const cc = selection.insertContentControl();
+    const target = await getSafeBlockInsertionTarget(context);
+    const cc = target.insertContentControl();
+
     cc.tag = "DN-accordion";
     cc.title = "Acordeão";
     cc.cannotDelete = false;
@@ -368,8 +384,9 @@ function addAccordionItem() {
 
 function insertTabs() {
   run(async function (context) {
-    const selection = context.document.getSelection();
-    const cc = selection.insertContentControl();
+    const target = await getSafeBlockInsertionTarget(context);
+    const cc = target.insertContentControl();
+
     cc.tag = "DN-tabs";
     cc.title = "Abas";
     cc.cannotDelete = false;
@@ -416,8 +433,8 @@ function addTabItem() {
 
 function insertImgText() {
   run(async function (context) {
-    const selection = context.document.getSelection();
-    const cc = selection.insertContentControl();
+    const target = await getSafeBlockInsertionTarget(context);
+    const cc = target.insertContentControl();
     cc.tag = "DN-imgText";
     cc.title = "Imagem + Texto";
     cc.cannotDelete = false;
@@ -437,8 +454,8 @@ function insertImgText() {
 
 function insertCallout() {
   run(async function (context) {
-    const selection = context.document.getSelection();
-    const cc = selection.insertContentControl();
+    const target = await getSafeBlockInsertionTarget(context);
+    const cc = target.insertContentControl();
     cc.tag = "DN-callout";
     cc.title = "Callout";
     cc.cannotDelete = false;
@@ -464,8 +481,8 @@ function insertCallout() {
 
 function insertVideo() {
   run(async function (context) {
-    const selection = context.document.getSelection();
-    const cc = selection.insertContentControl();
+    const target = await getSafeBlockInsertionTarget(context);
+    const cc = target.insertContentControl();
     cc.tag = "DN-video";
     cc.title = "Vídeo";
     cc.cannotDelete = false;
@@ -491,8 +508,8 @@ function insertVideo() {
 
 function insertCards() {
   run(async function (context) {
-    const selection = context.document.getSelection();
-    const cc = selection.insertContentControl();
+    const target = await getSafeBlockInsertionTarget(context);
+    const cc = target.insertContentControl();
     cc.tag = "DN-cards";
     cc.title = "Cards";
     cc.cannotDelete = false;
@@ -535,8 +552,8 @@ function addCardItem() {
 
 function insertFlipCard() {
   run(async function (context) {
-    const selection = context.document.getSelection();
-    const cc = selection.insertContentControl();
+    const target = await getSafeBlockInsertionTarget(context);
+    const cc = target.insertContentControl();
     cc.tag = "DN-flipcard";
     cc.title = "FlipCard";
     cc.cannotDelete = false;
@@ -599,8 +616,8 @@ function addFlipCardItem() {
 
 function insertQuiz() {
   run(async function (context) {
-    const selection = context.document.getSelection();
-    const cc = selection.insertContentControl();
+    const target = await getSafeBlockInsertionTarget(context);
+    const cc = target.insertContentControl();
     cc.tag = "DN-quiz";
     cc.title = "Quiz";
     cc.cannotDelete = false;
@@ -654,8 +671,8 @@ function addQuizOption() {
 
 function insertContinue() {
   run(async function (context) {
-    const selection = context.document.getSelection();
-    const cc = selection.insertContentControl();
+    const target = await getSafeBlockInsertionTarget(context);
+    const cc = target.insertContentControl();
     cc.tag = "DN-continue";
     cc.title = "Botão Continuar";
     cc.cannotDelete = false;
