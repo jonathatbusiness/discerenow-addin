@@ -56,22 +56,39 @@ function attachUiHandlers() {
 
 function handleAction(action) {
   switch (action) {
+    case "apply-chapter":
+      return applyStyle("DN-Capitulo");
+
+    case "apply-lesson":
+      return applyStyle("DN-Licao");
+
+    case "apply-paragraph":
+      return applyNormal();
+
     case "insert-callout":
       return insertCallout();
+
     case "insert-imgtext":
       return insertImgText();
+
     case "insert-video":
       return insertVideo();
+
     case "insert-accordion":
       return insertAccordion();
+
     case "insert-tabs":
       return insertTabs();
+
     case "insert-cards":
       return insertCards();
+
     case "insert-flipcard":
       return insertFlipCard();
+
     case "insert-quiz":
       return insertQuiz();
+
     case "insert-continue":
       return insertContinue();
   }
@@ -88,6 +105,36 @@ function handleAddItem(kind) {
     case "flipcard-item":
       return addFlipCardItem();
   }
+}
+
+function applyStyle(styleName) {
+  run(async function (context) {
+    const selection = context.document.getSelection();
+    selection.paragraphs.load("items");
+
+    await context.sync();
+
+    selection.paragraphs.items.forEach(function (p) {
+      p.style = styleName;
+    });
+
+    await context.sync();
+  });
+}
+
+function applyNormal() {
+  run(async function (context) {
+    const selection = context.document.getSelection();
+    selection.paragraphs.load("items");
+
+    await context.sync();
+
+    selection.paragraphs.items.forEach(function (p) {
+      p.style = "Normal";
+    });
+
+    await context.sync();
+  });
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────
