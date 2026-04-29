@@ -357,17 +357,32 @@ async function getParentCCByTag(context, expectedTag) {
 // CORRIGIDO: Garante que um bloco não seja inserido dentro de outro inadvertidamente
 async function getSafeBlockInsertionTarget(context) {
   const selection = context.document.getSelection();
-  const parentCCs = selection.getContentControls();
-  parentCCs.load("items");
+
+  // 1. Verifica se o cursor está DENTRO de um bloco
+  const surroundingCCs = selection.getContentControls({
+    selectionMode: "Surrounding",
+  });
+  surroundingCCs.load("items");
+
+  // 2. Verifica se a seleção CONTÉM um bloco (usuário selecionou o bloco inteiro)
+  const selectedCCs = selection.getContentControls();
+  selectedCCs.load("items");
+
   await context.sync();
 
-  if (parentCCs.items.length > 0) {
-    // We are inside a CC. Insert after the outermost one found.
-    const outermostCC = parentCCs.items[parentCCs.items.length - 1];
+  // Se o cursor estiver dentro de um bloco, pega o mais externo e insere depois dele
+  if (surroundingCCs.items.length > 0) {
+    const outermostCC = surroundingCCs.items[surroundingCCs.items.length - 1];
     return outermostCC.insertParagraph("", "After");
   }
 
-  // Not inside a CC, safe to insert at selection
+  // Se o usuário selecionou o bloco inteiro, insere depois dele
+  if (selectedCCs.items.length > 0) {
+    const outermostCC = selectedCCs.items[selectedCCs.items.length - 1];
+    return outermostCC.insertParagraph("", "After");
+  }
+
+  // Seguro para inserir no local
   return selection;
 }
 
