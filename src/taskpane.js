@@ -10,7 +10,7 @@ Office.onReady(function (info) {
   });
 
   attachUiHandlers();
-  attachSelectionListener(); // Reintroduzido o listener de seleção
+  attachSelectionListener();
 });
 
 // ─── Status bar ───────────────────────────────────────────────────────
@@ -95,7 +95,7 @@ function handleAddItem(kind) {
       return addCardItem();
     case "flipcard-item":
       return addFlipCardItem();
-    case "quiz-item": // Reintroduzido
+    case "quiz-item":
       return addQuizOption();
   }
 }
@@ -119,15 +119,35 @@ function attachSelectionListener() {
 }
 
 function updateContextHighlight() {
-  Word.run(function (context) {
+  Word.run(async function (context) {
     const sel = context.document.getSelection();
-    const cc = sel.parentContentControlOrNullObject;
-    cc.load("tag, isNullObject");
-    return context.sync().then(function () {
-      const tag = cc.isNullObject ? null : cc.tag;
-      applyContextualState(tag);
-    });
-  }).catch(function () {
+
+    // Improved logic to find the relevant Content Control
+    const parentCCs = sel.getContentControls();
+    parentCCs.load("items, tag");
+
+    await context.sync();
+
+    let tag = null;
+
+    if (parentCCs.items.length > 0) {
+      // If directly inside one, take the closest one
+      tag = parentCCs.items[0].tag;
+    } else {
+      // Fallback to surrounding if not directly inside but selection spans it
+      const surrounding = sel.getContentControls({
+        selectionMode: "Surrounding",
+      });
+      surrounding.load("items, tag");
+      await context.sync();
+      if (surrounding.items.length > 0) {
+        tag = surrounding.items[0].tag;
+      }
+    }
+
+    applyContextualState(tag);
+  }).catch(function (error) {
+    console.error("Context Update Error:", error);
     applyContextualState(null);
   });
 }
@@ -306,26 +326,49 @@ function applyNormal() {
 }
 
 // ─── Helper: garante estar dentro de um CC com tag esperada ───────────
-
+// CORRIGIDO: Busca na hierarquia caso não ache imediatamente
 async function getParentCCByTag(context, expectedTag) {
-  const sel = context.document.getSelection();
-  const cc = sel.parentContentControlOrNullObject;
-  cc.load("tag, isNullObject");
+  const selection = context.document.getSelection();
+  const parentCCs = selection.getContentControls();
+  parentCCs.load("tag, items");
   await context.sync();
-  if (cc.isNullObject || cc.tag !== expectedTag) return null;
-  return cc;
+
+  for (let i = 0; i < parentCCs.items.length; i++) {
+    if (parentCCs.items[i].tag === expectedTag) {
+      return parentCCs.items[i];
+    }
+  }
+
+  const surroundingCCs = selection.getContentControls({
+    selectionMode: "Surrounding",
+  });
+  surroundingCCs.load("tag, items");
+  await context.sync();
+
+  for (let i = 0; i < surroundingCCs.items.length; i++) {
+    if (surroundingCCs.items[i].tag === expectedTag) {
+      return surroundingCCs.items[i];
+    }
+  }
+
+  return null;
 }
 
+// CORRIGIDO: Garante que um bloco não seja inserido dentro de outro inadvertidamente
 async function getSafeBlockInsertionTarget(context) {
   const selection = context.document.getSelection();
-  const parentCc = selection.parentContentControlOrNullObject;
-
-  parentCc.load("isNullObject");
+  const parentCCs = selection.getContentControls();
+  parentCCs.load("items");
   await context.sync();
 
-  if (parentCc.isNullObject) return selection;
+  if (parentCCs.items.length > 0) {
+    // We are inside a CC. Insert after the outermost one found.
+    const outermostCC = parentCCs.items[parentCCs.items.length - 1];
+    return outermostCC.insertParagraph("", "After");
+  }
 
-  return parentCc.insertParagraph("", "After");
+  // Not inside a CC, safe to insert at selection
+  return selection;
 }
 
 // ─── CONSTANTE PADRÃO ────────────────────────────────────────────────
@@ -350,10 +393,10 @@ function insertAccordion() {
     const table = cc.insertTable(1, 2, "End", [
       ["Conteúdo do item...", IMG_PLACEHOLDER],
     ]);
-    table.style = "Table Grid"; // Adicionado estilo de tabela
+    table.style = "Table Grid";
 
     await context.sync();
-    setStatus("Acordeão inserido.", "ok"); // Reintroduzido
+    setStatus("Acordeão inserido.", "ok");
   });
 }
 
@@ -364,16 +407,19 @@ function addAccordionItem() {
       setStatus(
         "Coloque o cursor dentro de um acordeão antes de adicionar um item.",
         "warning",
-      ); // Reintroduzido
+      );
       return;
     }
     const t = cc.insertParagraph("Título do item", "End");
     t.style = "DN-Accordion-Titulo";
 
-    cc.insertTable(1, 2, "End", [["Conteúdo do item...", IMG_PLACEHOLDER]]);
+    const table = cc.insertTable(1, 2, "End", [
+      ["Conteúdo do item...", IMG_PLACEHOLDER],
+    ]);
+    table.style = "Table Grid";
 
     await context.sync();
-    setStatus("Novo item de acordeão adicionado.", "ok"); // Reintroduzido
+    setStatus("Novo item de acordeão adicionado.", "ok");
   });
 }
 
@@ -391,10 +437,13 @@ function insertTabs() {
     const t = cc.insertParagraph("Título da aba", "Start");
     t.style = "DN-Tab-Titulo";
 
-    cc.insertTable(1, 2, "End", [["Conteúdo da aba...", IMG_PLACEHOLDER]]);
+    const table = cc.insertTable(1, 2, "End", [
+      ["Conteúdo da aba...", IMG_PLACEHOLDER],
+    ]);
+    table.style = "Table Grid";
 
     await context.sync();
-    setStatus("Bloco de Abas inserido.", "ok"); // Reintroduzido
+    setStatus("Bloco de Abas inserido.", "ok");
   });
 }
 
@@ -405,16 +454,19 @@ function addTabItem() {
       setStatus(
         "Coloque o cursor dentro de um bloco de Abas antes de adicionar uma aba.",
         "warning",
-      ); // Reintroduzido
+      );
       return;
     }
     const t = cc.insertParagraph("Título da aba", "End");
     t.style = "DN-Tab-Titulo";
 
-    cc.insertTable(1, 2, "End", [["Conteúdo da aba...", IMG_PLACEHOLDER]]);
+    const table = cc.insertTable(1, 2, "End", [
+      ["Conteúdo da aba...", IMG_PLACEHOLDER],
+    ]);
+    table.style = "Table Grid";
 
     await context.sync();
-    setStatus("Nova aba adicionada.", "ok"); // Reintroduzido
+    setStatus("Nova aba adicionada.", "ok");
   });
 }
 
@@ -422,7 +474,7 @@ function addTabItem() {
 
 function insertImgText() {
   run(async function (context) {
-    const target = await getSafeBlockInsertionTarget(context); // Usando getSafeBlockInsertionTarget
+    const target = await getSafeBlockInsertionTarget(context);
     const cc = target.insertContentControl();
     cc.tag = "DN-imgText";
     cc.title = "Imagem + Texto";
@@ -443,14 +495,13 @@ function insertImgText() {
 
 function insertCallout() {
   run(async function (context) {
-    const target = await getSafeBlockInsertionTarget(context); // Usando getSafeBlockInsertionTarget
+    const target = await getSafeBlockInsertionTarget(context);
     const cc = target.insertContentControl();
     cc.tag = "DN-callout";
     cc.title = "Callout";
     cc.cannotDelete = false;
     cc.cannotEdit = false;
 
-    // Tipo: edite para "info", "alert" ou "tip"
     const tipo = cc.insertParagraph("info", "Start");
     tipo.style = "DN-Callout-Tipo";
     const titulo = cc.insertParagraph("Título do destaque", "End");
@@ -470,7 +521,7 @@ function insertCallout() {
 
 function insertVideo() {
   run(async function (context) {
-    const target = await getSafeBlockInsertionTarget(context); // Usando getSafeBlockInsertionTarget
+    const target = await getSafeBlockInsertionTarget(context);
     const cc = target.insertContentControl();
     cc.tag = "DN-video";
     cc.title = "Vídeo";
@@ -507,10 +558,13 @@ function insertCards() {
     const t = cc.insertParagraph("Título do card", "Start");
     t.style = "DN-Card-Titulo";
 
-    cc.insertTable(1, 2, "End", [["Conteúdo do card...", IMG_PLACEHOLDER]]);
+    const table = cc.insertTable(1, 2, "End", [
+      ["Conteúdo do card...", IMG_PLACEHOLDER],
+    ]);
+    table.style = "Table Grid";
 
     await context.sync();
-    setStatus("Cards inserido.", "ok"); // Reintroduzido
+    setStatus("Cards inserido.", "ok");
   });
 }
 
@@ -521,16 +575,19 @@ function addCardItem() {
       setStatus(
         "Coloque o cursor dentro de um bloco Cards antes de adicionar um card.",
         "warning",
-      ); // Reintroduzido
+      );
       return;
     }
     const t = cc.insertParagraph("Título do card", "End");
     t.style = "DN-Card-Titulo";
 
-    cc.insertTable(1, 2, "End", [["Conteúdo do card...", IMG_PLACEHOLDER]]);
+    const table = cc.insertTable(1, 2, "End", [
+      ["Conteúdo do card...", IMG_PLACEHOLDER],
+    ]);
+    table.style = "Table Grid";
 
     await context.sync();
-    setStatus("Novo card adicionado.", "ok"); // Reintroduzido
+    setStatus("Novo card adicionado.", "ok");
   });
 }
 
@@ -548,15 +605,21 @@ function insertFlipCard() {
     const ft = cc.insertParagraph("Frente — título", "Start");
     ft.style = "DN-Flip-Frente-Titulo";
 
-    cc.insertTable(1, 2, "End", [["Frente — conteúdo...", IMG_PLACEHOLDER]]);
+    const table1 = cc.insertTable(1, 2, "End", [
+      ["Frente — conteúdo...", IMG_PLACEHOLDER],
+    ]);
+    table1.style = "Table Grid";
 
     const vt = cc.insertParagraph("Verso — título", "End");
     vt.style = "DN-Flip-Verso-Titulo";
 
-    cc.insertTable(1, 2, "End", [["Verso — conteúdo...", IMG_PLACEHOLDER]]);
+    const table2 = cc.insertTable(1, 2, "End", [
+      ["Verso — conteúdo...", IMG_PLACEHOLDER],
+    ]);
+    table2.style = "Table Grid";
 
     await context.sync();
-    setStatus("FlipCard inserido.", "ok"); // Reintroduzido
+    setStatus("FlipCard inserido.", "ok");
   });
 }
 
@@ -567,21 +630,27 @@ function addFlipCardItem() {
       setStatus(
         "Coloque o cursor dentro de um bloco FlipCard antes de adicionar um card.",
         "warning",
-      ); // Reintroduzido
+      );
       return;
     }
     const ft = cc.insertParagraph("Frente — título", "End");
     ft.style = "DN-Flip-Frente-Titulo";
 
-    cc.insertTable(1, 2, "End", [["Frente — conteúdo...", IMG_PLACEHOLDER]]);
+    const table1 = cc.insertTable(1, 2, "End", [
+      ["Frente — conteúdo...", IMG_PLACEHOLDER],
+    ]);
+    table1.style = "Table Grid";
 
     const vt = cc.insertParagraph("Verso — título", "End");
     vt.style = "DN-Flip-Verso-Titulo";
 
-    cc.insertTable(1, 2, "End", [["Verso — conteúdo...", IMG_PLACEHOLDER]]);
+    const table2 = cc.insertTable(1, 2, "End", [
+      ["Verso — conteúdo...", IMG_PLACEHOLDER],
+    ]);
+    table2.style = "Table Grid";
 
     await context.sync();
-    setStatus("Novo flipcard adicionado.", "ok"); // Reintroduzido
+    setStatus("Novo flipcard adicionado.", "ok");
   });
 }
 
@@ -589,14 +658,13 @@ function addFlipCardItem() {
 
 function insertQuiz() {
   run(async function (context) {
-    const target = await getSafeBlockInsertionTarget(context); // Usando getSafeBlockInsertionTarget
+    const target = await getSafeBlockInsertionTarget(context);
     const cc = target.insertContentControl();
     cc.tag = "DN-quiz";
     cc.title = "Quiz";
     cc.cannotDelete = false;
     cc.cannotEdit = false;
 
-    // Tipo: "single" (radio) ou "multi" (checkbox)
     const tipo = cc.insertParagraph("single", "Start");
     tipo.style = "DN-Quiz-Tipo";
     const pergunta = cc.insertParagraph("Pergunta do quiz?", "End");
@@ -644,7 +712,7 @@ function addQuizOption() {
 
 function insertContinue() {
   run(async function (context) {
-    const target = await getSafeBlockInsertionTarget(context); // Usando getSafeBlockInsertionTarget
+    const target = await getSafeBlockInsertionTarget(context);
     const cc = target.insertContentControl();
     cc.tag = "DN-continue";
     cc.title = "Botão Continuar";
