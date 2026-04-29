@@ -354,7 +354,9 @@ async function getParentCCByTag(context, expectedTag) {
   return null;
 }
 
-// CORRIGIDO: Garante que um bloco não seja inserido dentro de outro inadvertidamente
+// ─── MODIFICAÇÃO AQUI: getSafeBlockInsertionTarget ────────────────────
+// Esta função foi alterada para retornar um objeto com o alvo e a posição
+// para que o Content Control seja inserido corretamente.
 async function getSafeBlockInsertionTarget(context) {
   const selection = context.document.getSelection();
   const parentCc = selection.parentContentControlOrNullObject;
@@ -363,11 +365,16 @@ async function getSafeBlockInsertionTarget(context) {
   await context.sync();
 
   if (!parentCc.isNullObject) {
-    return parentCc.insertParagraph("", "After");
+    // Se houver um CC pai, o novo CC será inserido APÓS ele.
+    // Retornamos o próprio CC pai para que o método de inserção possa usá-lo como referência.
+    return { target: parentCc, position: "After" };
   }
 
-  return selection;
+  // Se não houver CC pai, o novo CC será inserido na seleção atual.
+  // Usamos "Replace" para que o novo CC substitua a seleção, ou "Start" se quiser inserir no início da seleção.
+  return { target: selection, position: "Replace" };
 }
+// ─── FIM DA MODIFICAÇÃO: getSafeBlockInsertionTarget ──────────────────
 
 // ─── CONSTANTE PADRÃO ────────────────────────────────────────────────
 
@@ -378,8 +385,19 @@ const IMG_PLACEHOLDER =
 
 function insertAccordion() {
   run(async function (context) {
-    const target = await getSafeBlockInsertionTarget(context);
-    const cc = target.insertContentControl();
+    // MODIFICAÇÃO AQUI: Como usar o retorno de getSafeBlockInsertionTarget
+    const { target, position } = await getSafeBlockInsertionTarget(context);
+    let cc;
+
+    if (position === "After") {
+      // Inserir o novo Content Control após o Content Control pai
+      cc = target.insertContentControl(position);
+    } else {
+      // Inserir o novo Content Control na seleção (substituindo-a ou no início)
+      cc = target.insertContentControl();
+    }
+    // FIM DA MODIFICAÇÃO
+
     cc.tag = "DN-accordion";
     cc.title = "Acordeão";
     cc.cannotDelete = false;
@@ -425,8 +443,17 @@ function addAccordionItem() {
 
 function insertTabs() {
   run(async function (context) {
-    const target = await getSafeBlockInsertionTarget(context);
-    const cc = target.insertContentControl();
+    // MODIFICAÇÃO AQUI: Como usar o retorno de getSafeBlockInsertionTarget
+    const { target, position } = await getSafeBlockInsertionTarget(context);
+    let cc;
+
+    if (position === "After") {
+      cc = target.insertContentControl(position);
+    } else {
+      cc = target.insertContentControl();
+    }
+    // FIM DA MODIFICAÇÃO
+
     cc.tag = "DN-tabs";
     cc.title = "Abas";
     cc.cannotDelete = false;
@@ -472,8 +499,17 @@ function addTabItem() {
 
 function insertImgText() {
   run(async function (context) {
-    const target = await getSafeBlockInsertionTarget(context);
-    const cc = target.insertContentControl();
+    // MODIFICAÇÃO AQUI: Como usar o retorno de getSafeBlockInsertionTarget
+    const { target, position } = await getSafeBlockInsertionTarget(context);
+    let cc;
+
+    if (position === "After") {
+      cc = target.insertContentControl(position);
+    } else {
+      cc = target.insertContentControl();
+    }
+    // FIM DA MODIFICAÇÃO
+
     cc.tag = "DN-imgText";
     cc.title = "Imagem + Texto";
     cc.cannotDelete = false;
@@ -493,8 +529,17 @@ function insertImgText() {
 
 function insertCallout() {
   run(async function (context) {
-    const target = await getSafeBlockInsertionTarget(context);
-    const cc = target.insertContentControl();
+    // MODIFICAÇÃO AQUI: Como usar o retorno de getSafeBlockInsertionTarget
+    const { target, position } = await getSafeBlockInsertionTarget(context);
+    let cc;
+
+    if (position === "After") {
+      cc = target.insertContentControl(position);
+    } else {
+      cc = target.insertContentControl();
+    }
+    // FIM DA MODIFICAÇÃO
+
     cc.tag = "DN-callout";
     cc.title = "Callout";
     cc.cannotDelete = false;
@@ -519,8 +564,17 @@ function insertCallout() {
 
 function insertVideo() {
   run(async function (context) {
-    const target = await getSafeBlockInsertionTarget(context);
-    const cc = target.insertContentControl();
+    // MODIFICAÇÃO AQUI: Como usar o retorno de getSafeBlockInsertionTarget
+    const { target, position } = await getSafeBlockInsertionTarget(context);
+    let cc;
+
+    if (position === "After") {
+      cc = target.insertContentControl(position);
+    } else {
+      cc = target.insertContentControl();
+    }
+    // FIM DA MODIFICAÇÃO
+
     cc.tag = "DN-video";
     cc.title = "Vídeo";
     cc.cannotDelete = false;
@@ -546,8 +600,17 @@ function insertVideo() {
 
 function insertCards() {
   run(async function (context) {
-    const target = await getSafeBlockInsertionTarget(context);
-    const cc = target.insertContentControl();
+    // MODIFICAÇÃO AQUI: Como usar o retorno de getSafeBlockInsertionTarget
+    const { target, position } = await getSafeBlockInsertionTarget(context);
+    let cc;
+
+    if (position === "After") {
+      cc = target.insertContentControl(position);
+    } else {
+      cc = target.insertContentControl();
+    }
+    // FIM DA MODIFICAÇÃO
+
     cc.tag = "DN-cards";
     cc.title = "Cards";
     cc.cannotDelete = false;
@@ -593,8 +656,17 @@ function addCardItem() {
 
 function insertFlipCard() {
   run(async function (context) {
-    const target = await getSafeBlockInsertionTarget(context);
-    const cc = target.insertContentControl();
+    // MODIFICAÇÃO AQUI: Como usar o retorno de getSafeBlockInsertionTarget
+    const { target, position } = await getSafeBlockInsertionTarget(context);
+    let cc;
+
+    if (position === "After") {
+      cc = target.insertContentControl(position);
+    } else {
+      cc = target.insertContentControl();
+    }
+    // FIM DA MODIFICAÇÃO
+
     cc.tag = "DN-flipcard";
     cc.title = "FlipCard";
     cc.cannotDelete = false;
@@ -656,8 +728,17 @@ function addFlipCardItem() {
 
 function insertQuiz() {
   run(async function (context) {
-    const target = await getSafeBlockInsertionTarget(context);
-    const cc = target.insertContentControl();
+    // MODIFICAÇÃO AQUI: Como usar o retorno de getSafeBlockInsertionTarget
+    const { target, position } = await getSafeBlockInsertionTarget(context);
+    let cc;
+
+    if (position === "After") {
+      cc = target.insertContentControl(position);
+    } else {
+      cc = target.insertContentControl();
+    }
+    // FIM DA MODIFICAÇÃO
+
     cc.tag = "DN-quiz";
     cc.title = "Quiz";
     cc.cannotDelete = false;
@@ -710,8 +791,17 @@ function addQuizOption() {
 
 function insertContinue() {
   run(async function (context) {
-    const target = await getSafeBlockInsertionTarget(context);
-    const cc = target.insertContentControl();
+    // MODIFICAÇÃO AQUI: Como usar o retorno de getSafeBlockInsertionTarget
+    const { target, position } = await getSafeBlockInsertionTarget(context);
+    let cc;
+
+    if (position === "After") {
+      cc = target.insertContentControl(position);
+    } else {
+      cc = target.insertContentControl();
+    }
+    // FIM DA MODIFICAÇÃO
+
     cc.tag = "DN-continue";
     cc.title = "Botão Continuar";
     cc.cannotDelete = false;
