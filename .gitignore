@@ -1,0 +1,22 @@
+# Node
+node_modules/
+
+# Build / dist
+dist/
+build/
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env
+.env
+
+# Office Add-in debug
+.vscode/
+
+# Zip files
+*.zip

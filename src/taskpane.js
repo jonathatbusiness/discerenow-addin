@@ -329,8 +329,11 @@ function insertAccordion() {
 
     const at = cc.insertParagraph("Título do item", "Start");
     at.style = "DN-Accordion-Titulo";
-    const ac = cc.insertParagraph("Texto do item aqui...", "End");
-    ac.style = "DN-Accordion-Conteudo";
+
+    const table = cc.insertTable(1, 2, "End", [
+      ["[N]", "Texto do item aqui..."],
+    ]);
+    table.style = "Table Grid";
 
     await context.sync();
     setStatus("Acordeão inserido.", "ok");
@@ -347,10 +350,15 @@ function addAccordionItem() {
       );
       return;
     }
+
     const t = cc.insertParagraph("Título do item", "End");
     t.style = "DN-Accordion-Titulo";
-    const c = cc.insertParagraph("Texto do item aqui...", "End");
-    c.style = "DN-Accordion-Conteudo";
+
+    const table = cc.insertTable(1, 2, "End", [
+      ["[N]", "Texto do item aqui..."],
+    ]);
+    table.style = "Table Grid";
+
     await context.sync();
     setStatus("Novo item de acordeão adicionado.", "ok");
   });
@@ -369,8 +377,11 @@ function insertTabs() {
 
     const tt = cc.insertParagraph("Título da aba", "Start");
     tt.style = "DN-Tab-Titulo";
-    const tc = cc.insertParagraph("Conteúdo da aba aqui...", "End");
-    tc.style = "DN-Tab-Conteudo";
+
+    const table = cc.insertTable(1, 2, "End", [
+      ["[N]", "Conteúdo da aba aqui..."],
+    ]);
+    table.style = "Table Grid";
 
     await context.sync();
     setStatus("Bloco de Abas inserido.", "ok");
@@ -387,10 +398,15 @@ function addTabItem() {
       );
       return;
     }
+
     const t = cc.insertParagraph("Título da aba", "End");
     t.style = "DN-Tab-Titulo";
-    const c = cc.insertParagraph("Conteúdo da aba aqui...", "End");
-    c.style = "DN-Tab-Conteudo";
+
+    const table = cc.insertTable(1, 2, "End", [
+      ["[N]", "Conteúdo da aba aqui..."],
+    ]);
+    table.style = "Table Grid";
+
     await context.sync();
     setStatus("Nova aba adicionada.", "ok");
   });
@@ -484,8 +500,9 @@ function insertCards() {
 
     const t1 = cc.insertParagraph("Título do card", "Start");
     t1.style = "DN-Card-Titulo";
-    const c1 = cc.insertParagraph("Conteúdo do card...", "End");
-    c1.style = "DN-Card-Conteudo";
+
+    const table = cc.insertTable(1, 2, "End", [["[N]", "Conteúdo do card..."]]);
+    table.style = "Table Grid";
 
     await context.sync();
     setStatus("Cards inserido.", "ok");
@@ -502,10 +519,13 @@ function addCardItem() {
       );
       return;
     }
+
     const t = cc.insertParagraph("Título do card", "End");
     t.style = "DN-Card-Titulo";
-    const c = cc.insertParagraph("Conteúdo do card...", "End");
-    c.style = "DN-Card-Conteudo";
+
+    const table = cc.insertTable(1, 2, "End", [["[N]", "Conteúdo do card..."]]);
+    table.style = "Table Grid";
+
     await context.sync();
     setStatus("Novo card adicionado.", "ok");
   });
@@ -524,12 +544,19 @@ function insertFlipCard() {
 
     const ft = cc.insertParagraph("Frente — título", "Start");
     ft.style = "DN-Flip-Frente-Titulo";
-    const fc = cc.insertParagraph("Frente — conteúdo...", "End");
-    fc.style = "DN-Flip-Frente-Conteudo";
+
+    const frontTable = cc.insertTable(1, 2, "End", [
+      ["[N]", "Frente — conteúdo..."],
+    ]);
+    frontTable.style = "Table Grid";
+
     const vt = cc.insertParagraph("Verso — título", "End");
     vt.style = "DN-Flip-Verso-Titulo";
-    const vc = cc.insertParagraph("Verso — conteúdo...", "End");
-    vc.style = "DN-Flip-Verso-Conteudo";
+
+    const backTable = cc.insertTable(1, 2, "End", [
+      ["[N]", "Verso — conteúdo..."],
+    ]);
+    backTable.style = "Table Grid";
 
     await context.sync();
     setStatus("FlipCard inserido.", "ok");
@@ -546,14 +573,23 @@ function addFlipCardItem() {
       );
       return;
     }
+
     const ft = cc.insertParagraph("Frente — título", "End");
     ft.style = "DN-Flip-Frente-Titulo";
-    const fc = cc.insertParagraph("Frente — conteúdo...", "End");
-    fc.style = "DN-Flip-Frente-Conteudo";
+
+    const frontTable = cc.insertTable(1, 2, "End", [
+      ["[N]", "Frente — conteúdo..."],
+    ]);
+    frontTable.style = "Table Grid";
+
     const vt = cc.insertParagraph("Verso — título", "End");
     vt.style = "DN-Flip-Verso-Titulo";
-    const vc = cc.insertParagraph("Verso — conteúdo...", "End");
-    vc.style = "DN-Flip-Verso-Conteudo";
+
+    const backTable = cc.insertTable(1, 2, "End", [
+      ["[N]", "Verso — conteúdo..."],
+    ]);
+    backTable.style = "Table Grid";
+
     await context.sync();
     setStatus("Novo flipcard adicionado.", "ok");
   });
