@@ -13,58 +13,67 @@
         <span class="dn-version">v1.0</span>
       </header>
 
+      <div class="dn-language-bar">
+        <label for="dn-language-select" data-i18n="ui.languageLabel">Idioma</label>
+        <select id="dn-language-select" class="dn-language-select">
+          <option value="pt-BR">Português</option>
+          <option value="en">English</option>
+        </select>
+      </div>
+
       <div class="dn-scroll">
         <section class="dn-section">
-          <h3>Estrutura</h3>
+          <h3 data-i18n="ui.structure">Estrutura</h3>
           <div class="dn-row" data-action="apply-chapter">
             <div class="dn-icon dn-icon--accent">C</div>
-            <span class="dn-row-name">Capítulo</span>
-            <span class="dn-row-hint">marcar</span>
+            <span class="dn-row-name" data-i18n="ui.chapter">Capítulo</span>
+            <span class="dn-row-hint" data-i18n="ui.mark">marcar</span>
           </div>
           <div class="dn-row" data-action="apply-lesson">
             <div class="dn-icon dn-icon--accent">L</div>
-            <span class="dn-row-name">Lição</span>
-            <span class="dn-row-hint">marcar</span>
+            <span class="dn-row-name" data-i18n="ui.lesson">Lição</span>
+            <span class="dn-row-hint" data-i18n="ui.mark">marcar</span>
           </div>
         </section>
 
         <section class="dn-section">
-          <h3>Texto</h3>
+          <h3 data-i18n="ui.text">Texto</h3>
           <div class="dn-row" data-action="apply-paragraph">
             <div class="dn-icon">¶</div>
-            <span class="dn-row-name">Parágrafo</span>
+            <span class="dn-row-name" data-i18n="ui.paragraph">Parágrafo</span>
           </div>
           <div class="dn-row" data-action="insert-callout">
             <div class="dn-icon">!</div>
-            <span class="dn-row-name">Callout</span>
+            <span class="dn-row-name" data-i18n="ui.callout">Callout</span>
           </div>
         </section>
 
         <section class="dn-section">
-          <h3>Mídia</h3>
+          <h3 data-i18n="ui.media">Mídia</h3>
           <div class="dn-row" data-action="insert-imgtext">
             <div class="dn-icon">IT</div>
-            <span class="dn-row-name">Imagem + Texto</span>
+            <span class="dn-row-name" data-i18n="ui.imageText">Imagem + Texto</span>
           </div>
           <div class="dn-row" data-action="insert-video">
             <div class="dn-icon">▶</div>
-            <span class="dn-row-name">Vídeo</span>
+            <span class="dn-row-name" data-i18n="ui.video">Vídeo</span>
           </div>
         </section>
 
         <section class="dn-section">
-          <h3>Interação</h3>
+          <h3 data-i18n="ui.interaction">Interação</h3>
           <div
             class="dn-row"
             data-action="insert-accordion"
             data-context-tag="DN-accordion"
           >
             <div class="dn-icon">A</div>
-            <span class="dn-row-name">Acordeão</span>
+            <span class="dn-row-name" data-i18n="ui.accordion">Acordeão</span>
             <button
               class="dn-add"
               data-add="accordion-item"
               title="Adicionar item de acordeão"
+              data-i18n-title="ui.addAccordionItem"
             >
               +
             </button>
@@ -75,8 +84,13 @@
             data-context-tag="DN-tabs"
           >
             <div class="dn-icon">Ab</div>
-            <span class="dn-row-name">Abas</span>
-            <button class="dn-add" data-add="tab-item" title="Adicionar aba">
+            <span class="dn-row-name" data-i18n="ui.tabs">Abas</span>
+            <button
+              class="dn-add"
+              data-add="tab-item"
+              title="Adicionar aba"
+              data-i18n-title="ui.addTab"
+            >
               +
             </button>
           </div>
@@ -86,8 +100,13 @@
             data-context-tag="DN-cards"
           >
             <div class="dn-icon">Cd</div>
-            <span class="dn-row-name">Cards</span>
-            <button class="dn-add" data-add="card-item" title="Adicionar card">
+            <span class="dn-row-name" data-i18n="ui.cards">Cards</span>
+            <button
+              class="dn-add"
+              data-add="card-item"
+              title="Adicionar card"
+              data-i18n-title="ui.addCard"
+            >
               +
             </button>
           </div>
@@ -97,11 +116,12 @@
             data-context-tag="DN-flipcard"
           >
             <div class="dn-icon">Fc</div>
-            <span class="dn-row-name">FlipCard</span>
+            <span class="dn-row-name" data-i18n="ui.flipcard">FlipCard</span>
             <button
               class="dn-add"
               data-add="flipcard-item"
               title="Adicionar flipcard"
+              data-i18n-title="ui.addFlipcard"
             >
               +
             </button>
@@ -109,18 +129,19 @@
         </section>
 
         <section class="dn-section">
-          <h3>Avaliação</h3>
+          <h3 data-i18n="ui.assessment">Avaliação</h3>
           <div
             class="dn-row"
             data-action="insert-quiz"
             data-context-tag="DN-quiz"
           >
             <div class="dn-icon">?</div>
-            <span class="dn-row-name">Quiz</span>
+            <span class="dn-row-name" data-i18n="ui.quiz">Quiz</span>
             <button
               class="dn-add"
               data-add="quiz-item"
               title="Adicionar opção ao quiz"
+              data-i18n-title="ui.addQuizOption"
             >
               +
             </button>
@@ -131,6 +152,8 @@
               class="dn-quiz-action"
               data-action="quiz-type-single"
               title="Definir quiz como resposta única"
+              data-i18n-title="ui.setSingle"
+              data-i18n="ui.single"
             >
               Single
             </button>
@@ -138,6 +161,8 @@
               class="dn-quiz-action"
               data-action="quiz-type-multiple"
               title="Definir quiz como múltiplas respostas"
+              data-i18n-title="ui.setMultiple"
+              data-i18n="ui.multiple"
             >
               Multiple
             </button>
@@ -145,6 +170,8 @@
               class="dn-quiz-action"
               data-action="quiz-mark-correct"
               title="Marcar opção selecionada como resposta correta"
+              data-i18n-title="ui.markCorrect"
+              data-i18n="ui.correctAnswer"
             >
               Resposta certa
             </button>
@@ -152,21 +179,22 @@
         </section>
 
         <section class="dn-section">
-          <h3>Navegação</h3>
+          <h3 data-i18n="ui.navigation">Navegação</h3>
           <div class="dn-row" data-action="insert-continue">
             <div class="dn-icon">→</div>
-            <span class="dn-row-name">Botão Continuar</span>
+            <span class="dn-row-name" data-i18n="ui.continueButton">Botão Continuar</span>
           </div>
         </section>
       </div>
 
       <div id="dn-status-bar" class="dn-status-bar">
         <span class="dn-status-dot"></span>
-        <span id="dn-status-text">DiscereNow pronto.</span>
+        <span id="dn-status-text" data-i18n="ui.ready">DiscereNow pronto.</span>
       </div>
     </div>
 
     <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+    <script src="i18n.js"></script>
     <script src="taskpane.js"></script>
   </body>
 </html>

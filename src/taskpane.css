@@ -242,3 +242,36 @@ body {
 .dn-section .dn-quiz-actions button.dn-quiz-action:active {
   background: #e8edf6;
 }
+
+/* ── Language selector ── */
+
+.dn-language-bar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 14px;
+  background: #ffffff;
+  border-bottom: 1px solid #ececec;
+  font-size: 11px;
+  color: #555;
+}
+
+.dn-language-bar label {
+  font-weight: 500;
+}
+
+.dn-language-select {
+  min-width: 112px;
+  border: 1px solid #d8d8d8;
+  border-radius: 4px;
+  background: #ffffff;
+  color: #222;
+  font-family:
+    "Segoe UI",
+    -apple-system,
+    sans-serif;
+  font-size: 11px;
+  padding: 3px 6px;
+}

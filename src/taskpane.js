@@ -2,11 +2,17 @@
 
 // ─── Bootstrap ────────────────────────────────────────────────────────
 
+function dnT(key, params) {
+  return window.DNI18N ? window.DNI18N.t(key, params) : key;
+}
+
 Office.onReady(function (info) {
   if (info.host !== Office.HostType.Word) return;
 
+  if (window.DNI18N) window.DNI18N.applyTranslations();
+
   ensureStyles().then(function () {
-    setStatus("DiscereNow pronto.", "ok");
+    setStatus(dnT("ui.ready"), "ok");
   });
 
   attachUiHandlers();
@@ -29,7 +35,7 @@ function setStatus(msg, kind) {
 
 function run(fn) {
   return Word.run(fn).catch(function (err) {
-    setStatus("Erro: " + err.message, "error");
+    setStatus(dnT("status.errorPrefix") + err.message, "error");
     console.error(err);
   });
 }
@@ -60,6 +66,15 @@ function attachUiHandlers() {
       if (action) handleAction(action);
     });
   });
+
+  const languageSelect = document.getElementById("dn-language-select");
+  if (languageSelect && window.DNI18N) {
+    languageSelect.value = window.DNI18N.getLanguage();
+    languageSelect.addEventListener("change", function () {
+      window.DNI18N.setLanguage(languageSelect.value);
+      updateContextHighlight();
+    });
+  }
 }
 
 // ─── Despachadores ────────────────────────────────────────────────────
@@ -174,32 +189,32 @@ function applyContextualState(tag) {
   });
 
   if (tag) {
-    setStatus("Cursor em: " + friendlyTagName(tag), "info");
+    setStatus(dnT("status.cursorIn", { name: friendlyTagName(tag) }), "info");
   } else {
-    setStatus("DiscereNow pronto.", "ok");
+    setStatus(dnT("ui.ready"), "ok");
   }
 }
 
 function friendlyTagName(tag) {
   switch (tag) {
     case "DN-accordion":
-      return "Acordeão";
+      return dnT("ui.accordion");
     case "DN-tabs":
-      return "Abas";
+      return dnT("ui.tabs");
     case "DN-imgText":
-      return "Imagem + Texto";
+      return dnT("ui.imageText");
     case "DN-cards":
-      return "Cards";
+      return dnT("ui.cards");
     case "DN-flipcard":
-      return "FlipCard";
+      return dnT("ui.flipcard");
     case "DN-quiz":
-      return "Quiz";
+      return dnT("ui.quiz");
     case "DN-callout":
-      return "Callout";
+      return dnT("ui.callout");
     case "DN-video":
-      return "Vídeo";
+      return dnT("ui.video");
     case "DN-continue":
-      return "Botão Continuar";
+      return dnT("ui.continueButton");
     default:
       return tag;
   }
@@ -322,7 +337,7 @@ function applyStyle(styleName) {
       p.style = styleName;
     });
     await context.sync();
-    setStatus('Estilo "' + styleName + '" aplicado.', "ok");
+    setStatus(dnT("status.styleApplied", { styleName: styleName }), "ok");
   });
 }
 
@@ -335,7 +350,7 @@ function applyNormal() {
       p.style = "Normal";
     });
     await context.sync();
-    setStatus("Parágrafo normal aplicado.", "ok");
+    setStatus(dnT("status.normalApplied"), "ok");
   });
 }
 
@@ -395,8 +410,9 @@ async function getSafeBlockInsertionTarget(context) {
 
 // ─── CONSTANTE PADRÃO ────────────────────────────────────────────────
 
-const IMG_PLACEHOLDER =
-  '[Insira uma imagem nesta coluna ou deixe apenas "N" caso não queira adicionar imagem]';
+function imagePlaceholder() {
+  return dnT("word.imagePlaceholder");
+}
 
 // ─── Acordeão ─────────────────────────────────────────────────────────
 
@@ -415,20 +431,20 @@ function insertAccordion() {
     }
 
     cc.tag = "DN-accordion";
-    cc.title = "Acordeão";
+    cc.title = dnT("ui.accordion");
     cc.cannotDelete = false;
     cc.cannotEdit = false;
 
-    const t = cc.insertParagraph("Título do item", "Start");
+    const t = cc.insertParagraph(dnT("word.accordionTitle"), "Start");
     t.style = "DN-Accordion-Titulo";
 
     const table = cc.insertTable(1, 2, "End", [
-      ["Conteúdo do item...", IMG_PLACEHOLDER],
+      [dnT("word.accordionContent"), imagePlaceholder()],
     ]);
     table.style = "Table Grid";
 
     await context.sync();
-    setStatus("Acordeão inserido.", "ok");
+    setStatus(dnT("status.accordionInserted"), "ok");
   });
 }
 
@@ -437,21 +453,21 @@ function addAccordionItem() {
     const cc = await getParentCCByTag(context, "DN-accordion");
     if (!cc) {
       setStatus(
-        "Coloque o cursor dentro de um acordeão antes de adicionar um item.",
+        dnT("status.accordionItemMissing"),
         "warning",
       );
       return;
     }
-    const t = cc.insertParagraph("Título do item", "End");
+    const t = cc.insertParagraph(dnT("word.accordionTitle"), "End");
     t.style = "DN-Accordion-Titulo";
 
     const table = cc.insertTable(1, 2, "End", [
-      ["Conteúdo do item...", IMG_PLACEHOLDER],
+      [dnT("word.accordionContent"), imagePlaceholder()],
     ]);
     table.style = "Table Grid";
 
     await context.sync();
-    setStatus("Novo item de acordeão adicionado.", "ok");
+    setStatus(dnT("status.accordionItemAdded"), "ok");
   });
 }
 
@@ -472,20 +488,20 @@ function insertTabs() {
     }
 
     cc.tag = "DN-tabs";
-    cc.title = "Abas";
+    cc.title = dnT("ui.tabs");
     cc.cannotDelete = false;
     cc.cannotEdit = false;
 
-    const t = cc.insertParagraph("Título da aba", "Start");
+    const t = cc.insertParagraph(dnT("word.tabTitle"), "Start");
     t.style = "DN-Tab-Titulo";
 
     const table = cc.insertTable(1, 2, "End", [
-      ["Conteúdo da aba...", IMG_PLACEHOLDER],
+      [dnT("word.tabContent"), imagePlaceholder()],
     ]);
     table.style = "Table Grid";
 
     await context.sync();
-    setStatus("Bloco de Abas inserido.", "ok");
+    setStatus(dnT("status.tabsInserted"), "ok");
   });
 }
 
@@ -494,21 +510,21 @@ function addTabItem() {
     const cc = await getParentCCByTag(context, "DN-tabs");
     if (!cc) {
       setStatus(
-        "Coloque o cursor dentro de um bloco de Abas antes de adicionar uma aba.",
+        dnT("status.tabItemMissing"),
         "warning",
       );
       return;
     }
-    const t = cc.insertParagraph("Título da aba", "End");
+    const t = cc.insertParagraph(dnT("word.tabTitle"), "End");
     t.style = "DN-Tab-Titulo";
 
     const table = cc.insertTable(1, 2, "End", [
-      ["Conteúdo da aba...", IMG_PLACEHOLDER],
+      [dnT("word.tabContent"), imagePlaceholder()],
     ]);
     table.style = "Table Grid";
 
     await context.sync();
-    setStatus("Nova aba adicionada.", "ok");
+    setStatus(dnT("status.tabItemAdded"), "ok");
   });
 }
 
@@ -529,17 +545,17 @@ function insertImgText() {
     }
 
     cc.tag = "DN-imgText";
-    cc.title = "Imagem + Texto";
+    cc.title = dnT("ui.imageText");
     cc.cannotDelete = false;
     cc.cannotEdit = false;
 
     const table = cc.insertTable(1, 2, "End", [
-      ["[Inserir imagem aqui]", "Texto ao lado da imagem..."],
+      [dnT("word.imageHere"), dnT("word.imageSideText")],
     ]);
     table.style = "Table Grid";
 
     await context.sync();
-    setStatus("Bloco Imagem+Texto inserido.", "ok");
+    setStatus(dnT("status.imgTextInserted"), "ok");
   });
 }
 
@@ -567,15 +583,15 @@ function insertCallout() {
     const tipo = cc.insertParagraph("info", "Start");
     tipo.style = "DN-Callout-Tipo";
 
-    const titulo = cc.insertParagraph("Título do destaque", "End");
+    const titulo = cc.insertParagraph(dnT("word.calloutTitle"), "End");
     titulo.style = "DN-Callout-Titulo";
 
-    const conteudo = cc.insertParagraph("Conteúdo do destaque...", "End");
+    const conteudo = cc.insertParagraph(dnT("word.calloutContent"), "End");
     conteudo.style = "DN-Callout-Conteudo";
 
     await context.sync();
     setStatus(
-      'Callout inserido. (1ª linha: troque por "info", "alert" ou "tip")',
+      dnT("status.calloutInserted"),
       "ok",
     );
   });
@@ -598,7 +614,7 @@ function insertVideo() {
     }
 
     cc.tag = "DN-video";
-    cc.title = "Vídeo";
+    cc.title = dnT("ui.video");
     cc.cannotDelete = false;
     cc.cannotEdit = false;
 
@@ -608,12 +624,12 @@ function insertVideo() {
     );
     url.style = "DN-Video-Url";
 
-    const legenda = cc.insertParagraph("Legenda do vídeo (opcional)", "End");
+    const legenda = cc.insertParagraph(dnT("word.videoCaption"), "End");
     legenda.style = "DN-Video-Legenda";
 
     await context.sync();
     setStatus(
-      "Vídeo inserido. (1ª linha = URL do YouTube/Vimeo, 2ª = legenda)",
+      dnT("status.videoInserted"),
       "ok",
     );
   });
@@ -636,20 +652,20 @@ function insertCards() {
     }
 
     cc.tag = "DN-cards";
-    cc.title = "Cards";
+    cc.title = dnT("ui.cards");
     cc.cannotDelete = false;
     cc.cannotEdit = false;
 
-    const t = cc.insertParagraph("Título do card", "Start");
+    const t = cc.insertParagraph(dnT("word.cardTitle"), "Start");
     t.style = "DN-Card-Titulo";
 
     const table = cc.insertTable(1, 2, "End", [
-      ["Conteúdo do card...", IMG_PLACEHOLDER],
+      [dnT("word.cardContent"), imagePlaceholder()],
     ]);
     table.style = "Table Grid";
 
     await context.sync();
-    setStatus("Cards inserido.", "ok");
+    setStatus(dnT("status.cardsInserted"), "ok");
   });
 }
 
@@ -658,21 +674,21 @@ function addCardItem() {
     const cc = await getParentCCByTag(context, "DN-cards");
     if (!cc) {
       setStatus(
-        "Coloque o cursor dentro de um bloco Cards antes de adicionar um card.",
+        dnT("status.cardMissing"),
         "warning",
       );
       return;
     }
-    const t = cc.insertParagraph("Título do card", "End");
+    const t = cc.insertParagraph(dnT("word.cardTitle"), "End");
     t.style = "DN-Card-Titulo";
 
     const table = cc.insertTable(1, 2, "End", [
-      ["Conteúdo do card...", IMG_PLACEHOLDER],
+      [dnT("word.cardContent"), imagePlaceholder()],
     ]);
     table.style = "Table Grid";
 
     await context.sync();
-    setStatus("Novo card adicionado.", "ok");
+    setStatus(dnT("status.cardAdded"), "ok");
   });
 }
 
@@ -693,28 +709,28 @@ function insertFlipCard() {
     }
 
     cc.tag = "DN-flipcard";
-    cc.title = "FlipCard";
+    cc.title = dnT("ui.flipcard");
     cc.cannotDelete = false;
     cc.cannotEdit = false;
 
-    const ft = cc.insertParagraph("Frente — título", "Start");
+    const ft = cc.insertParagraph(dnT("word.flipFrontTitle"), "Start");
     ft.style = "DN-Flip-Frente-Titulo";
 
     const table1 = cc.insertTable(1, 2, "End", [
-      ["Frente — conteúdo...", IMG_PLACEHOLDER],
+      [dnT("word.flipFrontContent"), imagePlaceholder()],
     ]);
     table1.style = "Table Grid";
 
-    const vt = cc.insertParagraph("Verso — título", "End");
+    const vt = cc.insertParagraph(dnT("word.flipBackTitle"), "End");
     vt.style = "DN-Flip-Verso-Titulo";
 
     const table2 = cc.insertTable(1, 2, "End", [
-      ["Verso — conteúdo...", IMG_PLACEHOLDER],
+      [dnT("word.flipBackContent"), imagePlaceholder()],
     ]);
     table2.style = "Table Grid";
 
     await context.sync();
-    setStatus("FlipCard inserido.", "ok");
+    setStatus(dnT("status.flipcardInserted"), "ok");
   });
 }
 
@@ -723,29 +739,29 @@ function addFlipCardItem() {
     const cc = await getParentCCByTag(context, "DN-flipcard");
     if (!cc) {
       setStatus(
-        "Coloque o cursor dentro de um bloco FlipCard antes de adicionar um card.",
+        dnT("status.flipcardMissing"),
         "warning",
       );
       return;
     }
-    const ft = cc.insertParagraph("Frente — título", "End");
+    const ft = cc.insertParagraph(dnT("word.flipFrontTitle"), "End");
     ft.style = "DN-Flip-Frente-Titulo";
 
     const table1 = cc.insertTable(1, 2, "End", [
-      ["Frente — conteúdo...", IMG_PLACEHOLDER],
+      [dnT("word.flipFrontContent"), imagePlaceholder()],
     ]);
     table1.style = "Table Grid";
 
-    const vt = cc.insertParagraph("Verso — título", "End");
+    const vt = cc.insertParagraph(dnT("word.flipBackTitle"), "End");
     vt.style = "DN-Flip-Verso-Titulo";
 
     const table2 = cc.insertTable(1, 2, "End", [
-      ["Verso — conteúdo...", IMG_PLACEHOLDER],
+      [dnT("word.flipBackContent"), imagePlaceholder()],
     ]);
     table2.style = "Table Grid";
 
     await context.sync();
-    setStatus("Novo flipcard adicionado.", "ok");
+    setStatus(dnT("status.flipcardAdded"), "ok");
   });
 }
 
@@ -766,24 +782,24 @@ function insertQuiz() {
     }
 
     cc.tag = "DN-quiz";
-    cc.title = "Quiz";
+    cc.title = dnT("ui.quiz");
     cc.cannotDelete = false;
     cc.cannotEdit = false;
 
     const table = cc.insertTable(7, 2, "End", [
-      ["Tipo do quiz", "single"],
-      ["Pergunta", "Pergunta do quiz?"],
-      ["Opção", "Opção 1"],
-      ["Opção", "Opção 2"],
-      ["Opção", "Opção 3"],
-      ["Feedback correto", "Resposta correta! Parabéns."],
-      ["Feedback incorreto", "Não foi dessa vez. Tente de novo!"],
+      [dnT("word.quizTypeLabel"), "single"],
+      [dnT("word.quizQuestionLabel"), dnT("word.quizQuestion")],
+      [dnT("word.quizOptionLabel"), dnT("word.quizOption1")],
+      [dnT("word.quizOptionLabel"), dnT("word.quizOption2")],
+      [dnT("word.quizOptionLabel"), dnT("word.quizOption3")],
+      [dnT("word.quizCorrectFeedbackLabel"), dnT("word.quizCorrectFeedback")],
+      [dnT("word.quizIncorrectFeedbackLabel"), dnT("word.quizIncorrectFeedback")],
     ]);
 
     table.style = "Table Grid";
 
     table.getCell(0, 0).value =
-      'Tipo do quiz — use "single" para resposta única ou "multiple" para múltiplas respostas.';
+      dnT("word.quizTypeHelp");
     table.getCell(0, 1).body.paragraphs.getFirst().style = "DN-Quiz-Tipo";
 
     table.getCell(1, 1).body.paragraphs.getFirst().style = "DN-Quiz-Pergunta";
@@ -798,7 +814,7 @@ function insertQuiz() {
 
     await context.sync();
     setStatus(
-      "Quiz inserido. Tipo padrão: single. Use os botões Single, Multiple e Resposta certa para configurar.",
+      dnT("status.quizInserted"),
       "ok",
     );
   });
@@ -809,7 +825,7 @@ function addQuizOption() {
     const cc = await getParentCCByTag(context, "DN-quiz");
     if (!cc) {
       setStatus(
-        "Coloque o cursor dentro de um Quiz antes de adicionar uma opção.",
+        dnT("status.quizOptionMissing"),
         "warning",
       );
       return;
@@ -820,26 +836,39 @@ function addQuizOption() {
     await context.sync();
 
     if (tables.items.length === 0) {
-      const op = cc.insertParagraph("Nova opção", "End");
+      const op = cc.insertParagraph(dnT("word.quizNewOption"), "End");
       op.style = "DN-Quiz-Opcao";
       await context.sync();
-      setStatus("Nova opção adicionada.", "ok");
+      setStatus(dnT("status.quizOptionAdded"), "ok");
       return;
     }
 
     const table = tables.items[0];
-    const feedbackCorrectCell = table
-      .search("Feedback correto")
-      .getFirstOrNullObject();
-    feedbackCorrectCell.load("isNullObject");
+    const feedbackLabels = [
+      dnT("word.quizCorrectFeedbackLabel"),
+      window.DNI18N ? window.DNI18N.t("word.quizCorrectFeedbackLabel", null) : "Feedback correto",
+      "Feedback correto",
+      "Correct feedback",
+    ];
 
-    await context.sync();
+    let feedbackCorrectCell = null;
 
-    if (!feedbackCorrectCell.isNullObject) {
+    for (let i = 0; i < feedbackLabels.length; i++) {
+      const foundCell = table.search(feedbackLabels[i]).getFirstOrNullObject();
+      foundCell.load("isNullObject");
+      await context.sync();
+
+      if (!foundCell.isNullObject) {
+        feedbackCorrectCell = foundCell;
+        break;
+      }
+    }
+
+    if (feedbackCorrectCell) {
       const row = feedbackCorrectCell.parentTable.getCell(5, 0);
-      row.insertRows("Before", 1, [["Opção", "Nova opção"]]);
+      row.insertRows("Before", 1, [[dnT("word.quizOptionLabel"), dnT("word.quizNewOption")]]);
     } else {
-      table.getCell(0, 0).insertRows("After", 1, [["Opção", "Nova opção"]]);
+      table.getCell(0, 0).insertRows("After", 1, [[dnT("word.quizOptionLabel"), dnT("word.quizNewOption")]]);
     }
 
     await context.sync();
@@ -853,7 +882,7 @@ function addQuizOption() {
       "DN-Quiz-Opcao";
 
     await context.sync();
-    setStatus("Nova opção adicionada ao Quiz.", "ok");
+    setStatus(dnT("status.quizOptionAddedToQuiz"), "ok");
   });
 }
 
@@ -862,7 +891,7 @@ function setQuizType(quizType) {
     const cc = await getParentCCByTag(context, "DN-quiz");
     if (!cc) {
       setStatus(
-        "Coloque o cursor dentro de um Quiz antes de alterar o tipo.",
+        dnT("status.quizTypeMissing"),
         "warning",
       );
       return;
@@ -882,7 +911,7 @@ function setQuizType(quizType) {
     }
 
     if (!typeParagraph) {
-      setStatus("Não encontrei a linha de tipo do Quiz.", "warning");
+      setStatus(dnT("status.quizTypeLineNotFound"), "warning");
       return;
     }
 
@@ -891,8 +920,8 @@ function setQuizType(quizType) {
     await context.sync();
     setStatus(
       quizType === "single"
-        ? "Quiz configurado como Single: apenas uma resposta correta."
-        : "Quiz configurado como Multiple: permite mais de uma resposta correta.",
+        ? dnT("status.quizSingle")
+        : dnT("status.quizMultiple"),
       "ok",
     );
   });
@@ -903,7 +932,7 @@ function markQuizCorrectAnswer() {
     const cc = await getParentCCByTag(context, "DN-quiz");
     if (!cc) {
       setStatus(
-        "Coloque o cursor sobre uma opção dentro de um Quiz.",
+        dnT("status.quizCorrectMissing"),
         "warning",
       );
       return;
@@ -920,7 +949,7 @@ function markQuizCorrectAnswer() {
 
     if (selectedParagraphs.items.length === 0) {
       setStatus(
-        "Selecione ou posicione o cursor sobre uma opção do Quiz.",
+        dnT("status.quizSelectOption"),
         "warning",
       );
       return;
@@ -932,7 +961,7 @@ function markQuizCorrectAnswer() {
       selectedParagraph.style !== "DN-Quiz-Opcao" &&
       selectedParagraph.style !== "DN-Quiz-OpcaoCerta"
     ) {
-      setStatus("O cursor precisa estar em uma opção do Quiz.", "warning");
+      setStatus(dnT("status.quizCursorNeedOption"), "warning");
       return;
     }
 
@@ -963,8 +992,8 @@ function markQuizCorrectAnswer() {
 
     setStatus(
       quizType === "single"
-        ? "Resposta certa definida. As outras opções foram marcadas como incorretas."
-        : "Resposta certa adicionada. As outras respostas certas foram mantidas.",
+        ? dnT("status.quizCorrectSingle")
+        : dnT("status.quizCorrectMultiple"),
       "ok",
     );
   });
@@ -987,14 +1016,14 @@ function insertContinue() {
     }
 
     cc.tag = "DN-continue";
-    cc.title = "Botão Continuar";
+    cc.title = dnT("ui.continueButton");
     cc.cannotDelete = false;
     cc.cannotEdit = false;
 
-    const txt = cc.insertParagraph("Continuar", "Start");
+    const txt = cc.insertParagraph(dnT("word.continue"), "Start");
     txt.style = "DN-Continue-Texto";
 
     await context.sync();
-    setStatus("Botão Continuar inserido.", "ok");
+    setStatus(dnT("status.continueInserted"), "ok");
   });
 }
