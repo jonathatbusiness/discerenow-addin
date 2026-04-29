@@ -347,7 +347,10 @@ function insertAccordion() {
     at.style = "DN-Accordion-Titulo";
 
     const table = cc.insertTable(1, 2, "End", [
-      ["[N]", "Texto do item aqui..."],
+      [
+        '[Insira uma imagem nesta coluna ou deixe apenas "N" caso não queira adicionar imagem]',
+        "Texto do item aqui...",
+      ],
     ]);
     table.style = "Table Grid";
 
@@ -371,7 +374,10 @@ function addAccordionItem() {
     t.style = "DN-Accordion-Titulo";
 
     const table = cc.insertTable(1, 2, "End", [
-      ["[N]", "Texto do item aqui..."],
+      [
+        '[Insira uma imagem nesta coluna ou deixe apenas "N" caso não queira adicionar imagem]',
+        "Texto do item aqui...",
+      ],
     ]);
     table.style = "Table Grid";
 
@@ -396,7 +402,10 @@ function insertTabs() {
     tt.style = "DN-Tab-Titulo";
 
     const table = cc.insertTable(1, 2, "End", [
-      ["[N]", "Conteúdo da aba aqui..."],
+      [
+        '[Insira uma imagem nesta coluna ou deixe apenas "N" caso não queira adicionar imagem]',
+        "Conteúdo da aba aqui...",
+      ],
     ]);
     table.style = "Table Grid";
 
@@ -420,7 +429,10 @@ function addTabItem() {
     t.style = "DN-Tab-Titulo";
 
     const table = cc.insertTable(1, 2, "End", [
-      ["[N]", "Conteúdo da aba aqui..."],
+      [
+        '[Insira uma imagem nesta coluna ou deixe apenas "N" caso não queira adicionar imagem]',
+        "Conteúdo da aba aqui...",
+      ],
     ]);
     table.style = "Table Grid";
 
@@ -563,7 +575,10 @@ function insertFlipCard() {
     ft.style = "DN-Flip-Frente-Titulo";
 
     const frontTable = cc.insertTable(1, 2, "End", [
-      ["[N]", "Frente — conteúdo..."],
+      [
+        '[Insira uma imagem nesta coluna ou deixe apenas "N" caso não queira adicionar imagem]',
+        "Frente — conteúdo...",
+      ],
     ]);
     frontTable.style = "Table Grid";
 
@@ -571,7 +586,10 @@ function insertFlipCard() {
     vt.style = "DN-Flip-Verso-Titulo";
 
     const backTable = cc.insertTable(1, 2, "End", [
-      ["[N]", "Verso — conteúdo..."],
+      [
+        '[Insira uma imagem nesta coluna ou deixe apenas "N" caso não queira adicionar imagem]',
+        "Verso — conteúdo...",
+      ],
     ]);
     backTable.style = "Table Grid";
 
@@ -595,7 +613,10 @@ function addFlipCardItem() {
     ft.style = "DN-Flip-Frente-Titulo";
 
     const frontTable = cc.insertTable(1, 2, "End", [
-      ["[N]", "Frente — conteúdo..."],
+      [
+        '[Insira uma imagem nesta coluna ou deixe apenas "N" caso não queira adicionar imagem]',
+        "Frente — conteúdo...",
+      ],
     ]);
     frontTable.style = "Table Grid";
 
@@ -603,7 +624,10 @@ function addFlipCardItem() {
     vt.style = "DN-Flip-Verso-Titulo";
 
     const backTable = cc.insertTable(1, 2, "End", [
-      ["[N]", "Verso — conteúdo..."],
+      [
+        '[Insira uma imagem nesta coluna ou deixe apenas "N" caso não queira adicionar imagem]',
+        "Verso — conteúdo...",
+      ],
     ]);
     backTable.style = "Table Grid";
 
