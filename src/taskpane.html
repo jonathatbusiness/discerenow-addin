@@ -22,167 +22,118 @@
       </div>
 
       <div class="dn-scroll">
-        <section class="dn-section">
-          <h3 data-i18n="ui.structure">Estrutura</h3>
-          <div class="dn-row" data-action="apply-chapter">
-            <div class="dn-icon dn-icon--accent">C</div>
-            <span class="dn-row-name" data-i18n="ui.chapter">Capítulo</span>
-            <span class="dn-row-hint" data-i18n="ui.mark">marcar</span>
-          </div>
-          <div class="dn-row" data-action="apply-lesson">
-            <div class="dn-icon dn-icon--accent">L</div>
-            <span class="dn-row-name" data-i18n="ui.lesson">Lição</span>
-            <span class="dn-row-hint" data-i18n="ui.mark">marcar</span>
-          </div>
-        </section>
-
-        <section class="dn-section">
-          <h3 data-i18n="ui.text">Texto</h3>
-          <div class="dn-row" data-action="apply-paragraph">
-            <div class="dn-icon">¶</div>
-            <span class="dn-row-name" data-i18n="ui.paragraph">Parágrafo</span>
-          </div>
-          <div class="dn-row" data-action="insert-callout">
-            <div class="dn-icon">!</div>
-            <span class="dn-row-name" data-i18n="ui.callout">Callout</span>
+        <section class="dn-section is-open" data-section="structure">
+          <button class="dn-section-header" type="button" aria-expanded="true">
+            <span data-i18n="ui.structure">Estrutura</span>
+            <span class="dn-section-chevron" aria-hidden="true">⌄</span>
+          </button>
+          <div class="dn-section-content">
+            <div class="dn-row" data-action="apply-chapter">
+              <div class="dn-icon dn-icon--accent">C</div>
+              <span class="dn-row-name" data-i18n="ui.chapter">Capítulo</span>
+              <span class="dn-row-hint" data-i18n="ui.mark">marcar</span>
+            </div>
+            <div class="dn-row" data-action="apply-lesson">
+              <div class="dn-icon dn-icon--accent">L</div>
+              <span class="dn-row-name" data-i18n="ui.lesson">Lição</span>
+              <span class="dn-row-hint" data-i18n="ui.mark">marcar</span>
+            </div>
           </div>
         </section>
 
-        <section class="dn-section">
-          <h3 data-i18n="ui.media">Mídia</h3>
-          <div class="dn-row" data-action="insert-imgtext">
-            <div class="dn-icon">IT</div>
-            <span class="dn-row-name" data-i18n="ui.imageText">Imagem + Texto</span>
-          </div>
-          <div class="dn-row" data-action="insert-video">
-            <div class="dn-icon">▶</div>
-            <span class="dn-row-name" data-i18n="ui.video">Vídeo</span>
-          </div>
-        </section>
-
-        <section class="dn-section">
-          <h3 data-i18n="ui.interaction">Interação</h3>
-          <div
-            class="dn-row"
-            data-action="insert-accordion"
-            data-context-tag="DN-accordion"
-          >
-            <div class="dn-icon">A</div>
-            <span class="dn-row-name" data-i18n="ui.accordion">Acordeão</span>
-            <button
-              class="dn-add"
-              data-add="accordion-item"
-              title="Adicionar item de acordeão"
-              data-i18n-title="ui.addAccordionItem"
-            >
-              +
-            </button>
-          </div>
-          <div
-            class="dn-row"
-            data-action="insert-tabs"
-            data-context-tag="DN-tabs"
-          >
-            <div class="dn-icon">Ab</div>
-            <span class="dn-row-name" data-i18n="ui.tabs">Abas</span>
-            <button
-              class="dn-add"
-              data-add="tab-item"
-              title="Adicionar aba"
-              data-i18n-title="ui.addTab"
-            >
-              +
-            </button>
-          </div>
-          <div
-            class="dn-row"
-            data-action="insert-cards"
-            data-context-tag="DN-cards"
-          >
-            <div class="dn-icon">Cd</div>
-            <span class="dn-row-name" data-i18n="ui.cards">Cards</span>
-            <button
-              class="dn-add"
-              data-add="card-item"
-              title="Adicionar card"
-              data-i18n-title="ui.addCard"
-            >
-              +
-            </button>
-          </div>
-          <div
-            class="dn-row"
-            data-action="insert-flipcard"
-            data-context-tag="DN-flipcard"
-          >
-            <div class="dn-icon">Fc</div>
-            <span class="dn-row-name" data-i18n="ui.flipcard">FlipCard</span>
-            <button
-              class="dn-add"
-              data-add="flipcard-item"
-              title="Adicionar flipcard"
-              data-i18n-title="ui.addFlipcard"
-            >
-              +
-            </button>
+        <section class="dn-section is-open" data-section="text">
+          <button class="dn-section-header" type="button" aria-expanded="true">
+            <span data-i18n="ui.text">Texto</span>
+            <span class="dn-section-chevron" aria-hidden="true">⌄</span>
+          </button>
+          <div class="dn-section-content">
+            <div class="dn-row" data-action="apply-paragraph">
+              <div class="dn-icon">¶</div>
+              <span class="dn-row-name" data-i18n="ui.paragraph">Parágrafo</span>
+            </div>
+            <div class="dn-row" data-action="insert-callout">
+              <div class="dn-icon">!</div>
+              <span class="dn-row-name" data-i18n="ui.callout">Callout</span>
+            </div>
           </div>
         </section>
 
-        <section class="dn-section">
-          <h3 data-i18n="ui.assessment">Avaliação</h3>
-          <div
-            class="dn-row"
-            data-action="insert-quiz"
-            data-context-tag="DN-quiz"
-          >
-            <div class="dn-icon">?</div>
-            <span class="dn-row-name" data-i18n="ui.quiz">Quiz</span>
-            <button
-              class="dn-add"
-              data-add="quiz-item"
-              title="Adicionar opção ao quiz"
-              data-i18n-title="ui.addQuizOption"
-            >
-              +
-            </button>
-          </div>
-
-          <div class="dn-quiz-actions">
-            <button
-              class="dn-quiz-action"
-              data-action="quiz-type-single"
-              title="Definir quiz como resposta única"
-              data-i18n-title="ui.setSingle"
-              data-i18n="ui.single"
-            >
-              Single
-            </button>
-            <button
-              class="dn-quiz-action"
-              data-action="quiz-type-multiple"
-              title="Definir quiz como múltiplas respostas"
-              data-i18n-title="ui.setMultiple"
-              data-i18n="ui.multiple"
-            >
-              Multiple
-            </button>
-            <button
-              class="dn-quiz-action"
-              data-action="quiz-mark-correct"
-              title="Marcar opção selecionada como resposta correta"
-              data-i18n-title="ui.markCorrect"
-              data-i18n="ui.correctAnswer"
-            >
-              Resposta certa
-            </button>
+        <section class="dn-section" data-section="media">
+          <button class="dn-section-header" type="button" aria-expanded="false">
+            <span data-i18n="ui.media">Mídia</span>
+            <span class="dn-section-chevron" aria-hidden="true">⌄</span>
+          </button>
+          <div class="dn-section-content">
+            <div class="dn-row" data-action="insert-imgtext">
+              <div class="dn-icon">IT</div>
+              <span class="dn-row-name" data-i18n="ui.imageText">Imagem + Texto</span>
+            </div>
+            <div class="dn-row" data-action="insert-video">
+              <div class="dn-icon">▶</div>
+              <span class="dn-row-name" data-i18n="ui.video">Vídeo</span>
+            </div>
           </div>
         </section>
 
-        <section class="dn-section">
-          <h3 data-i18n="ui.navigation">Navegação</h3>
-          <div class="dn-row" data-action="insert-continue">
-            <div class="dn-icon">→</div>
-            <span class="dn-row-name" data-i18n="ui.continueButton">Botão Continuar</span>
+        <section class="dn-section" data-section="interaction">
+          <button class="dn-section-header" type="button" aria-expanded="false">
+            <span data-i18n="ui.interaction">Interação</span>
+            <span class="dn-section-chevron" aria-hidden="true">⌄</span>
+          </button>
+          <div class="dn-section-content">
+            <div class="dn-row" data-action="insert-accordion" data-context-tag="DN-accordion">
+              <div class="dn-icon">A</div>
+              <span class="dn-row-name" data-i18n="ui.accordion">Acordeão</span>
+              <button class="dn-add" data-add="accordion-item" title="Adicionar item de acordeão" data-i18n-title="ui.addAccordionItem">+</button>
+            </div>
+            <div class="dn-row" data-action="insert-tabs" data-context-tag="DN-tabs">
+              <div class="dn-icon">Ab</div>
+              <span class="dn-row-name" data-i18n="ui.tabs">Abas</span>
+              <button class="dn-add" data-add="tab-item" title="Adicionar aba" data-i18n-title="ui.addTab">+</button>
+            </div>
+            <div class="dn-row" data-action="insert-cards" data-context-tag="DN-cards">
+              <div class="dn-icon">Cd</div>
+              <span class="dn-row-name" data-i18n="ui.cards">Cards</span>
+              <button class="dn-add" data-add="card-item" title="Adicionar card" data-i18n-title="ui.addCard">+</button>
+            </div>
+            <div class="dn-row" data-action="insert-flipcard" data-context-tag="DN-flipcard">
+              <div class="dn-icon">Fc</div>
+              <span class="dn-row-name" data-i18n="ui.flipcard">FlipCard</span>
+              <button class="dn-add" data-add="flipcard-item" title="Adicionar flipcard" data-i18n-title="ui.addFlipcard">+</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="dn-section" data-section="assessment">
+          <button class="dn-section-header" type="button" aria-expanded="false">
+            <span data-i18n="ui.assessment">Avaliação</span>
+            <span class="dn-section-chevron" aria-hidden="true">⌄</span>
+          </button>
+          <div class="dn-section-content">
+            <div class="dn-row" data-action="insert-quiz" data-context-tag="DN-quiz">
+              <div class="dn-icon">?</div>
+              <span class="dn-row-name" data-i18n="ui.quiz">Quiz</span>
+              <button class="dn-add" data-add="quiz-item" title="Adicionar opção ao quiz" data-i18n-title="ui.addQuizOption">+</button>
+            </div>
+
+            <div class="dn-quiz-actions">
+              <button class="dn-quiz-action" data-action="quiz-type-single" title="Definir quiz como resposta única" data-i18n-title="ui.setSingle" data-i18n="ui.single">Single</button>
+              <button class="dn-quiz-action" data-action="quiz-type-multiple" title="Definir quiz como múltiplas respostas" data-i18n-title="ui.setMultiple" data-i18n="ui.multiple">Multiple</button>
+              <button class="dn-quiz-action" data-action="quiz-mark-correct" title="Marcar opção selecionada como resposta correta" data-i18n-title="ui.markCorrect" data-i18n="ui.correctAnswer">Resposta certa</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="dn-section" data-section="navigation">
+          <button class="dn-section-header" type="button" aria-expanded="false">
+            <span data-i18n="ui.navigation">Navegação</span>
+            <span class="dn-section-chevron" aria-hidden="true">⌄</span>
+          </button>
+          <div class="dn-section-content">
+            <div class="dn-row" data-action="insert-continue">
+              <div class="dn-icon">→</div>
+              <span class="dn-row-name" data-i18n="ui.continueButton">Botão Continuar</span>
+            </div>
           </div>
         </section>
       </div>

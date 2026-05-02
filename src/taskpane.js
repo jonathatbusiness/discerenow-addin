@@ -43,6 +43,16 @@ function run(fn) {
 // ─── UI: bind dos cliques ─────────────────────────────────────────────
 
 function attachUiHandlers() {
+  document.querySelectorAll(".dn-section-header").forEach(function (header) {
+    header.addEventListener("click", function () {
+      const section = header.closest(".dn-section");
+      if (!section) return;
+
+      const isOpen = section.classList.toggle("is-open");
+      header.setAttribute("aria-expanded", String(isOpen));
+    });
+  });
+
   document.querySelectorAll(".dn-row").forEach(function (row) {
     row.addEventListener("click", function (ev) {
       if (ev.target.classList.contains("dn-add")) return;
