@@ -1,0 +1,59 @@
+name: Update add-in log
+
+on:
+  workflow_dispatch:
+    inputs:
+      updateTxt:
+        description: "Update description"
+        required: true
+      version:
+        description: "Optional manual version, e.g. 2.0.0"
+        required: false
+
+permissions:
+  contents: write
+
+jobs:
+  update-log:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Update update-log.json
+        run: |
+          node <<'NODE'
+          const fs = require("fs");
+
+          const file = "update-log.json";
+          const updateTxt = process.env.UPDATE_TXT;
+          const manualVersion = process.env.MANUAL_VERSION;
+
+          const current = fs.existsSync(file)
+            ? JSON.parse(fs.readFileSync(file, "utf8"))
+            : { version: "1.0.0" };
+
+          function bumpMinor(version) {
+            const [major, minor, patch] = version.split(".").map(Number);
+            return `${major}.${minor + 1}.${patch || 0}`;
+          }
+
+          const next = {
+            version: manualVersion || bumpMinor(current.version),
+            date: new Date().toISOString().slice(0, 10),
+            updateTxt
+          };
+
+          fs.writeFileSync(file, JSON.stringify(next, null, 2) + "\n");
+          NODE
+        env:
+          UPDATE_TXT: ${{ github.event.inputs.updateTxt }}
+          MANUAL_VERSION: ${{ github.event.inputs.version }}
+
+      - name: Commit update log
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add update-log.json
+          git commit -m "Update add-in release log" || echo "No changes to commit"
+          git push
