@@ -49,14 +49,16 @@
       "word.flipFrontContent": "Frente — conteúdo...",
       "word.flipBackTitle": "Verso — título",
       "word.flipBackContent": "Verso — conteúdo...",
-      "word.imagePlaceholder": "[Insira uma imagem nesta coluna ou deixe apenas \"N\" caso não queira adicionar imagem]",
+      "word.imagePlaceholder":
+        '[Insira uma imagem nesta coluna ou deixe apenas "N" caso não queira adicionar imagem]',
       "word.imageHere": "[Inserir imagem aqui]",
       "word.imageSideText": "Texto ao lado da imagem...",
       "word.calloutTitle": "Título do destaque",
       "word.calloutContent": "Conteúdo do destaque...",
       "word.videoCaption": "Legenda do vídeo (opcional)",
       "word.quizTypeLabel": "Tipo do quiz",
-      "word.quizTypeHelp": "Tipo do quiz — use \"single\" para resposta única ou \"multiple\" para múltiplas respostas.",
+      "word.quizTypeHelp":
+        'Tipo do quiz — use "single" para resposta única ou "multiple" para múltiplas respostas.',
       "word.quizQuestionLabel": "Pergunta",
       "word.quizQuestion": "Pergunta do quiz?",
       "word.quizOptionLabel": "Opção",
@@ -72,39 +74,57 @@
 
       "status.errorPrefix": "Erro: ",
       "status.cursorIn": "Cursor em: {name}",
-      "status.styleApplied": "Estilo \"{styleName}\" aplicado.",
-      "status.normalApplied": "Parágrafo normal aplicado.",
+      "status.styleApplied": 'Estilo "{styleName}" aplicado.',
+      "status.paragraphMarked": "Parágrafo marcado para o DiscereNow.",
+      "status.paragraphAlreadyMarked":
+        "Este parágrafo já está marcado para o DiscereNow.",
       "status.accordionInserted": "Acordeão inserido.",
-      "status.accordionItemMissing": "Coloque o cursor dentro de um acordeão antes de adicionar um item.",
+      "status.accordionItemMissing":
+        "Coloque o cursor dentro de um acordeão antes de adicionar um item.",
       "status.accordionItemAdded": "Novo item de acordeão adicionado.",
       "status.tabsInserted": "Bloco de Abas inserido.",
-      "status.tabItemMissing": "Coloque o cursor dentro de um bloco de Abas antes de adicionar uma aba.",
+      "status.tabItemMissing":
+        "Coloque o cursor dentro de um bloco de Abas antes de adicionar uma aba.",
       "status.tabItemAdded": "Nova aba adicionada.",
       "status.imgTextInserted": "Bloco Imagem+Texto inserido.",
-      "status.calloutInserted": "Callout inserido. (1ª linha: troque por \"info\", \"alert\" ou \"tip\")",
-      "status.videoInserted": "Vídeo inserido. (1ª linha = URL do YouTube/Vimeo, 2ª = legenda)",
+      "status.calloutInserted":
+        'Callout inserido. (1ª linha: troque por "info", "alert" ou "tip")',
+      "status.videoInserted":
+        "Vídeo inserido. (1ª linha = URL do YouTube/Vimeo, 2ª = legenda)",
       "status.cardsInserted": "Cards inserido.",
-      "status.cardMissing": "Coloque o cursor dentro de um bloco Cards antes de adicionar um card.",
+      "status.cardMissing":
+        "Coloque o cursor dentro de um bloco Cards antes de adicionar um card.",
       "status.cardAdded": "Novo card adicionado.",
       "status.flipcardInserted": "FlipCard inserido.",
-      "status.flipcardMissing": "Coloque o cursor dentro de um bloco FlipCard antes de adicionar um card.",
+      "status.flipcardMissing":
+        "Coloque o cursor dentro de um bloco FlipCard antes de adicionar um card.",
       "status.flipcardAdded": "Novo flipcard adicionado.",
-      "status.quizInserted": "Quiz inserido. Tipo padrão: single. Use os botões Single, Multiple e Resposta certa para configurar.",
-      "status.quizOptionMissing": "Coloque o cursor dentro de um Quiz antes de adicionar uma opção.",
+      "status.quizInserted":
+        "Quiz inserido. Tipo padrão: single. Use os botões Single, Multiple e Resposta certa para configurar.",
+      "status.quizOptionMissing":
+        "Coloque o cursor dentro de um Quiz antes de adicionar uma opção.",
       "status.quizOptionAdded": "Nova opção adicionada.",
       "status.quizOptionAddedToQuiz": "Nova opção adicionada ao Quiz.",
-      "status.quizTypeMissing": "Coloque o cursor dentro de um Quiz antes de alterar o tipo.",
+      "status.quizTypeMissing":
+        "Coloque o cursor dentro de um Quiz antes de alterar o tipo.",
       "status.quizTypeLineNotFound": "Não encontrei a linha de tipo do Quiz.",
-      "status.quizSingle": "Quiz configurado como Single: apenas uma resposta correta.",
-      "status.quizMultiple": "Quiz configurado como Multiple: permite mais de uma resposta correta.",
-      "status.quizCorrectMissing": "Coloque o cursor sobre uma opção dentro de um Quiz.",
-      "status.quizSelectOption": "Selecione ou posicione o cursor sobre uma opção do Quiz.",
-      "status.quizCursorNeedOption": "O cursor precisa estar em uma opção do Quiz.",
-      "status.quizCorrectSingle": "Resposta certa definida. As outras opções foram marcadas como incorretas.",
-      "status.quizCorrectMultiple": "Resposta certa adicionada. As outras respostas certas foram mantidas.",
-      "status.continueInserted": "Botão Continuar inserido."
+      "status.quizSingle":
+        "Quiz configurado como Single: apenas uma resposta correta.",
+      "status.quizMultiple":
+        "Quiz configurado como Multiple: permite mais de uma resposta correta.",
+      "status.quizCorrectMissing":
+        "Coloque o cursor sobre uma opção dentro de um Quiz.",
+      "status.quizSelectOption":
+        "Selecione ou posicione o cursor sobre uma opção do Quiz.",
+      "status.quizCursorNeedOption":
+        "O cursor precisa estar em uma opção do Quiz.",
+      "status.quizCorrectSingle":
+        "Resposta certa definida. As outras opções foram marcadas como incorretas.",
+      "status.quizCorrectMultiple":
+        "Resposta certa adicionada. As outras respostas certas foram mantidas.",
+      "status.continueInserted": "Botão Continuar inserido.",
     },
-    "en": {
+    en: {
       "ui.languageLabel": "Language",
       "ui.structure": "Structure",
       "ui.chapter": "Chapter",
@@ -148,14 +168,16 @@
       "word.flipFrontContent": "Front — content...",
       "word.flipBackTitle": "Back — title",
       "word.flipBackContent": "Back — content...",
-      "word.imagePlaceholder": "[Insert an image in this column or leave only \"N\" if you do not want to add an image]",
+      "word.imagePlaceholder":
+        '[Insert an image in this column or leave only "N" if you do not want to add an image]',
       "word.imageHere": "[Insert image here]",
       "word.imageSideText": "Text beside the image...",
       "word.calloutTitle": "Callout title",
       "word.calloutContent": "Callout content...",
       "word.videoCaption": "Video caption (optional)",
       "word.quizTypeLabel": "Quiz type",
-      "word.quizTypeHelp": "Quiz type — use \"single\" for single answer or \"multiple\" for multiple answers.",
+      "word.quizTypeHelp":
+        'Quiz type — use "single" for single answer or "multiple" for multiple answers.',
       "word.quizQuestionLabel": "Question",
       "word.quizQuestion": "Quiz question?",
       "word.quizOptionLabel": "Option",
@@ -171,38 +193,53 @@
 
       "status.errorPrefix": "Error: ",
       "status.cursorIn": "Cursor in: {name}",
-      "status.styleApplied": "Style \"{styleName}\" applied.",
-      "status.normalApplied": "Normal paragraph applied.",
+      "status.styleApplied": 'Style "{styleName}" applied.',
+      "status.paragraphMarked": "Paragraph marked for DiscereNow.",
+      "status.paragraphAlreadyMarked":
+        "This paragraph is already marked for DiscereNow.",
       "status.accordionInserted": "Accordion inserted.",
-      "status.accordionItemMissing": "Place the cursor inside an accordion before adding an item.",
+      "status.accordionItemMissing":
+        "Place the cursor inside an accordion before adding an item.",
       "status.accordionItemAdded": "New accordion item added.",
       "status.tabsInserted": "Tabs block inserted.",
-      "status.tabItemMissing": "Place the cursor inside a Tabs block before adding a tab.",
+      "status.tabItemMissing":
+        "Place the cursor inside a Tabs block before adding a tab.",
       "status.tabItemAdded": "New tab added.",
       "status.imgTextInserted": "Image+Text block inserted.",
-      "status.calloutInserted": "Callout inserted. (1st line: change to \"info\", \"alert\" or \"tip\")",
-      "status.videoInserted": "Video inserted. (1st line = YouTube/Vimeo URL, 2nd = caption)",
+      "status.calloutInserted":
+        'Callout inserted. (1st line: change to "info", "alert" or "tip")',
+      "status.videoInserted":
+        "Video inserted. (1st line = YouTube/Vimeo URL, 2nd = caption)",
       "status.cardsInserted": "Cards inserted.",
-      "status.cardMissing": "Place the cursor inside a Cards block before adding a card.",
+      "status.cardMissing":
+        "Place the cursor inside a Cards block before adding a card.",
       "status.cardAdded": "New card added.",
       "status.flipcardInserted": "FlipCard inserted.",
-      "status.flipcardMissing": "Place the cursor inside a FlipCard block before adding a card.",
+      "status.flipcardMissing":
+        "Place the cursor inside a FlipCard block before adding a card.",
       "status.flipcardAdded": "New flipcard added.",
-      "status.quizInserted": "Quiz inserted. Default type: single. Use the Single, Multiple and Correct answer buttons to configure it.",
-      "status.quizOptionMissing": "Place the cursor inside a Quiz before adding an option.",
+      "status.quizInserted":
+        "Quiz inserted. Default type: single. Use the Single, Multiple and Correct answer buttons to configure it.",
+      "status.quizOptionMissing":
+        "Place the cursor inside a Quiz before adding an option.",
       "status.quizOptionAdded": "New option added.",
       "status.quizOptionAddedToQuiz": "New option added to Quiz.",
-      "status.quizTypeMissing": "Place the cursor inside a Quiz before changing the type.",
+      "status.quizTypeMissing":
+        "Place the cursor inside a Quiz before changing the type.",
       "status.quizTypeLineNotFound": "I could not find the Quiz type line.",
       "status.quizSingle": "Quiz set as Single: only one correct answer.",
-      "status.quizMultiple": "Quiz set as Multiple: allows more than one correct answer.",
-      "status.quizCorrectMissing": "Place the cursor on an option inside a Quiz.",
+      "status.quizMultiple":
+        "Quiz set as Multiple: allows more than one correct answer.",
+      "status.quizCorrectMissing":
+        "Place the cursor on an option inside a Quiz.",
       "status.quizSelectOption": "Select or place the cursor on a Quiz option.",
       "status.quizCursorNeedOption": "The cursor must be on a Quiz option.",
-      "status.quizCorrectSingle": "Correct answer set. The other options were marked as incorrect.",
-      "status.quizCorrectMultiple": "Correct answer added. The other correct answers were kept.",
-      "status.continueInserted": "Continue button inserted."
-    }
+      "status.quizCorrectSingle":
+        "Correct answer set. The other options were marked as incorrect.",
+      "status.quizCorrectMultiple":
+        "Correct answer added. The other correct answers were kept.",
+      "status.continueInserted": "Continue button inserted.",
+    },
   };
 
   function getLanguage() {

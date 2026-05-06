@@ -96,7 +96,7 @@ function handleAction(action) {
     case "apply-lesson":
       return applyStyle("DN-Licao");
     case "apply-paragraph":
-      return applyNormal();
+      return markParagraphBlock();
     case "insert-callout":
       return insertCallout();
     case "insert-imgtext":
@@ -207,6 +207,8 @@ function applyContextualState(tag) {
 
 function friendlyTagName(tag) {
   switch (tag) {
+    case "DN-paragraph":
+      return dnT("ui.paragraph");
     case "DN-accordion":
       return dnT("ui.accordion");
     case "DN-tabs":
@@ -351,16 +353,25 @@ function applyStyle(styleName) {
   });
 }
 
-function applyNormal() {
+function markParagraphBlock() {
   run(async function (context) {
     const selection = context.document.getSelection();
-    selection.paragraphs.load("items");
+
+    const existingParagraphCC = await getParentCCByTag(context, "DN-paragraph");
+    if (existingParagraphCC) {
+      setStatus(dnT("status.paragraphAlreadyMarked"), "info");
+      return;
+    }
+
+    const cc = selection.insertContentControl();
+    cc.tag = "DN-paragraph";
+    cc.title = dnT("ui.paragraph");
+    cc.cannotDelete = false;
+    cc.cannotEdit = false;
+
     await context.sync();
-    selection.paragraphs.items.forEach(function (p) {
-      p.style = "Normal";
-    });
-    await context.sync();
-    setStatus(dnT("status.normalApplied"), "ok");
+    setStatus(dnT("status.paragraphMarked"), "ok");
+    updateContextHighlight();
   });
 }
 
@@ -462,10 +473,7 @@ function addAccordionItem() {
   run(async function (context) {
     const cc = await getParentCCByTag(context, "DN-accordion");
     if (!cc) {
-      setStatus(
-        dnT("status.accordionItemMissing"),
-        "warning",
-      );
+      setStatus(dnT("status.accordionItemMissing"), "warning");
       return;
     }
     const t = cc.insertParagraph(dnT("word.accordionTitle"), "End");
@@ -519,10 +527,7 @@ function addTabItem() {
   run(async function (context) {
     const cc = await getParentCCByTag(context, "DN-tabs");
     if (!cc) {
-      setStatus(
-        dnT("status.tabItemMissing"),
-        "warning",
-      );
+      setStatus(dnT("status.tabItemMissing"), "warning");
       return;
     }
     const t = cc.insertParagraph(dnT("word.tabTitle"), "End");
@@ -600,10 +605,7 @@ function insertCallout() {
     conteudo.style = "DN-Callout-Conteudo";
 
     await context.sync();
-    setStatus(
-      dnT("status.calloutInserted"),
-      "ok",
-    );
+    setStatus(dnT("status.calloutInserted"), "ok");
   });
 }
 
@@ -638,10 +640,7 @@ function insertVideo() {
     legenda.style = "DN-Video-Legenda";
 
     await context.sync();
-    setStatus(
-      dnT("status.videoInserted"),
-      "ok",
-    );
+    setStatus(dnT("status.videoInserted"), "ok");
   });
 }
 
@@ -683,10 +682,7 @@ function addCardItem() {
   run(async function (context) {
     const cc = await getParentCCByTag(context, "DN-cards");
     if (!cc) {
-      setStatus(
-        dnT("status.cardMissing"),
-        "warning",
-      );
+      setStatus(dnT("status.cardMissing"), "warning");
       return;
     }
     const t = cc.insertParagraph(dnT("word.cardTitle"), "End");
@@ -748,10 +744,7 @@ function addFlipCardItem() {
   run(async function (context) {
     const cc = await getParentCCByTag(context, "DN-flipcard");
     if (!cc) {
-      setStatus(
-        dnT("status.flipcardMissing"),
-        "warning",
-      );
+      setStatus(dnT("status.flipcardMissing"), "warning");
       return;
     }
     const ft = cc.insertParagraph(dnT("word.flipFrontTitle"), "End");
@@ -803,13 +796,15 @@ function insertQuiz() {
       [dnT("word.quizOptionLabel"), dnT("word.quizOption2")],
       [dnT("word.quizOptionLabel"), dnT("word.quizOption3")],
       [dnT("word.quizCorrectFeedbackLabel"), dnT("word.quizCorrectFeedback")],
-      [dnT("word.quizIncorrectFeedbackLabel"), dnT("word.quizIncorrectFeedback")],
+      [
+        dnT("word.quizIncorrectFeedbackLabel"),
+        dnT("word.quizIncorrectFeedback"),
+      ],
     ]);
 
     table.style = "Table Grid";
 
-    table.getCell(0, 0).value =
-      dnT("word.quizTypeHelp");
+    table.getCell(0, 0).value = dnT("word.quizTypeHelp");
     table.getCell(0, 1).body.paragraphs.getFirst().style = "DN-Quiz-Tipo";
 
     table.getCell(1, 1).body.paragraphs.getFirst().style = "DN-Quiz-Pergunta";
@@ -823,10 +818,7 @@ function insertQuiz() {
       "DN-Quiz-FeedbackErro";
 
     await context.sync();
-    setStatus(
-      dnT("status.quizInserted"),
-      "ok",
-    );
+    setStatus(dnT("status.quizInserted"), "ok");
   });
 }
 
@@ -834,10 +826,7 @@ function addQuizOption() {
   run(async function (context) {
     const cc = await getParentCCByTag(context, "DN-quiz");
     if (!cc) {
-      setStatus(
-        dnT("status.quizOptionMissing"),
-        "warning",
-      );
+      setStatus(dnT("status.quizOptionMissing"), "warning");
       return;
     }
 
@@ -856,7 +845,9 @@ function addQuizOption() {
     const table = tables.items[0];
     const feedbackLabels = [
       dnT("word.quizCorrectFeedbackLabel"),
-      window.DNI18N ? window.DNI18N.t("word.quizCorrectFeedbackLabel", null) : "Feedback correto",
+      window.DNI18N
+        ? window.DNI18N.t("word.quizCorrectFeedbackLabel", null)
+        : "Feedback correto",
       "Feedback correto",
       "Correct feedback",
     ];
@@ -876,9 +867,15 @@ function addQuizOption() {
 
     if (feedbackCorrectCell) {
       const row = feedbackCorrectCell.parentTable.getCell(5, 0);
-      row.insertRows("Before", 1, [[dnT("word.quizOptionLabel"), dnT("word.quizNewOption")]]);
+      row.insertRows("Before", 1, [
+        [dnT("word.quizOptionLabel"), dnT("word.quizNewOption")],
+      ]);
     } else {
-      table.getCell(0, 0).insertRows("After", 1, [[dnT("word.quizOptionLabel"), dnT("word.quizNewOption")]]);
+      table
+        .getCell(0, 0)
+        .insertRows("After", 1, [
+          [dnT("word.quizOptionLabel"), dnT("word.quizNewOption")],
+        ]);
     }
 
     await context.sync();
@@ -900,10 +897,7 @@ function setQuizType(quizType) {
   run(async function (context) {
     const cc = await getParentCCByTag(context, "DN-quiz");
     if (!cc) {
-      setStatus(
-        dnT("status.quizTypeMissing"),
-        "warning",
-      );
+      setStatus(dnT("status.quizTypeMissing"), "warning");
       return;
     }
 
@@ -941,10 +935,7 @@ function markQuizCorrectAnswer() {
   run(async function (context) {
     const cc = await getParentCCByTag(context, "DN-quiz");
     if (!cc) {
-      setStatus(
-        dnT("status.quizCorrectMissing"),
-        "warning",
-      );
+      setStatus(dnT("status.quizCorrectMissing"), "warning");
       return;
     }
 
@@ -958,10 +949,7 @@ function markQuizCorrectAnswer() {
     await context.sync();
 
     if (selectedParagraphs.items.length === 0) {
-      setStatus(
-        dnT("status.quizSelectOption"),
-        "warning",
-      );
+      setStatus(dnT("status.quizSelectOption"), "warning");
       return;
     }
 
