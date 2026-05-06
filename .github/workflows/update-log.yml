@@ -1,11 +1,17 @@
 name: Update add-in log
 
 on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - "update-log.json"
+
   workflow_dispatch:
     inputs:
       updateTxt:
         description: "Update description"
-        required: true
+        required: false
       version:
         description: "Optional manual version, e.g. 2.0.0"
         required: false
@@ -26,7 +32,12 @@ jobs:
           const fs = require("fs");
 
           const file = "update-log.json";
-          const updateTxt = process.env.UPDATE_TXT;
+
+          const updateTxt =
+            process.env.UPDATE_TXT ||
+            process.env.COMMIT_MESSAGE ||
+            "General add-in update.";
+
           const manualVersion = process.env.MANUAL_VERSION;
 
           const current = fs.existsSync(file)
@@ -49,6 +60,7 @@ jobs:
         env:
           UPDATE_TXT: ${{ github.event.inputs.updateTxt }}
           MANUAL_VERSION: ${{ github.event.inputs.version }}
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
 
       - name: Commit update log
         run: |
