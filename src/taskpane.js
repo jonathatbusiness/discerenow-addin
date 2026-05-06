@@ -10,6 +10,7 @@ Office.onReady(function (info) {
   if (info.host !== Office.HostType.Word) return;
 
   if (window.DNI18N) window.DNI18N.applyTranslations();
+  loadUpdateInfo();
 
   ensureStyles().then(function () {
     setStatus(dnT("ui.ready"), "ok");
@@ -18,6 +19,27 @@ Office.onReady(function (info) {
   attachUiHandlers();
   attachSelectionListener();
 });
+
+async function loadUpdateInfo() {
+  try {
+    const response = await fetch("./update-log.json", { cache: "no-store" });
+    if (!response.ok) return;
+
+    const data = await response.json();
+    const versionEl = document.getElementById("dn-app-version");
+    if (!versionEl) return;
+
+    if (data.version) {
+      versionEl.textContent = "v" + data.version;
+    }
+
+    if (data.date && data.updateTxt) {
+      versionEl.title = data.date + " — " + data.updateTxt;
+    }
+  } catch (error) {
+    console.warn("Could not load update info:", error);
+  }
+}
 
 // ─── Status bar ───────────────────────────────────────────────────────
 
