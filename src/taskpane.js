@@ -24,7 +24,7 @@ Office.onReady(function (info) {
 
 async function loadUpdateInfo() {
   try {
-    const response = await fetch("./update-log.json?v=1.2.0", { cache: "no-store" });
+    const response = await fetch("./update-log.json?v=1.2.0.2", { cache: "no-store" });
     if (!response.ok) return;
 
     dnUpdateInfo = await response.json();
@@ -118,8 +118,14 @@ function attachUiHandlers() {
       const section = header.closest(".dn-section");
       if (!section) return;
 
-      const isOpen = section.classList.toggle("is-open");
-      header.setAttribute("aria-expanded", String(isOpen));
+      const willOpen = !section.classList.contains("is-open");
+
+      document.querySelectorAll(".dn-section").forEach(function (otherSection) {
+        const otherHeader = otherSection.querySelector(".dn-section-header");
+        const shouldOpen = otherSection === section && willOpen;
+        otherSection.classList.toggle("is-open", shouldOpen);
+        if (otherHeader) otherHeader.setAttribute("aria-expanded", String(shouldOpen));
+      });
     });
   });
 
