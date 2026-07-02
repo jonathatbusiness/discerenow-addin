@@ -119,6 +119,18 @@ function handleAction(action) {
       return applyStyle("DN-Licao");
     case "apply-paragraph":
       return markParagraphBlock();
+    case "insert-paragraph-heading":
+      return insertParagraphWithLead("heading");
+    case "insert-paragraph-subheading":
+      return insertParagraphWithLead("subheading");
+    case "insert-heading":
+      return insertTextBlock("heading");
+    case "insert-subheading":
+      return insertTextBlock("subheading");
+    case "insert-columns":
+      return insertColumns();
+    case "insert-table":
+      return insertDataTable();
     case "insert-callout":
       return insertCallout();
     case "insert-imgtext":
@@ -231,6 +243,18 @@ function friendlyTagName(tag) {
   switch (tag) {
     case "DN-paragraph":
       return dnT("ui.paragraph");
+    case "DN-paragraphHeading":
+      return dnT("ui.paragraphHeading");
+    case "DN-paragraphSubheading":
+      return dnT("ui.paragraphSubheading");
+    case "DN-heading":
+      return dnT("ui.heading");
+    case "DN-subheading":
+      return dnT("ui.subheading");
+    case "DN-columns":
+      return dnT("ui.columns");
+    case "DN-table":
+      return dnT("ui.table");
     case "DN-accordion":
       return dnT("ui.accordion");
     case "DN-tabs":
@@ -262,6 +286,12 @@ async function ensureStyles() {
       // Estrutura
       { name: "DN-Capitulo", fontSize: 22, bold: true, color: "1e3c72" },
       { name: "DN-Licao", fontSize: 16, bold: true, color: "2a5298" },
+      // Texto
+      { name: "DN-Heading", fontSize: 24, bold: true, color: "1e3c72" },
+      { name: "DN-Subheading", fontSize: 18, bold: true, color: "2a5298" },
+      { name: "DN-Text-Content", fontSize: 12, bold: false, color: "333333" },
+      { name: "DN-Table-Header", fontSize: 12, bold: true, color: "ffffff" },
+      { name: "DN-Table-Cell", fontSize: 12, bold: false, color: "333333" },
       // Acordeão / Abas
       {
         name: "DN-Accordion-Titulo",
@@ -394,6 +424,98 @@ function markParagraphBlock() {
     await context.sync();
     setStatus(dnT("status.paragraphMarked"), "ok");
     updateContextHighlight();
+  });
+}
+
+async function createBlockContentControl(context, tag, title) {
+  const { target, type, position } = await getSafeBlockInsertionTarget(context);
+  let cc;
+
+  if (type === "ContentControl" && position === "After") {
+    const paragraphAfter = target.insertParagraph("", "After");
+    cc = paragraphAfter.getRange().insertContentControl();
+  } else {
+    cc = target.insertContentControl();
+  }
+
+  cc.tag = tag;
+  cc.title = title;
+  cc.cannotDelete = false;
+  cc.cannotEdit = false;
+  return cc;
+}
+
+function insertTextBlock(kind) {
+  run(async function (context) {
+    const isHeading = kind === "heading";
+    const cc = await createBlockContentControl(
+      context,
+      isHeading ? "DN-heading" : "DN-subheading",
+      dnT(isHeading ? "ui.heading" : "ui.subheading"),
+    );
+    const paragraph = cc.insertParagraph(
+      dnT(isHeading ? "word.heading" : "word.subheading"),
+      "Start",
+    );
+    paragraph.style = isHeading ? "DN-Heading" : "DN-Subheading";
+    await context.sync();
+    setStatus(dnT(isHeading ? "status.headingInserted" : "status.subheadingInserted"), "ok");
+  });
+}
+
+function insertParagraphWithLead(kind) {
+  run(async function (context) {
+    const isHeading = kind === "heading";
+    const cc = await createBlockContentControl(
+      context,
+      isHeading ? "DN-paragraphHeading" : "DN-paragraphSubheading",
+      dnT(isHeading ? "ui.paragraphHeading" : "ui.paragraphSubheading"),
+    );
+    const lead = cc.insertParagraph(
+      dnT(isHeading ? "word.heading" : "word.subheading"),
+      "Start",
+    );
+    lead.style = isHeading ? "DN-Heading" : "DN-Subheading";
+    const content = cc.insertParagraph(dnT("word.paragraphContent"), "End");
+    content.style = "DN-Text-Content";
+    await context.sync();
+    setStatus(
+      dnT(isHeading ? "status.paragraphHeadingInserted" : "status.paragraphSubheadingInserted"),
+      "ok",
+    );
+  });
+}
+
+function insertColumns() {
+  run(async function (context) {
+    const cc = await createBlockContentControl(context, "DN-columns", dnT("ui.columns"));
+    const table = cc.insertTable(1, 2, "Start", [
+      [dnT("word.columnContent"), dnT("word.columnContent")],
+    ]);
+    table.style = "Table Grid";
+    table.getCell(0, 0).body.paragraphs.getFirst().style = "DN-Text-Content";
+    table.getCell(0, 1).body.paragraphs.getFirst().style = "DN-Text-Content";
+    await context.sync();
+    setStatus(dnT("status.columnsInserted"), "ok");
+  });
+}
+
+function insertDataTable() {
+  run(async function (context) {
+    const cc = await createBlockContentControl(context, "DN-table", dnT("ui.table"));
+    const table = cc.insertTable(2, 2, "Start", [
+      [dnT("word.tableHeader"), dnT("word.tableHeader")],
+      [dnT("word.tableCell"), dnT("word.tableCell")],
+    ]);
+    table.style = "Table Grid";
+    for (let col = 0; col < 2; col++) {
+      const header = table.getCell(0, col);
+      header.body.paragraphs.getFirst().style = "DN-Table-Header";
+      header.shadingColor = "2a5298";
+      table.getCell(1, col).body.paragraphs.getFirst().style = "DN-Table-Cell";
+    }
+    await context.sync();
+    setStatus(dnT("status.tableInserted"), "ok");
   });
 }
 

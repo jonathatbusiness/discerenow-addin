@@ -64,6 +64,30 @@
                 >Parágrafo</span
               >
             </div>
+            <div class="dn-row" data-action="insert-paragraph-heading" data-context-tag="DN-paragraphHeading">
+              <div class="dn-icon">H¶</div>
+              <span class="dn-row-name" data-i18n="ui.paragraphHeading">Parágrafo com título</span>
+            </div>
+            <div class="dn-row" data-action="insert-paragraph-subheading" data-context-tag="DN-paragraphSubheading">
+              <div class="dn-icon">S¶</div>
+              <span class="dn-row-name" data-i18n="ui.paragraphSubheading">Parágrafo com subtítulo</span>
+            </div>
+            <div class="dn-row" data-action="insert-heading" data-context-tag="DN-heading">
+              <div class="dn-icon">H</div>
+              <span class="dn-row-name" data-i18n="ui.heading">Título</span>
+            </div>
+            <div class="dn-row" data-action="insert-subheading" data-context-tag="DN-subheading">
+              <div class="dn-icon">S</div>
+              <span class="dn-row-name" data-i18n="ui.subheading">Subtítulo</span>
+            </div>
+            <div class="dn-row" data-action="insert-columns" data-context-tag="DN-columns">
+              <div class="dn-icon">Ⅱ</div>
+              <span class="dn-row-name" data-i18n="ui.columns">Colunas</span>
+            </div>
+            <div class="dn-row" data-action="insert-table" data-context-tag="DN-table">
+              <div class="dn-icon">▦</div>
+              <span class="dn-row-name" data-i18n="ui.table">Tabela</span>
+            </div>
             <div class="dn-row" data-action="insert-callout">
               <div class="dn-icon">!</div>
               <span class="dn-row-name" data-i18n="ui.callout">Callout</span>
@@ -77,15 +101,22 @@
             <span class="dn-section-chevron" aria-hidden="true">⌄</span>
           </button>
           <div class="dn-section-content">
-            <div class="dn-row" data-action="insert-imgtext">
-              <div class="dn-icon">IT</div>
-              <span class="dn-row-name" data-i18n="ui.imageText"
-                >Imagem + Texto</span
-              >
-            </div>
             <div class="dn-row" data-action="insert-video">
               <div class="dn-icon">▶</div>
               <span class="dn-row-name" data-i18n="ui.video">Vídeo</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="dn-section" data-section="image">
+          <button class="dn-section-header" type="button" aria-expanded="false">
+            <span data-i18n="ui.image">Imagem</span>
+            <span class="dn-section-chevron" aria-hidden="true">⌄</span>
+          </button>
+          <div class="dn-section-content">
+            <div class="dn-row" data-action="insert-imgtext" data-context-tag="DN-imgText">
+              <div class="dn-icon">IT</div>
+              <span class="dn-row-name" data-i18n="ui.imageText">Imagem + Texto</span>
             </div>
           </div>
         </section>
