@@ -1,9 +1,9 @@
 {
-  "version": "1.4.0",
+  "version": "1.5.0",
   "date": "2026-07-02",
-  "updateTxt": "New centered image block with an optional caption. Update DiscereNow Studio before using it.",
+  "updateTxt": "New Process carousel with repeatable steps and optional images. Update DiscereNow Studio before using it.",
   "updateTxtI18n": {
-    "pt-BR": "Novo bloco de imagem centralizada com legenda opcional. Atualize o DiscereNow Studio antes de usá-lo.",
-    "en": "New centered image block with an optional caption. Update DiscereNow Studio before using it."
+    "pt-BR": "Novo carrossel de Processo com passos repetíveis e imagens opcionais. Atualize o DiscereNow Studio antes de usá-lo.",
+    "en": "New Process carousel with repeatable steps and optional images. Update DiscereNow Studio before using it."
   }
 }

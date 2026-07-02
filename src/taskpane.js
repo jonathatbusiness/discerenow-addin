@@ -24,7 +24,7 @@ Office.onReady(function (info) {
 
 async function loadUpdateInfo() {
   try {
-    const response = await fetch("./update-log.json?v=1.4.0", { cache: "no-store" });
+    const response = await fetch("./update-log.json?v=1.5.0", { cache: "no-store" });
     if (!response.ok) return;
 
     dnUpdateInfo = await response.json();
@@ -242,6 +242,8 @@ function handleAction(action) {
       return insertTabs();
     case "insert-cards":
       return insertCards();
+    case "insert-process":
+      return insertProcess();
     case "insert-flipcard":
       return insertFlipCard();
     case "insert-quiz":
@@ -265,6 +267,8 @@ function handleAddItem(kind) {
       return addTabItem();
     case "card-item":
       return addCardItem();
+    case "process-step":
+      return addProcessStep();
     case "flipcard-item":
       return addFlipCardItem();
     case "quiz-item":
@@ -376,6 +380,8 @@ function friendlyTagName(tag) {
       return dnT("ui.imageCentered");
     case "DN-cards":
       return dnT("ui.cards");
+    case "DN-process":
+      return dnT("ui.process");
     case "DN-flipcard":
       return dnT("ui.flipcard");
     case "DN-quiz":
@@ -407,6 +413,9 @@ async function ensureStyles() {
       { name: "DN-Table-Cell", fontSize: 12, bold: false, color: "333333" },
       { name: "DN-List-Item", fontSize: 12, bold: false, color: "333333" },
       { name: "DN-Image-Legenda", fontSize: 11, bold: false, color: "666666" },
+      { name: "DN-Process-Passo", fontSize: 10, bold: true, color: "888888" },
+      { name: "DN-Process-Titulo", fontSize: 13, bold: true, color: "1e3c72" },
+      { name: "DN-Process-Texto", fontSize: 12, bold: false, color: "333333" },
       // Acordeão / Abas
       {
         name: "DN-Accordion-Titulo",
@@ -1022,6 +1031,44 @@ function addCardItem() {
 
     await context.sync();
     setStatus(dnT("status.cardAdded"), "ok");
+  });
+}
+
+function appendProcessStep(cc, stepNumber) {
+  const table = cc.insertTable(4, 2, "End", [
+    [dnT("word.processStepLabel"), dnT("word.processStep", { number: stepNumber })],
+    [dnT("word.processTitleLabel"), dnT("word.processTitle")],
+    [dnT("word.processImageLabel"), imagePlaceholder()],
+    [dnT("word.processTextLabel"), dnT("word.processText")],
+  ]);
+  table.style = "Table Grid";
+  table.getCell(0, 1).body.paragraphs.getFirst().style = "DN-Process-Passo";
+  table.getCell(1, 1).body.paragraphs.getFirst().style = "DN-Process-Titulo";
+  table.getCell(3, 1).body.paragraphs.getFirst().style = "DN-Process-Texto";
+}
+
+function insertProcess() {
+  run(async function (context) {
+    const cc = await createBlockContentControl(context, "DN-process", dnT("ui.process"));
+    appendProcessStep(cc, 1);
+    await context.sync();
+    setStatus(dnT("status.processInserted"), "ok");
+  });
+}
+
+function addProcessStep() {
+  run(async function (context) {
+    const cc = await getParentCCByTag(context, "DN-process");
+    if (!cc) {
+      setStatus(dnT("status.processStepMissing"), "warning");
+      return;
+    }
+    const tables = cc.tables;
+    tables.load("items");
+    await context.sync();
+    appendProcessStep(cc, tables.items.length + 1);
+    await context.sync();
+    setStatus(dnT("status.processStepAdded"), "ok");
   });
 }
 
