@@ -24,7 +24,7 @@ Office.onReady(function (info) {
 
 async function loadUpdateInfo() {
   try {
-    const response = await fetch("./update-log.json?v=1.3.0", { cache: "no-store" });
+    const response = await fetch("./update-log.json?v=1.4.0", { cache: "no-store" });
     if (!response.ok) return;
 
     dnUpdateInfo = await response.json();
@@ -232,6 +232,8 @@ function handleAction(action) {
       return insertCallout();
     case "insert-imgtext":
       return insertImgText();
+    case "insert-image-centered":
+      return insertImageCentered();
     case "insert-video":
       return insertVideo();
     case "insert-accordion":
@@ -370,6 +372,8 @@ function friendlyTagName(tag) {
       return dnT("ui.tabs");
     case "DN-imgText":
       return dnT("ui.imageText");
+    case "DN-imageCentered":
+      return dnT("ui.imageCentered");
     case "DN-cards":
       return dnT("ui.cards");
     case "DN-flipcard":
@@ -402,6 +406,7 @@ async function ensureStyles() {
       { name: "DN-Table-Header", fontSize: 12, bold: true, color: "ffffff" },
       { name: "DN-Table-Cell", fontSize: 12, bold: false, color: "333333" },
       { name: "DN-List-Item", fontSize: 12, bold: false, color: "333333" },
+      { name: "DN-Image-Legenda", fontSize: 11, bold: false, color: "666666" },
       // Acordeão / Abas
       {
         name: "DN-Accordion-Titulo",
@@ -874,6 +879,25 @@ function insertImgText() {
 
     await context.sync();
     setStatus(dnT("status.imgTextInserted"), "ok");
+  });
+}
+
+function insertImageCentered() {
+  run(async function (context) {
+    const cc = await createBlockContentControl(
+      context,
+      "DN-imageCentered",
+      dnT("ui.imageCentered"),
+    );
+    const table = cc.insertTable(2, 1, "Start", [
+      [dnT("word.imageHere")],
+      [dnT("word.imageCaptionOptional")],
+    ]);
+    table.style = "Table Grid";
+    table.getCell(1, 0).body.paragraphs.getFirst().style =
+      "DN-Image-Legenda";
+    await context.sync();
+    setStatus(dnT("status.imageCenteredInserted"), "ok");
   });
 }
 

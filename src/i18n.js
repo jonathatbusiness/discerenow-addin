@@ -28,6 +28,7 @@
       "ui.media": "Mídia",
       "ui.image": "Imagem",
       "ui.imageText": "Imagem + Texto",
+      "ui.imageCentered": "Imagem centralizada",
       "ui.video": "Vídeo",
       "ui.interaction": "Interação",
       "ui.accordion": "Acordeão",
@@ -77,6 +78,7 @@
         '[Insira uma imagem nesta coluna ou deixe apenas "N" caso não queira adicionar imagem]',
       "word.imageHere": "[Inserir imagem aqui]",
       "word.imageSideText": "Texto ao lado da imagem...",
+      "word.imageCaptionOptional": "Legenda da imagem (opcional)",
       "word.calloutTitle": "Título do destaque",
       "word.calloutContent": "Conteúdo do destaque...",
       "word.videoCaption": "Legenda do vídeo (opcional)",
@@ -120,6 +122,7 @@
         "Coloque o cursor dentro de um bloco de Abas antes de adicionar uma aba.",
       "status.tabItemAdded": "Nova aba adicionada.",
       "status.imgTextInserted": "Bloco Imagem+Texto inserido.",
+      "status.imageCenteredInserted": "Imagem centralizada inserida.",
       "status.calloutInserted":
         'Callout inserido. (1ª linha: troque por "info", "alert" ou "tip")',
       "status.videoInserted":
@@ -180,6 +183,7 @@
       "ui.media": "Media",
       "ui.image": "Image",
       "ui.imageText": "Image + Text",
+      "ui.imageCentered": "Centered image",
       "ui.video": "Video",
       "ui.interaction": "Interaction",
       "ui.accordion": "Accordion",
@@ -229,6 +233,7 @@
         '[Insert an image in this column or leave only "N" if you do not want to add an image]',
       "word.imageHere": "[Insert image here]",
       "word.imageSideText": "Text beside the image...",
+      "word.imageCaptionOptional": "Image caption (optional)",
       "word.calloutTitle": "Callout title",
       "word.calloutContent": "Callout content...",
       "word.videoCaption": "Video caption (optional)",
@@ -272,6 +277,7 @@
         "Place the cursor inside a Tabs block before adding a tab.",
       "status.tabItemAdded": "New tab added.",
       "status.imgTextInserted": "Image+Text block inserted.",
+      "status.imageCenteredInserted": "Centered image inserted.",
       "status.calloutInserted":
         'Callout inserted. (1st line: change to "info", "alert" or "tip")',
       "status.videoInserted":

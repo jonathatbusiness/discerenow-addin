@@ -1,9 +1,9 @@
 {
-  "version": "1.3.0",
+  "version": "1.4.0",
   "date": "2026-07-02",
-  "updateTxt": "New numbered, checkbox and bullet list blocks. Update DiscereNow Studio before using them.",
+  "updateTxt": "New centered image block with an optional caption. Update DiscereNow Studio before using it.",
   "updateTxtI18n": {
-    "pt-BR": "Novos blocos de lista numerada, de verificação e com marcadores. Atualize o DiscereNow Studio antes de usá-los.",
-    "en": "New numbered, checkbox and bullet list blocks. Update DiscereNow Studio before using them."
+    "pt-BR": "Novo bloco de imagem centralizada com legenda opcional. Atualize o DiscereNow Studio antes de usá-lo.",
+    "en": "New centered image block with an optional caption. Update DiscereNow Studio before using it."
   }
 }
