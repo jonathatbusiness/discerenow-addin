@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>DiscereNow</title>
-    <link rel="stylesheet" href="taskpane.css?v=1.2.0.3" />
+    <link rel="stylesheet" href="taskpane.css?v=1.3.0" />
   </head>
   <body>
     <div id="app">
@@ -101,6 +101,30 @@
             <div class="dn-row" data-action="insert-callout">
               <div class="dn-icon">!</div>
               <span class="dn-row-name" data-i18n="ui.callout">Callout</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="dn-section" data-section="list">
+          <button class="dn-section-header" type="button" aria-expanded="false">
+            <span data-i18n="ui.list">Lista</span>
+            <span class="dn-section-chevron" aria-hidden="true">⌄</span>
+          </button>
+          <div class="dn-section-content">
+            <div class="dn-row" data-action="insert-numbered-list" data-context-tag="DN-numberedList">
+              <div class="dn-icon">1.</div>
+              <span class="dn-row-name" data-i18n="ui.numberedList">Lista numerada</span>
+              <button class="dn-add" data-add="numbered-list-item" title="Adicionar item" data-i18n-title="ui.addListItem">+</button>
+            </div>
+            <div class="dn-row" data-action="insert-checkbox-list" data-context-tag="DN-checkboxList">
+              <div class="dn-icon">☐</div>
+              <span class="dn-row-name" data-i18n="ui.checkboxList">Lista de verificação</span>
+              <button class="dn-add" data-add="checkbox-list-item" title="Adicionar item" data-i18n-title="ui.addListItem">+</button>
+            </div>
+            <div class="dn-row" data-action="insert-bullet-list" data-context-tag="DN-bulletList">
+              <div class="dn-icon">•</div>
+              <span class="dn-row-name" data-i18n="ui.bulletList">Lista com marcadores</span>
+              <button class="dn-add" data-add="bullet-list-item" title="Adicionar item" data-i18n-title="ui.addListItem">+</button>
             </div>
           </div>
         </section>
@@ -282,7 +306,7 @@
     </div>
 
     <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
-    <script src="i18n.js?v=1.2.0.3"></script>
-    <script src="taskpane.js?v=1.2.0.3"></script>
+    <script src="i18n.js?v=1.3.0"></script>
+    <script src="taskpane.js?v=1.3.0"></script>
   </body>
 </html>

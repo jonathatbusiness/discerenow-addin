@@ -24,7 +24,7 @@ Office.onReady(function (info) {
 
 async function loadUpdateInfo() {
   try {
-    const response = await fetch("./update-log.json?v=1.2.0.3", { cache: "no-store" });
+    const response = await fetch("./update-log.json?v=1.3.0", { cache: "no-store" });
     if (!response.ok) return;
 
     dnUpdateInfo = await response.json();
@@ -222,6 +222,12 @@ function handleAction(action) {
       return insertColumns();
     case "insert-table":
       return insertDataTable();
+    case "insert-numbered-list":
+      return insertListBlock("numbered");
+    case "insert-checkbox-list":
+      return insertListBlock("checkbox");
+    case "insert-bullet-list":
+      return insertListBlock("bullet");
     case "insert-callout":
       return insertCallout();
     case "insert-imgtext":
@@ -261,6 +267,12 @@ function handleAddItem(kind) {
       return addFlipCardItem();
     case "quiz-item":
       return addQuizOption();
+    case "numbered-list-item":
+      return addListItem("numbered");
+    case "checkbox-list-item":
+      return addListItem("checkbox");
+    case "bullet-list-item":
+      return addListItem("bullet");
   }
 }
 
@@ -346,6 +358,12 @@ function friendlyTagName(tag) {
       return dnT("ui.columns");
     case "DN-table":
       return dnT("ui.table");
+    case "DN-numberedList":
+      return dnT("ui.numberedList");
+    case "DN-checkboxList":
+      return dnT("ui.checkboxList");
+    case "DN-bulletList":
+      return dnT("ui.bulletList");
     case "DN-accordion":
       return dnT("ui.accordion");
     case "DN-tabs":
@@ -383,6 +401,7 @@ async function ensureStyles() {
       { name: "DN-Text-Content", fontSize: 12, bold: false, color: "333333" },
       { name: "DN-Table-Header", fontSize: 12, bold: true, color: "ffffff" },
       { name: "DN-Table-Cell", fontSize: 12, bold: false, color: "333333" },
+      { name: "DN-List-Item", fontSize: 12, bold: false, color: "333333" },
       // Acordeão / Abas
       {
         name: "DN-Accordion-Titulo",
@@ -607,6 +626,55 @@ function insertDataTable() {
     }
     await context.sync();
     setStatus(dnT("status.tableInserted"), "ok");
+  });
+}
+
+const listBlockConfig = {
+  numbered: { tag: "DN-numberedList", uiKey: "ui.numberedList" },
+  checkbox: { tag: "DN-checkboxList", uiKey: "ui.checkboxList" },
+  bullet: { tag: "DN-bulletList", uiKey: "ui.bulletList" },
+};
+
+function insertListBlock(kind) {
+  run(async function (context) {
+    const config = listBlockConfig[kind];
+    const cc = await createBlockContentControl(context, config.tag, dnT(config.uiKey));
+    const table = cc.insertTable(2, 1, "Start", [
+      [dnT("word.listItem1")],
+      [dnT("word.listItem2")],
+    ]);
+    table.style = "Table Grid";
+    table.getCell(0, 0).body.paragraphs.getFirst().style = "DN-List-Item";
+    table.getCell(1, 0).body.paragraphs.getFirst().style = "DN-List-Item";
+    await context.sync();
+    setStatus(dnT("status.listInserted", { name: dnT(config.uiKey) }), "ok");
+  });
+}
+
+function addListItem(kind) {
+  run(async function (context) {
+    const config = listBlockConfig[kind];
+    const cc = await getParentCCByTag(context, config.tag);
+    if (!cc) {
+      setStatus(dnT("status.listItemMissing", { name: dnT(config.uiKey) }), "warning");
+      return;
+    }
+
+    const tables = cc.tables;
+    tables.load("items");
+    await context.sync();
+    if (tables.items.length === 0) return;
+
+    const table = tables.items[0];
+    table.load("rowCount");
+    await context.sync();
+    table.addRows("End", 1, [[dnT("word.listNewItem")]]);
+    await context.sync();
+    table.load("rowCount");
+    await context.sync();
+    table.getCell(table.rowCount - 1, 0).body.paragraphs.getFirst().style = "DN-List-Item";
+    await context.sync();
+    setStatus(dnT("status.listItemAdded"), "ok");
   });
 }
 
