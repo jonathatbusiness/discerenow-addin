@@ -24,7 +24,7 @@ Office.onReady(function (info) {
 
 async function loadUpdateInfo() {
   try {
-    const response = await fetch("./update-log.json?v=1.5.0", { cache: "no-store" });
+    const response = await fetch("./update-log.json?v=1.5.1", { cache: "no-store" });
     if (!response.ok) return;
 
     dnUpdateInfo = await response.json();
@@ -205,9 +205,9 @@ function attachUiHandlers() {
 function handleAction(action) {
   switch (action) {
     case "apply-chapter":
-      return applyStyle("DN-Capitulo");
+      return applyStructuralStyle("DN-Capitulo", "word.chapterTitle");
     case "apply-lesson":
-      return applyStyle("DN-Licao");
+      return applyStructuralStyle("DN-Licao", "word.lessonTitle");
     case "apply-paragraph":
       return markParagraphBlock();
     case "insert-paragraph-heading":
@@ -516,9 +516,47 @@ async function ensureStyles() {
 
 // ─── Aplicar estilo de parágrafo ──────────────────────────────────────
 
-function applyStyle(styleName) {
+async function getContainingContentControl(context) {
+  const selection = context.document.getSelection();
+  const directParent = selection.parentContentControlOrNullObject;
+  directParent.load("isNullObject, tag");
+  await context.sync();
+  if (!directParent.isNullObject) return directParent;
+
+  const surrounding = selection.getContentControls({
+    selectionMode: "Surrounding",
+  });
+  surrounding.load("items, tag");
+  await context.sync();
+  if (surrounding.items[0]) return surrounding.items[0];
+
+  const contained = selection.getContentControls();
+  contained.load("items, tag");
+  await context.sync();
+  return contained.items[0] || null;
+}
+
+function applyStructuralStyle(styleName, placeholderKey) {
   run(async function (context) {
     const selection = context.document.getSelection();
+    const containingCC = await getContainingContentControl(context);
+
+    if (containingCC) {
+      const paragraph = containingCC.insertParagraph(
+        dnT(placeholderKey),
+        "After",
+      );
+      paragraph.style = styleName;
+      await context.sync();
+      setStatus(
+        dnT("status.structureInsertedAfterBlock", {
+          name: dnT(placeholderKey),
+        }),
+        "ok",
+      );
+      return;
+    }
+
     selection.paragraphs.load("items");
     await context.sync();
     selection.paragraphs.items.forEach(function (p) {
@@ -539,14 +577,32 @@ function markParagraphBlock() {
       return;
     }
 
-    const cc = selection.insertContentControl();
+    const containingCC = await getContainingContentControl(context);
+    let cc;
+
+    if (containingCC) {
+      const paragraph = containingCC.insertParagraph(
+        dnT("word.paragraphContent"),
+        "After",
+      );
+      cc = paragraph.getRange().insertContentControl();
+    } else {
+      cc = selection.insertContentControl();
+    }
     cc.tag = "DN-paragraph";
     cc.title = dnT("ui.paragraph");
     cc.cannotDelete = false;
     cc.cannotEdit = false;
 
     await context.sync();
-    setStatus(dnT("status.paragraphMarked"), "ok");
+    setStatus(
+      dnT(
+        containingCC
+          ? "status.paragraphInsertedAfterBlock"
+          : "status.paragraphMarked",
+      ),
+      "ok",
+    );
     updateContextHighlight();
   });
 }

@@ -59,6 +59,8 @@
 
       "word.accordionTitle": "Título do item",
       "word.heading": "Título",
+      "word.chapterTitle": "Novo capítulo",
+      "word.lessonTitle": "Nova lição",
       "word.subheading": "Subtítulo",
       "word.paragraphContent": "Digite o texto do parágrafo...",
       "word.columnContent": "Digite o conteúdo da coluna...",
@@ -113,6 +115,8 @@
       "status.paragraphMarked": "Parágrafo marcado para o DiscereNow.",
       "status.paragraphAlreadyMarked":
         "Este parágrafo já está marcado para o DiscereNow.",
+      "status.paragraphInsertedAfterBlock": "Novo parágrafo inserido após o bloco atual.",
+      "status.structureInsertedAfterBlock": "{name} inserido após o bloco atual.",
       "status.headingInserted": "Título inserido.",
       "status.subheadingInserted": "Subtítulo inserido.",
       "status.paragraphHeadingInserted": "Parágrafo com título inserido.",
@@ -226,6 +230,8 @@
 
       "word.accordionTitle": "Item title",
       "word.heading": "Heading",
+      "word.chapterTitle": "New chapter",
+      "word.lessonTitle": "New lesson",
       "word.subheading": "Subheading",
       "word.paragraphContent": "Enter paragraph text...",
       "word.columnContent": "Enter column content...",
@@ -280,6 +286,8 @@
       "status.paragraphMarked": "Paragraph marked for DiscereNow.",
       "status.paragraphAlreadyMarked":
         "This paragraph is already marked for DiscereNow.",
+      "status.paragraphInsertedAfterBlock": "New paragraph inserted after the current block.",
+      "status.structureInsertedAfterBlock": "{name} inserted after the current block.",
       "status.headingInserted": "Heading inserted.",
       "status.subheadingInserted": "Subheading inserted.",
       "status.paragraphHeadingInserted": "Paragraph with heading inserted.",

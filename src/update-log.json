@@ -1,9 +1,9 @@
 {
-  "version": "1.5.0",
+  "version": "1.5.1",
   "date": "2026-07-02",
-  "updateTxt": "New Process carousel with repeatable steps and optional images. Update DiscereNow Studio before using it.",
+  "updateTxt": "Chapter, lesson and paragraph actions now move safely outside the current block.",
   "updateTxtI18n": {
-    "pt-BR": "Novo carrossel de Processo com passos repetíveis e imagens opcionais. Atualize o DiscereNow Studio antes de usá-lo.",
-    "en": "New Process carousel with repeatable steps and optional images. Update DiscereNow Studio before using it."
+    "pt-BR": "As ações de capítulo, lição e parágrafo agora são posicionadas com segurança fora do bloco atual.",
+    "en": "Chapter, lesson and paragraph actions now move safely outside the current block."
   }
 }
