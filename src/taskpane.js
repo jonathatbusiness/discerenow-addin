@@ -24,7 +24,7 @@ Office.onReady(function (info) {
 
 async function loadUpdateInfo() {
   try {
-    const response = await fetch("./update-log.json?v=1.2.0.2", { cache: "no-store" });
+    const response = await fetch("./update-log.json?v=1.2.0.3", { cache: "no-store" });
     if (!response.ok) return;
 
     dnUpdateInfo = await response.json();
@@ -77,6 +77,32 @@ function toggleUpdatePanel() {
   else panel.hidden = true;
 }
 
+function setResourceSectionOpen(section, shouldOpen, animate) {
+  const header = section.querySelector(".dn-section-header");
+  const content = section.querySelector(".dn-section-content");
+  if (!header || !content) return;
+
+  header.setAttribute("aria-expanded", String(shouldOpen));
+
+  if (!animate) {
+    section.classList.toggle("is-open", shouldOpen);
+    content.style.height = shouldOpen ? "auto" : "0px";
+    return;
+  }
+
+  if (shouldOpen) {
+    section.classList.add("is-open");
+    content.style.height = "0px";
+    content.getBoundingClientRect();
+    content.style.height = content.scrollHeight + "px";
+  } else {
+    content.style.height = content.scrollHeight + "px";
+    content.getBoundingClientRect();
+    section.classList.remove("is-open");
+    content.style.height = "0px";
+  }
+}
+
 // ─── Status bar ───────────────────────────────────────────────────────
 
 function setStatus(msg, kind) {
@@ -113,6 +139,18 @@ function attachUiHandlers() {
     });
   }
 
+  document.querySelectorAll(".dn-section").forEach(function (section) {
+    setResourceSectionOpen(section, section.classList.contains("is-open"), false);
+    const content = section.querySelector(".dn-section-content");
+    if (content) {
+      content.addEventListener("transitionend", function (event) {
+        if (event.propertyName === "height" && section.classList.contains("is-open")) {
+          content.style.height = "auto";
+        }
+      });
+    }
+  });
+
   document.querySelectorAll(".dn-section-header").forEach(function (header) {
     header.addEventListener("click", function () {
       const section = header.closest(".dn-section");
@@ -121,10 +159,8 @@ function attachUiHandlers() {
       const willOpen = !section.classList.contains("is-open");
 
       document.querySelectorAll(".dn-section").forEach(function (otherSection) {
-        const otherHeader = otherSection.querySelector(".dn-section-header");
         const shouldOpen = otherSection === section && willOpen;
-        otherSection.classList.toggle("is-open", shouldOpen);
-        if (otherHeader) otherHeader.setAttribute("aria-expanded", String(shouldOpen));
+        setResourceSectionOpen(otherSection, shouldOpen, true);
       });
     });
   });

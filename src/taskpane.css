@@ -254,14 +254,14 @@ body {
 }
 
 .dn-section-content {
-  max-height: 0;
+  height: 0;
   overflow: hidden;
   padding: 0 8px;
   opacity: 0;
   transform: translateY(-5px);
   visibility: hidden;
   transition:
-    max-height 0.34s cubic-bezier(0.22, 1, 0.36, 1),
+    height 0.34s cubic-bezier(0.22, 1, 0.36, 1),
     opacity 0.22s ease,
     transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
     padding-bottom 0.3s ease,
@@ -269,7 +269,6 @@ body {
 }
 
 .dn-section.is-open .dn-section-content {
-  max-height: 700px;
   padding-bottom: 9px;
   opacity: 1;
   transform: translateY(0);
