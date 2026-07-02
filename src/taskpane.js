@@ -24,7 +24,7 @@ Office.onReady(function (info) {
 
 async function loadUpdateInfo() {
   try {
-    const response = await fetch("./update-log.json", { cache: "no-store" });
+    const response = await fetch("./update-log.json?v=1.2.0", { cache: "no-store" });
     if (!response.ok) return;
 
     dnUpdateInfo = await response.json();
@@ -35,10 +35,13 @@ async function loadUpdateInfo() {
 }
 
 function getUpdateMessage(data) {
-  if (!data || !data.updateTxt) return "";
-  if (typeof data.updateTxt === "string") return data.updateTxt;
+  if (!data) return "";
   const language = window.DNI18N ? window.DNI18N.getLanguage() : "pt-BR";
-  return data.updateTxt[language] || data.updateTxt["pt-BR"] || data.updateTxt.en || "";
+  const translations = data.updateTxtI18n;
+  if (translations) {
+    return translations[language] || translations["pt-BR"] || translations.en || "";
+  }
+  return typeof data.updateTxt === "string" ? data.updateTxt : "";
 }
 
 function renderUpdateInfo() {
