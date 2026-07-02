@@ -6,6 +6,8 @@ function dnT(key, params) {
   return window.DNI18N ? window.DNI18N.t(key, params) : key;
 }
 
+let dnUpdateInfo = null;
+
 Office.onReady(function (info) {
   if (info.host !== Office.HostType.Word) return;
 
@@ -25,20 +27,51 @@ async function loadUpdateInfo() {
     const response = await fetch("./update-log.json", { cache: "no-store" });
     if (!response.ok) return;
 
-    const data = await response.json();
-    const versionEl = document.getElementById("dn-app-version");
-    if (!versionEl) return;
-
-    if (data.version) {
-      versionEl.textContent = "v" + data.version;
-    }
-
-    if (data.date && data.updateTxt) {
-      versionEl.title = data.date + " — " + data.updateTxt;
-    }
+    dnUpdateInfo = await response.json();
+    renderUpdateInfo();
   } catch (error) {
     console.warn("Could not load update info:", error);
   }
+}
+
+function getUpdateMessage(data) {
+  if (!data || !data.updateTxt) return "";
+  if (typeof data.updateTxt === "string") return data.updateTxt;
+  const language = window.DNI18N ? window.DNI18N.getLanguage() : "pt-BR";
+  return data.updateTxt[language] || data.updateTxt["pt-BR"] || data.updateTxt.en || "";
+}
+
+function renderUpdateInfo() {
+  if (!dnUpdateInfo) return;
+  const versionEl = document.getElementById("dn-app-version");
+  const badge = document.getElementById("dn-update-badge");
+  const date = document.getElementById("dn-update-date");
+  const message = document.getElementById("dn-update-message");
+  const version = dnUpdateInfo.version || "";
+
+  if (versionEl && version) versionEl.textContent = "v" + version;
+  if (date) date.textContent = dnUpdateInfo.date || "";
+  if (message) message.textContent = getUpdateMessage(dnUpdateInfo);
+  if (badge && version) {
+    badge.hidden = localStorage.getItem("dn-update-seen-" + version) === "1";
+  }
+}
+
+function openUpdatePanel() {
+  if (!dnUpdateInfo) return;
+  const panel = document.getElementById("dn-update-panel");
+  const badge = document.getElementById("dn-update-badge");
+  if (panel) panel.hidden = false;
+  if (badge) badge.hidden = true;
+  if (dnUpdateInfo.version) {
+    localStorage.setItem("dn-update-seen-" + dnUpdateInfo.version, "1");
+  }
+}
+
+function toggleUpdatePanel() {
+  const panel = document.getElementById("dn-update-panel");
+  if (!panel || panel.hidden) openUpdatePanel();
+  else panel.hidden = true;
 }
 
 // ─── Status bar ───────────────────────────────────────────────────────
@@ -65,6 +98,18 @@ function run(fn) {
 // ─── UI: bind dos cliques ─────────────────────────────────────────────
 
 function attachUiHandlers() {
+  const updateBadge = document.getElementById("dn-update-badge");
+  const versionButton = document.getElementById("dn-app-version");
+  const updateClose = document.getElementById("dn-update-close");
+  if (updateBadge) updateBadge.addEventListener("click", openUpdatePanel);
+  if (versionButton) versionButton.addEventListener("click", toggleUpdatePanel);
+  if (updateClose) {
+    updateClose.addEventListener("click", function () {
+      const panel = document.getElementById("dn-update-panel");
+      if (panel) panel.hidden = true;
+    });
+  }
+
   document.querySelectorAll(".dn-section-header").forEach(function (header) {
     header.addEventListener("click", function () {
       const section = header.closest(".dn-section");
@@ -104,6 +149,7 @@ function attachUiHandlers() {
     languageSelect.value = window.DNI18N.getLanguage();
     languageSelect.addEventListener("change", function () {
       window.DNI18N.setLanguage(languageSelect.value);
+      renderUpdateInfo();
       updateContextHighlight();
     });
   }

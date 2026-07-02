@@ -1,5 +1,8 @@
 {
   "version": "1.2.0",
   "date": "2026-07-02",
-  "updateTxt": "New heading, subheading, paragraph, columns and table blocks. Update DiscereNow Studio before using them."
+  "updateTxt": {
+    "pt-BR": "Novos blocos de título, subtítulo, parágrafo, colunas e tabela. Atualize o DiscereNow Studio antes de usá-los.",
+    "en": "New heading, subheading, paragraph, columns and table blocks. Update DiscereNow Studio before using them."
+  }
 }

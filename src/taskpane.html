@@ -10,13 +10,23 @@
     <div id="app">
       <header class="dn-header">
         <span class="dn-logo">DiscereNow</span>
-        <span
-          id="dn-app-version"
-          class="dn-version"
-          title="Loading update info..."
-          >v1.0.0</span
-        >
+        <div class="dn-update-trigger">
+          <button id="dn-update-badge" class="dn-update-badge" type="button" hidden>
+            <span aria-hidden="true">✦</span>
+            <span data-i18n="ui.whatsNew">Novidades! Clique aqui</span>
+          </button>
+          <button id="dn-app-version" class="dn-version" type="button">v1.0.0</button>
+        </div>
       </header>
+
+      <aside id="dn-update-panel" class="dn-update-panel" hidden>
+        <div class="dn-update-panel-heading">
+          <strong data-i18n="ui.updateTitle">Novidades</strong>
+          <button id="dn-update-close" class="dn-update-close" type="button" data-i18n-title="ui.closeUpdate" title="Fechar" aria-label="Fechar">×</button>
+        </div>
+        <span id="dn-update-date" class="dn-update-date"></span>
+        <p id="dn-update-message"></p>
+      </aside>
 
       <div class="dn-language-bar">
         <label for="dn-language-select" data-i18n="ui.languageLabel"
