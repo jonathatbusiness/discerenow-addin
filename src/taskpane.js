@@ -639,9 +639,16 @@ function markParagraphBlock() {
 
       cc = selection.insertContentControl();
       if (isSelectionEmpty) {
-        cc.insertText(dnT("word.paragraphContent"), "Replace");
+        const initialText = cc.insertText(
+          dnT("word.paragraphContent"),
+          "Replace",
+        );
+        initialText.font.size = 12;
+        initialText.font.bold = false;
+        initialText.font.color = "333333";
       }
     }
+    cc.getRange().style = "DN-Text-Content";
     cc.tag = "DN-paragraph";
     cc.title = dnT("ui.paragraph");
     cc.cannotDelete = false;
