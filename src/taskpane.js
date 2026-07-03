@@ -24,7 +24,7 @@ Office.onReady(function (info) {
 
 async function loadUpdateInfo() {
   try {
-    const response = await fetch("./update-log.json?v=1.5.2", { cache: "no-store" });
+    const response = await fetch("./update-log.json?v=1.5.4", { cache: "no-store" });
     if (!response.ok) return;
 
     dnUpdateInfo = await response.json();

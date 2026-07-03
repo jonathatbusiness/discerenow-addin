@@ -1,9 +1,9 @@
 {
-  "version": "1.5.2",
+  "version": "1.5.4",
   "date": "2026-07-03",
-  "updateTxt": "Chapter and lesson titles now use automatic multilevel numbering in Word.",
+  "updateTxt": "Paragraph blocks now use editable placeholder text with normalized body formatting.",
   "updateTxtI18n": {
-    "pt-BR": "Os títulos de capítulo e lição agora usam numeração automática em vários níveis no Word.",
-    "en": "Chapter and lesson titles now use automatic multilevel numbering in Word."
+    "pt-BR": "Os blocos de parágrafo agora usam texto inicial editável com formatação de corpo normalizada.",
+    "en": "Paragraph blocks now use editable placeholder text with normalized body formatting."
   }
 }
