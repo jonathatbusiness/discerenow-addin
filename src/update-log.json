@@ -1,9 +1,9 @@
 {
-  "version": "1.5.4",
+  "version": "1.5.5",
   "date": "2026-07-03",
-  "updateTxt": "Paragraph blocks now use editable placeholder text with normalized body formatting.",
+  "updateTxt": "Callouts can now be inserted directly as information, alert, or tip.",
   "updateTxtI18n": {
-    "pt-BR": "Os blocos de parágrafo agora usam texto inicial editável com formatação de corpo normalizada.",
-    "en": "Paragraph blocks now use editable placeholder text with normalized body formatting."
+    "pt-BR": "Os destaques agora podem ser inseridos diretamente como informação, alerta ou dica.",
+    "en": "Callouts can now be inserted directly as information, alert, or tip."
   }
 }

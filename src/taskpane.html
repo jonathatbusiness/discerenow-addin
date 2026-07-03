@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>DiscereNow</title>
-    <link rel="stylesheet" href="taskpane.css?v=1.5.4" />
+    <link rel="stylesheet" href="taskpane.css?v=1.5.5" />
   </head>
   <body>
     <div id="app">
@@ -98,9 +98,17 @@
               <div class="dn-icon">▦</div>
               <span class="dn-row-name" data-i18n="ui.table">Tabela</span>
             </div>
-            <div class="dn-row" data-action="insert-callout">
+            <div class="dn-row" data-action="insert-callout-info">
+              <div class="dn-icon">i</div>
+              <span class="dn-row-name" data-i18n="ui.calloutInfo">Informação</span>
+            </div>
+            <div class="dn-row" data-action="insert-callout-alert">
               <div class="dn-icon">!</div>
-              <span class="dn-row-name" data-i18n="ui.callout">Callout</span>
+              <span class="dn-row-name" data-i18n="ui.calloutAlert">Alerta</span>
+            </div>
+            <div class="dn-row" data-action="insert-callout-tip">
+              <div class="dn-icon">T</div>
+              <span class="dn-row-name" data-i18n="ui.calloutTip">Dica</span>
             </div>
           </div>
         </section>
@@ -315,7 +323,7 @@
     </div>
 
     <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
-    <script src="i18n.js?v=1.5.4"></script>
-    <script src="taskpane.js?v=1.5.4"></script>
+    <script src="i18n.js?v=1.5.5"></script>
+    <script src="taskpane.js?v=1.5.5"></script>
   </body>
 </html>

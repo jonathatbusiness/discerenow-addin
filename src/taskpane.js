@@ -24,7 +24,7 @@ Office.onReady(function (info) {
 
 async function loadUpdateInfo() {
   try {
-    const response = await fetch("./update-log.json?v=1.5.4", { cache: "no-store" });
+    const response = await fetch("./update-log.json?v=1.5.5", { cache: "no-store" });
     if (!response.ok) return;
 
     dnUpdateInfo = await response.json();
@@ -228,8 +228,12 @@ function handleAction(action) {
       return insertListBlock("checkbox");
     case "insert-bullet-list":
       return insertListBlock("bullet");
-    case "insert-callout":
-      return insertCallout();
+    case "insert-callout-info":
+      return insertCallout("info");
+    case "insert-callout-alert":
+      return insertCallout("alert");
+    case "insert-callout-tip":
+      return insertCallout("tip");
     case "insert-imgtext":
       return insertImgText();
     case "insert-image-centered":
@@ -1028,7 +1032,7 @@ function insertImageCentered() {
 
 // ─── Callout ──────────────────────────────────────────────────────────
 
-function insertCallout() {
+function insertCallout(calloutType) {
   run(async function (context) {
     const { target, type, position } =
       await getSafeBlockInsertionTarget(context);
@@ -1047,7 +1051,7 @@ function insertCallout() {
     cc.cannotDelete = false;
     cc.cannotEdit = false;
 
-    const tipo = cc.insertParagraph("info", "Start");
+    const tipo = cc.insertParagraph(calloutType, "Start");
     tipo.style = "DN-Callout-Tipo";
 
     const titulo = cc.insertParagraph(dnT("word.calloutTitle"), "End");
@@ -1057,7 +1061,12 @@ function insertCallout() {
     conteudo.style = "DN-Callout-Conteudo";
 
     await context.sync();
-    setStatus(dnT("status.calloutInserted"), "ok");
+    setStatus(
+      dnT("status.calloutInserted", {
+        name: dnT("ui.callout" + calloutType[0].toUpperCase() + calloutType.slice(1)),
+      }),
+      "ok",
+    );
   });
 }
 
