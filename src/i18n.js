@@ -25,6 +25,9 @@
       "ui.bulletList": "Lista com marcadores",
       "ui.addListItem": "Adicionar item",
       "ui.callout": "Callout",
+      "ui.calloutInfo": "Informação",
+      "ui.calloutAlert": "Alerta",
+      "ui.calloutTip": "Dica",
       "ui.media": "Mídia",
       "ui.image": "Imagem",
       "ui.imageText": "Imagem + Texto",
@@ -136,8 +139,7 @@
       "status.tabItemAdded": "Nova aba adicionada.",
       "status.imgTextInserted": "Bloco Imagem+Texto inserido.",
       "status.imageCenteredInserted": "Imagem centralizada inserida.",
-      "status.calloutInserted":
-        'Callout inserido. (1ª linha: troque por "info", "alert" ou "tip")',
+      "status.calloutInserted": "Destaque {name} inserido.",
       "status.videoInserted":
         "Vídeo inserido. (1ª linha = URL do YouTube/Vimeo, 2ª = legenda)",
       "status.cardsInserted": "Cards inserido.",
@@ -196,6 +198,9 @@
       "ui.bulletList": "Bullet list",
       "ui.addListItem": "Add item",
       "ui.callout": "Callout",
+      "ui.calloutInfo": "Information",
+      "ui.calloutAlert": "Alert",
+      "ui.calloutTip": "Tip",
       "ui.media": "Media",
       "ui.image": "Image",
       "ui.imageText": "Image + Text",
@@ -307,8 +312,7 @@
       "status.tabItemAdded": "New tab added.",
       "status.imgTextInserted": "Image+Text block inserted.",
       "status.imageCenteredInserted": "Centered image inserted.",
-      "status.calloutInserted":
-        'Callout inserted. (1st line: change to "info", "alert" or "tip")',
+      "status.calloutInserted": "{name} callout inserted.",
       "status.videoInserted":
         "Video inserted. (1st line = YouTube/Vimeo URL, 2nd = caption)",
       "status.cardsInserted": "Cards inserted.",
