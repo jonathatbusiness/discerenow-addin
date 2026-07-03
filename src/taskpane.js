@@ -633,7 +633,14 @@ function markParagraphBlock() {
       );
       cc = paragraph.getRange().insertContentControl();
     } else {
+      selection.load("text");
+      await context.sync();
+      const isSelectionEmpty = selection.text.length === 0;
+
       cc = selection.insertContentControl();
+      if (isSelectionEmpty) {
+        cc.insertText(dnT("word.paragraphContent"), "Replace");
+      }
     }
     cc.tag = "DN-paragraph";
     cc.title = dnT("ui.paragraph");
