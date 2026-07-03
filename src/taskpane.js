@@ -24,7 +24,7 @@ Office.onReady(function (info) {
 
 async function loadUpdateInfo() {
   try {
-    const response = await fetch("./update-log.json?v=1.5.1", { cache: "no-store" });
+    const response = await fetch("./update-log.json?v=1.5.2", { cache: "no-store" });
     if (!response.ok) return;
 
     dnUpdateInfo = await response.json();
@@ -540,6 +540,7 @@ function applyStructuralStyle(styleName, placeholderKey) {
   run(async function (context) {
     const selection = context.document.getSelection();
     const containingCC = await getContainingContentControl(context);
+    let paragraphToSelect = null;
 
     if (containingCC) {
       const paragraph = containingCC.insertParagraph(
@@ -547,6 +548,23 @@ function applyStructuralStyle(styleName, placeholderKey) {
         "After",
       );
       paragraph.style = styleName;
+      paragraphToSelect = paragraph;
+    } else {
+      selection.paragraphs.load("items");
+      await context.sync();
+      selection.paragraphs.items.forEach(function (p) {
+        p.style = styleName;
+      });
+    }
+
+    await context.sync();
+
+    if (Office.context.requirements.isSetSupported("WordApi", "1.3")) {
+      await rebuildStructuralNumbering(context);
+    }
+
+    if (paragraphToSelect) {
+      paragraphToSelect.getRange("Content").select("End");
       await context.sync();
       setStatus(
         dnT("status.structureInsertedAfterBlock", {
@@ -554,17 +572,45 @@ function applyStructuralStyle(styleName, placeholderKey) {
         }),
         "ok",
       );
-      return;
+    } else {
+      setStatus(dnT("status.styleApplied", { styleName: styleName }), "ok");
     }
-
-    selection.paragraphs.load("items");
-    await context.sync();
-    selection.paragraphs.items.forEach(function (p) {
-      p.style = styleName;
-    });
-    await context.sync();
-    setStatus(dnT("status.styleApplied", { styleName: styleName }), "ok");
   });
+}
+
+async function rebuildStructuralNumbering(context) {
+  const paragraphs = context.document.body.paragraphs;
+  paragraphs.load("items/style");
+  await context.sync();
+
+  const structuralParagraphs = paragraphs.items.filter(function (paragraph) {
+    return paragraph.style === "DN-Capitulo" || paragraph.style === "DN-Licao";
+  });
+
+  if (!structuralParagraphs.length) return;
+
+  structuralParagraphs.forEach(function (paragraph) {
+    paragraph.detachFromList();
+  });
+  await context.sync();
+
+  const firstParagraph = structuralParagraphs[0];
+  const list = firstParagraph.startNewList();
+  list.load("id");
+  await context.sync();
+
+  // Level 0: 1.  Level 1: 1.1. The number is list metadata, not title text.
+  list.setLevelNumbering(0, Word.ListNumbering.arabic, [0, "."]);
+  list.setLevelNumbering(1, Word.ListNumbering.arabic, [0, ".", 1]);
+  firstParagraph.listItem.level = firstParagraph.style === "DN-Licao" ? 1 : 0;
+
+  for (let i = 1; i < structuralParagraphs.length; i += 1) {
+    const paragraph = structuralParagraphs[i];
+    const level = paragraph.style === "DN-Licao" ? 1 : 0;
+    paragraph.attachToList(list.id, level);
+  }
+
+  await context.sync();
 }
 
 function markParagraphBlock() {

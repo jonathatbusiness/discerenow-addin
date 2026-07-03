@@ -1,9 +1,9 @@
 {
-  "version": "1.5.1",
-  "date": "2026-07-02",
-  "updateTxt": "Chapter, lesson and paragraph actions now move safely outside the current block.",
+  "version": "1.5.2",
+  "date": "2026-07-03",
+  "updateTxt": "Chapter and lesson titles now use automatic multilevel numbering in Word.",
   "updateTxtI18n": {
-    "pt-BR": "As ações de capítulo, lição e parágrafo agora são posicionadas com segurança fora do bloco atual.",
-    "en": "Chapter, lesson and paragraph actions now move safely outside the current block."
+    "pt-BR": "Os títulos de capítulo e lição agora usam numeração automática em vários níveis no Word.",
+    "en": "Chapter and lesson titles now use automatic multilevel numbering in Word."
   }
 }
