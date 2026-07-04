@@ -24,7 +24,7 @@ Office.onReady(function (info) {
 
 async function loadUpdateInfo() {
   try {
-    const response = await fetch("./update-log.json?v=1.5.5", { cache: "no-store" });
+    const response = await fetch("./update-log.json?v=1.5.6", { cache: "no-store" });
     if (!response.ok) return;
 
     dnUpdateInfo = await response.json();
@@ -258,6 +258,8 @@ function handleAction(action) {
       return setQuizType("multiple");
     case "quiz-mark-correct":
       return markQuizCorrectAnswer();
+    case "quiz-mark-incorrect":
+      return markQuizIncorrectAnswer();
     case "insert-continue":
       return insertContinue();
   }
@@ -1493,6 +1495,62 @@ function markQuizCorrectAnswer() {
         : dnT("status.quizCorrectMultiple"),
       "ok",
     );
+  });
+}
+
+function markQuizIncorrectAnswer() {
+  run(async function (context) {
+    const cc = await getParentCCByTag(context, "DN-quiz");
+    if (!cc) {
+      setStatus(dnT("status.quizCorrectMissing"), "warning");
+      return;
+    }
+
+    const selection = context.document.getSelection();
+    const selectedParagraphs = selection.paragraphs;
+    selectedParagraphs.load("items/style,text");
+
+    const quizParagraphs = cc.paragraphs;
+    quizParagraphs.load("items/style,text");
+
+    await context.sync();
+
+    if (selectedParagraphs.items.length === 0) {
+      setStatus(dnT("status.quizSelectOption"), "warning");
+      return;
+    }
+
+    const selectedParagraph = selectedParagraphs.items[0];
+
+    if (
+      selectedParagraph.style !== "DN-Quiz-Opcao" &&
+      selectedParagraph.style !== "DN-Quiz-OpcaoCerta"
+    ) {
+      setStatus(dnT("status.quizCursorNeedOption"), "warning");
+      return;
+    }
+
+    let quizType = "single";
+
+    for (let i = 0; i < quizParagraphs.items.length; i++) {
+      const p = quizParagraphs.items[i];
+      if (p.style === "DN-Quiz-Tipo") {
+        const value = (p.text || "").trim().toLowerCase();
+        quizType =
+          value === "multiple" || value === "multi" ? "multiple" : "single";
+        break;
+      }
+    }
+
+    if (quizType === "single") {
+      setStatus(dnT("status.quizIncorrectSingleNoEffect"), "info");
+      return;
+    }
+
+    selectedParagraph.style = "DN-Quiz-Opcao";
+
+    await context.sync();
+    setStatus(dnT("status.quizIncorrectMultiple"), "ok");
   });
 }
 

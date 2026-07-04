@@ -44,7 +44,8 @@
       "ui.quiz": "Quiz",
       "ui.single": "Single",
       "ui.multiple": "Multiple",
-      "ui.correctAnswer": "Resposta certa",
+      "ui.correctAnswer": "Correta",
+      "ui.incorrectAnswer": "Incorreta",
       "ui.navigation": "Navegação",
       "ui.continueButton": "Botão Continuar",
       "ui.ready": "DiscereNow pronto.",
@@ -59,6 +60,7 @@
       "ui.setSingle": "Definir quiz como resposta única",
       "ui.setMultiple": "Definir quiz como múltiplas respostas",
       "ui.markCorrect": "Marcar opção selecionada como resposta correta",
+      "ui.markIncorrect": "Marcar opção selecionada como resposta incorreta",
 
       "word.accordionTitle": "Título do item",
       "word.heading": "Título",
@@ -176,6 +178,9 @@
         "Resposta certa definida. As outras opções foram marcadas como incorretas.",
       "status.quizCorrectMultiple":
         "Resposta certa adicionada. As outras respostas certas foram mantidas.",
+      "status.quizIncorrectSingleNoEffect":
+        "Em quizzes Single, as opções não selecionadas já são incorretas automaticamente.",
+      "status.quizIncorrectMultiple": "Opção marcada como incorreta.",
       "status.continueInserted": "Botão Continuar inserido.",
     },
     en: {
@@ -217,7 +222,8 @@
       "ui.quiz": "Quiz",
       "ui.single": "Single",
       "ui.multiple": "Multiple",
-      "ui.correctAnswer": "Correct answer",
+      "ui.correctAnswer": "Correct",
+      "ui.incorrectAnswer": "Incorrect",
       "ui.navigation": "Navigation",
       "ui.continueButton": "Continue button",
       "ui.ready": "DiscereNow ready.",
@@ -232,6 +238,7 @@
       "ui.setSingle": "Set quiz as single answer",
       "ui.setMultiple": "Set quiz as multiple answers",
       "ui.markCorrect": "Mark selected option as correct answer",
+      "ui.markIncorrect": "Mark selected option as incorrect",
 
       "word.accordionTitle": "Item title",
       "word.heading": "Heading",
@@ -346,6 +353,9 @@
         "Correct answer set. The other options were marked as incorrect.",
       "status.quizCorrectMultiple":
         "Correct answer added. The other correct answers were kept.",
+      "status.quizIncorrectSingleNoEffect":
+        "In Single quizzes, unselected options are already incorrect automatically.",
+      "status.quizIncorrectMultiple": "Option marked as incorrect.",
       "status.continueInserted": "Continue button inserted.",
     },
   };
