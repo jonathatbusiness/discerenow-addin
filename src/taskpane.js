@@ -1054,14 +1054,17 @@ function insertCallout(calloutType) {
     cc.cannotDelete = false;
     cc.cannotEdit = false;
 
-    const tipo = cc.insertParagraph(calloutType, "Start");
-    tipo.style = "DN-Callout-Tipo";
+    const table = cc.insertTable(3, 1, "Start", [
+      [calloutType],
+      [dnT("word.calloutTitle")],
+      [dnT("word.calloutContent")],
+    ]);
+    table.style = "Table Grid";
 
-    const titulo = cc.insertParagraph(dnT("word.calloutTitle"), "End");
-    titulo.style = "DN-Callout-Titulo";
-
-    const conteudo = cc.insertParagraph(dnT("word.calloutContent"), "End");
-    conteudo.style = "DN-Callout-Conteudo";
+    table.getCell(0, 0).body.paragraphs.getFirst().style = "DN-Callout-Tipo";
+    table.getCell(1, 0).body.paragraphs.getFirst().style = "DN-Callout-Titulo";
+    table.getCell(2, 0).body.paragraphs.getFirst().style =
+      "DN-Callout-Conteudo";
 
     await context.sync();
     setStatus(
