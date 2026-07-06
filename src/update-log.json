@@ -1,9 +1,9 @@
 {
-  "version": "1.5.8",
+  "version": "1.5.9",
   "date": "2026-07-06",
-  "updateTxt": "Card content now keeps the correct text style when new cards are added.",
+  "updateTxt": "FlipCard titles and content now keep their correct structure and text styles.",
   "updateTxtI18n": {
-    "pt-BR": "O conteúdo dos Cards agora mantém o estilo de texto correto ao adicionar novos cards.",
-    "en": "Card content now keeps the correct text style when new cards are added."
+    "pt-BR": "Os títulos e conteúdos dos FlipCards agora mantêm a estrutura e os estilos de texto corretos.",
+    "en": "FlipCard titles and content now keep their correct structure and text styles."
   }
 }

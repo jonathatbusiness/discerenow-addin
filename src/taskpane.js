@@ -24,7 +24,7 @@ Office.onReady(function (info) {
 
 async function loadUpdateInfo() {
   try {
-    const response = await fetch("./update-log.json?v=1.5.8", { cache: "no-store" });
+    const response = await fetch("./update-log.json?v=1.5.9", { cache: "no-store" });
     if (!response.ok) return;
 
     dnUpdateInfo = await response.json();
@@ -1234,6 +1234,8 @@ function insertFlipCard() {
       [dnT("word.flipFrontContent"), imagePlaceholder()],
     ]);
     table1.style = "Table Grid";
+    table1.getCell(0, 0).body.paragraphs.getFirst().style =
+      "DN-Flip-Frente-Conteudo";
 
     const vt = cc.insertParagraph(dnT("word.flipBackTitle"), "End");
     vt.style = "DN-Flip-Verso-Titulo";
@@ -1242,6 +1244,8 @@ function insertFlipCard() {
       [dnT("word.flipBackContent"), imagePlaceholder()],
     ]);
     table2.style = "Table Grid";
+    table2.getCell(0, 0).body.paragraphs.getFirst().style =
+      "DN-Flip-Verso-Conteudo";
 
     await context.sync();
     setStatus(dnT("status.flipcardInserted"), "ok");
@@ -1262,6 +1266,8 @@ function addFlipCardItem() {
       [dnT("word.flipFrontContent"), imagePlaceholder()],
     ]);
     table1.style = "Table Grid";
+    table1.getCell(0, 0).body.paragraphs.getFirst().style =
+      "DN-Flip-Frente-Conteudo";
 
     const vt = cc.insertParagraph(dnT("word.flipBackTitle"), "End");
     vt.style = "DN-Flip-Verso-Titulo";
@@ -1270,6 +1276,8 @@ function addFlipCardItem() {
       [dnT("word.flipBackContent"), imagePlaceholder()],
     ]);
     table2.style = "Table Grid";
+    table2.getCell(0, 0).body.paragraphs.getFirst().style =
+      "DN-Flip-Verso-Conteudo";
 
     await context.sync();
     setStatus(dnT("status.flipcardAdded"), "ok");
