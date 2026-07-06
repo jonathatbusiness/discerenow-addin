@@ -1,9 +1,9 @@
 {
-  "version": "1.5.7",
+  "version": "1.5.8",
   "date": "2026-07-06",
-  "updateTxt": "Video blocks now use a guided table for the URL and optional caption.",
+  "updateTxt": "Card content now keeps the correct text style when new cards are added.",
   "updateTxtI18n": {
-    "pt-BR": "Os blocos de vídeo agora usam uma tabela com instruções para a URL e a legenda opcional.",
-    "en": "Video blocks now use a guided table for the URL and optional caption."
+    "pt-BR": "O conteúdo dos Cards agora mantém o estilo de texto correto ao adicionar novos cards.",
+    "en": "Card content now keeps the correct text style when new cards are added."
   }
 }

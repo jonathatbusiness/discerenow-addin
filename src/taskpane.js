@@ -24,7 +24,7 @@ Office.onReady(function (info) {
 
 async function loadUpdateInfo() {
   try {
-    const response = await fetch("./update-log.json?v=1.5.7", { cache: "no-store" });
+    const response = await fetch("./update-log.json?v=1.5.8", { cache: "no-store" });
     if (!response.ok) return;
 
     dnUpdateInfo = await response.json();
@@ -1138,6 +1138,8 @@ function insertCards() {
       [dnT("word.cardContent"), imagePlaceholder()],
     ]);
     table.style = "Table Grid";
+    table.getCell(0, 0).body.paragraphs.getFirst().style =
+      "DN-Card-Conteudo";
 
     await context.sync();
     setStatus(dnT("status.cardsInserted"), "ok");
@@ -1158,6 +1160,8 @@ function addCardItem() {
       [dnT("word.cardContent"), imagePlaceholder()],
     ]);
     table.style = "Table Grid";
+    table.getCell(0, 0).body.paragraphs.getFirst().style =
+      "DN-Card-Conteudo";
 
     await context.sync();
     setStatus(dnT("status.cardAdded"), "ok");
