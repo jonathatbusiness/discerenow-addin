@@ -1,9 +1,9 @@
 {
-  "version": "1.5.9",
+  "version": "1.6.0",
   "date": "2026-07-06",
-  "updateTxt": "FlipCard titles and content now keep their correct structure and text styles.",
+  "updateTxt": "Word blocks are now inserted as stable table-first content controls to preserve markers after reopening documents.",
   "updateTxtI18n": {
-    "pt-BR": "Os títulos e conteúdos dos FlipCards agora mantêm a estrutura e os estilos de texto corretos.",
-    "en": "FlipCard titles and content now keep their correct structure and text styles."
+    "pt-BR": "Os blocos do Word agora são inseridos como controles de conteúdo criados a partir de tabelas, preservando os marcadores ao reabrir documentos.",
+    "en": "Word blocks are now inserted as stable table-first content controls to preserve markers after reopening documents."
   }
 }

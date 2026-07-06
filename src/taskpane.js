@@ -24,7 +24,9 @@ Office.onReady(function (info) {
 
 async function loadUpdateInfo() {
   try {
-    const response = await fetch("./update-log.json?v=1.5.9", { cache: "no-store" });
+    const response = await fetch("./update-log.json?v=1.6.0", {
+      cache: "no-store",
+    });
     if (!response.ok) return;
 
     dnUpdateInfo = await response.json();
@@ -39,7 +41,9 @@ function getUpdateMessage(data) {
   const language = window.DNI18N ? window.DNI18N.getLanguage() : "pt-BR";
   const translations = data.updateTxtI18n;
   if (translations) {
-    return translations[language] || translations["pt-BR"] || translations.en || "";
+    return (
+      translations[language] || translations["pt-BR"] || translations.en || ""
+    );
   }
   return typeof data.updateTxt === "string" ? data.updateTxt : "";
 }
@@ -140,11 +144,18 @@ function attachUiHandlers() {
   }
 
   document.querySelectorAll(".dn-section").forEach(function (section) {
-    setResourceSectionOpen(section, section.classList.contains("is-open"), false);
+    setResourceSectionOpen(
+      section,
+      section.classList.contains("is-open"),
+      false,
+    );
     const content = section.querySelector(".dn-section-content");
     if (content) {
       content.addEventListener("transitionend", function (event) {
-        if (event.propertyName === "height" && section.classList.contains("is-open")) {
+        if (
+          event.propertyName === "height" &&
+          section.classList.contains("is-open")
+        ) {
           content.style.height = "auto";
         }
       });
@@ -482,7 +493,12 @@ async function ensureStyles() {
       { name: "DN-Quiz-Tipo", fontSize: 10, bold: true, color: "888888" },
       { name: "DN-Quiz-Pergunta", fontSize: 13, bold: true, color: "1e3c72" },
       { name: "DN-Quiz-Opcao", fontSize: 12, bold: false, color: "333333" },
-      { name: "DN-Quiz-OpcaoCerta", fontSize: 12, bold: true, color: "2e7d32" },
+      {
+        name: "DN-Quiz-OpcaoCerta",
+        fontSize: 12,
+        bold: false,
+        color: "2e7d32",
+      },
       {
         name: "DN-Quiz-FeedbackOk",
         fontSize: 12,
@@ -620,10 +636,62 @@ async function rebuildStructuralNumbering(context) {
   await context.sync();
 }
 
+function setCellParagraphStyle(table, row, col, styleName) {
+  table.getCell(row, col).body.paragraphs.getFirst().style = styleName;
+}
+
+function setCellShading(table, row, col, color) {
+  table.getCell(row, col).shadingColor = color;
+}
+
+function applyContentControlMetadata(cc, tag, title) {
+  cc.tag = tag;
+  cc.title = title;
+  cc.cannotDelete = false;
+  cc.cannotEdit = false;
+  return cc;
+}
+
+async function getSafeBlockInsertionRange(context) {
+  const { target, type, position } = await getSafeBlockInsertionTarget(context);
+
+  if (type === "ContentControl" && position === "After") {
+    const paragraphAfter = target.insertParagraph("", "After");
+    return paragraphAfter.getRange();
+  }
+
+  return target;
+}
+
+async function createWrappedTableBlock(context, tag, title, values) {
+  const insertionRange = await getSafeBlockInsertionRange(context);
+  const rowCount = values.length;
+  const columnCount = values.reduce(function (max, row) {
+    return Math.max(max, row.length);
+  }, 1);
+
+  const normalizedValues = values.map(function (row) {
+    const copy = row.slice();
+    while (copy.length < columnCount) copy.push("");
+    return copy;
+  });
+
+  const table = insertionRange.insertTable(
+    rowCount,
+    columnCount,
+    "Replace",
+    normalizedValues,
+  );
+  table.style = "Table Grid";
+
+  const cc = table.getRange().insertContentControl();
+  applyContentControlMetadata(cc, tag, title);
+
+  return { cc: cc, table: table };
+}
+
 function markParagraphBlock() {
   run(async function (context) {
-    const selection = context.document.getSelection();
-
     const existingParagraphCC = await getParentCCByTag(context, "DN-paragraph");
     if (existingParagraphCC) {
       setStatus(dnT("status.paragraphAlreadyMarked"), "info");
@@ -631,35 +699,14 @@ function markParagraphBlock() {
     }
 
     const containingCC = await getContainingContentControl(context);
-    let cc;
+    const created = await createWrappedTableBlock(
+      context,
+      "DN-paragraph",
+      dnT("ui.paragraph"),
+      [[dnT("word.paragraphContent")]],
+    );
 
-    if (containingCC) {
-      const paragraph = containingCC.insertParagraph(
-        dnT("word.paragraphContent"),
-        "After",
-      );
-      cc = paragraph.getRange().insertContentControl();
-    } else {
-      selection.load("text");
-      await context.sync();
-      const isSelectionEmpty = selection.text.length === 0;
-
-      cc = selection.insertContentControl();
-      if (isSelectionEmpty) {
-        const initialText = cc.insertText(
-          dnT("word.paragraphContent"),
-          "Replace",
-        );
-        initialText.font.size = 12;
-        initialText.font.bold = false;
-        initialText.font.color = "333333";
-      }
-    }
-    cc.getRange().style = "DN-Text-Content";
-    cc.tag = "DN-paragraph";
-    cc.title = dnT("ui.paragraph");
-    cc.cannotDelete = false;
-    cc.cannotEdit = false;
+    setCellParagraphStyle(created.table, 0, 0, "DN-Text-Content");
 
     await context.sync();
     setStatus(
@@ -674,60 +721,59 @@ function markParagraphBlock() {
   });
 }
 
-async function createBlockContentControl(context, tag, title) {
-  const { target, type, position } = await getSafeBlockInsertionTarget(context);
-  let cc;
-
-  if (type === "ContentControl" && position === "After") {
-    const paragraphAfter = target.insertParagraph("", "After");
-    cc = paragraphAfter.getRange().insertContentControl();
-  } else {
-    cc = target.insertContentControl();
-  }
-
-  cc.tag = tag;
-  cc.title = title;
-  cc.cannotDelete = false;
-  cc.cannotEdit = false;
-  return cc;
-}
-
 function insertTextBlock(kind) {
   run(async function (context) {
     const isHeading = kind === "heading";
-    const cc = await createBlockContentControl(
+    const created = await createWrappedTableBlock(
       context,
       isHeading ? "DN-heading" : "DN-subheading",
       dnT(isHeading ? "ui.heading" : "ui.subheading"),
+      [[dnT(isHeading ? "word.heading" : "word.subheading")]],
     );
-    const paragraph = cc.insertParagraph(
-      dnT(isHeading ? "word.heading" : "word.subheading"),
-      "Start",
+
+    setCellParagraphStyle(
+      created.table,
+      0,
+      0,
+      isHeading ? "DN-Heading" : "DN-Subheading",
     );
-    paragraph.style = isHeading ? "DN-Heading" : "DN-Subheading";
+
     await context.sync();
-    setStatus(dnT(isHeading ? "status.headingInserted" : "status.subheadingInserted"), "ok");
+    setStatus(
+      dnT(isHeading ? "status.headingInserted" : "status.subheadingInserted"),
+      "ok",
+    );
   });
 }
 
 function insertParagraphWithLead(kind) {
   run(async function (context) {
     const isHeading = kind === "heading";
-    const cc = await createBlockContentControl(
+    const created = await createWrappedTableBlock(
       context,
       isHeading ? "DN-paragraphHeading" : "DN-paragraphSubheading",
       dnT(isHeading ? "ui.paragraphHeading" : "ui.paragraphSubheading"),
+      [
+        [dnT(isHeading ? "word.heading" : "word.subheading")],
+        [dnT("word.paragraphContent")],
+      ],
     );
-    const lead = cc.insertParagraph(
-      dnT(isHeading ? "word.heading" : "word.subheading"),
-      "Start",
+
+    setCellParagraphStyle(
+      created.table,
+      0,
+      0,
+      isHeading ? "DN-Heading" : "DN-Subheading",
     );
-    lead.style = isHeading ? "DN-Heading" : "DN-Subheading";
-    const content = cc.insertParagraph(dnT("word.paragraphContent"), "End");
-    content.style = "DN-Text-Content";
+    setCellParagraphStyle(created.table, 1, 0, "DN-Text-Content");
+
     await context.sync();
     setStatus(
-      dnT(isHeading ? "status.paragraphHeadingInserted" : "status.paragraphSubheadingInserted"),
+      dnT(
+        isHeading
+          ? "status.paragraphHeadingInserted"
+          : "status.paragraphSubheadingInserted",
+      ),
       "ok",
     );
   });
@@ -735,13 +781,16 @@ function insertParagraphWithLead(kind) {
 
 function insertColumns() {
   run(async function (context) {
-    const cc = await createBlockContentControl(context, "DN-columns", dnT("ui.columns"));
-    const table = cc.insertTable(1, 2, "Start", [
-      [dnT("word.columnContent"), dnT("word.columnContent")],
-    ]);
-    table.style = "Table Grid";
-    table.getCell(0, 0).body.paragraphs.getFirst().style = "DN-Text-Content";
-    table.getCell(0, 1).body.paragraphs.getFirst().style = "DN-Text-Content";
+    const created = await createWrappedTableBlock(
+      context,
+      "DN-columns",
+      dnT("ui.columns"),
+      [[dnT("word.columnContent"), dnT("word.columnContent")]],
+    );
+
+    setCellParagraphStyle(created.table, 0, 0, "DN-Text-Content");
+    setCellParagraphStyle(created.table, 0, 1, "DN-Text-Content");
+
     await context.sync();
     setStatus(dnT("status.columnsInserted"), "ok");
   });
@@ -749,18 +798,22 @@ function insertColumns() {
 
 function insertDataTable() {
   run(async function (context) {
-    const cc = await createBlockContentControl(context, "DN-table", dnT("ui.table"));
-    const table = cc.insertTable(2, 2, "Start", [
-      [dnT("word.tableHeader"), dnT("word.tableHeader")],
-      [dnT("word.tableCell"), dnT("word.tableCell")],
-    ]);
-    table.style = "Table Grid";
+    const created = await createWrappedTableBlock(
+      context,
+      "DN-table",
+      dnT("ui.table"),
+      [
+        [dnT("word.tableHeader"), dnT("word.tableHeader")],
+        [dnT("word.tableCell"), dnT("word.tableCell")],
+      ],
+    );
+
     for (let col = 0; col < 2; col++) {
-      const header = table.getCell(0, col);
-      header.body.paragraphs.getFirst().style = "DN-Table-Header";
-      header.shadingColor = "2a5298";
-      table.getCell(1, col).body.paragraphs.getFirst().style = "DN-Table-Cell";
+      setCellParagraphStyle(created.table, 0, col, "DN-Table-Header");
+      setCellShading(created.table, 0, col, "2a5298");
+      setCellParagraphStyle(created.table, 1, col, "DN-Table-Cell");
     }
+
     await context.sync();
     setStatus(dnT("status.tableInserted"), "ok");
   });
@@ -775,14 +828,16 @@ const listBlockConfig = {
 function insertListBlock(kind) {
   run(async function (context) {
     const config = listBlockConfig[kind];
-    const cc = await createBlockContentControl(context, config.tag, dnT(config.uiKey));
-    const table = cc.insertTable(2, 1, "Start", [
-      [dnT("word.listItem1")],
-      [dnT("word.listItem2")],
-    ]);
-    table.style = "Table Grid";
-    table.getCell(0, 0).body.paragraphs.getFirst().style = "DN-List-Item";
-    table.getCell(1, 0).body.paragraphs.getFirst().style = "DN-List-Item";
+    const created = await createWrappedTableBlock(
+      context,
+      config.tag,
+      dnT(config.uiKey),
+      [[dnT("word.listItem1")], [dnT("word.listItem2")]],
+    );
+
+    setCellParagraphStyle(created.table, 0, 0, "DN-List-Item");
+    setCellParagraphStyle(created.table, 1, 0, "DN-List-Item");
+
     await context.sync();
     setStatus(dnT("status.listInserted", { name: dnT(config.uiKey) }), "ok");
   });
@@ -793,7 +848,10 @@ function addListItem(kind) {
     const config = listBlockConfig[kind];
     const cc = await getParentCCByTag(context, config.tag);
     if (!cc) {
-      setStatus(dnT("status.listItemMissing", { name: dnT(config.uiKey) }), "warning");
+      setStatus(
+        dnT("status.listItemMissing", { name: dnT(config.uiKey) }),
+        "warning",
+      );
       return;
     }
 
@@ -809,7 +867,8 @@ function addListItem(kind) {
     await context.sync();
     table.load("rowCount");
     await context.sync();
-    table.getCell(table.rowCount - 1, 0).body.paragraphs.getFirst().style = "DN-List-Item";
+    table.getCell(table.rowCount - 1, 0).body.paragraphs.getFirst().style =
+      "DN-List-Item";
     await context.sync();
     setStatus(dnT("status.listItemAdded"), "ok");
   });
@@ -879,30 +938,18 @@ function imagePlaceholder() {
 
 function insertAccordion() {
   run(async function (context) {
-    const { target, type, position } =
-      await getSafeBlockInsertionTarget(context);
-    let cc;
+    const created = await createWrappedTableBlock(
+      context,
+      "DN-accordion",
+      dnT("ui.accordion"),
+      [
+        [dnT("word.accordionTitle"), ""],
+        [dnT("word.accordionContent"), imagePlaceholder()],
+      ],
+    );
 
-    if (type === "ContentControl" && position === "After") {
-      const paragraphAfter = target.insertParagraph("", "After");
-      const insertionRange = paragraphAfter.getRange();
-      cc = insertionRange.insertContentControl();
-    } else {
-      cc = target.insertContentControl();
-    }
-
-    cc.tag = "DN-accordion";
-    cc.title = dnT("ui.accordion");
-    cc.cannotDelete = false;
-    cc.cannotEdit = false;
-
-    const t = cc.insertParagraph(dnT("word.accordionTitle"), "Start");
-    t.style = "DN-Accordion-Titulo";
-
-    const table = cc.insertTable(1, 2, "End", [
-      [dnT("word.accordionContent"), imagePlaceholder()],
-    ]);
-    table.style = "Table Grid";
+    setCellParagraphStyle(created.table, 0, 0, "DN-Accordion-Titulo");
+    setCellParagraphStyle(created.table, 1, 0, "DN-Accordion-Conteudo");
 
     await context.sync();
     setStatus(dnT("status.accordionInserted"), "ok");
@@ -933,30 +980,18 @@ function addAccordionItem() {
 
 function insertTabs() {
   run(async function (context) {
-    const { target, type, position } =
-      await getSafeBlockInsertionTarget(context);
-    let cc;
+    const created = await createWrappedTableBlock(
+      context,
+      "DN-tabs",
+      dnT("ui.tabs"),
+      [
+        [dnT("word.tabTitle"), ""],
+        [dnT("word.tabContent"), imagePlaceholder()],
+      ],
+    );
 
-    if (type === "ContentControl" && position === "After") {
-      const paragraphAfter = target.insertParagraph("", "After");
-      const insertionRange = paragraphAfter.getRange();
-      cc = insertionRange.insertContentControl();
-    } else {
-      cc = target.insertContentControl();
-    }
-
-    cc.tag = "DN-tabs";
-    cc.title = dnT("ui.tabs");
-    cc.cannotDelete = false;
-    cc.cannotEdit = false;
-
-    const t = cc.insertParagraph(dnT("word.tabTitle"), "Start");
-    t.style = "DN-Tab-Titulo";
-
-    const table = cc.insertTable(1, 2, "End", [
-      [dnT("word.tabContent"), imagePlaceholder()],
-    ]);
-    table.style = "Table Grid";
+    setCellParagraphStyle(created.table, 0, 0, "DN-Tab-Titulo");
+    setCellParagraphStyle(created.table, 1, 0, "DN-Tab-Conteudo");
 
     await context.sync();
     setStatus(dnT("status.tabsInserted"), "ok");
@@ -987,27 +1022,14 @@ function addTabItem() {
 
 function insertImgText() {
   run(async function (context) {
-    const { target, type, position } =
-      await getSafeBlockInsertionTarget(context);
-    let cc;
+    const created = await createWrappedTableBlock(
+      context,
+      "DN-imgText",
+      dnT("ui.imageText"),
+      [[dnT("word.imageHere"), dnT("word.imageSideText")]],
+    );
 
-    if (type === "ContentControl" && position === "After") {
-      const paragraphAfter = target.insertParagraph("", "After");
-      const insertionRange = paragraphAfter.getRange();
-      cc = insertionRange.insertContentControl();
-    } else {
-      cc = target.insertContentControl();
-    }
-
-    cc.tag = "DN-imgText";
-    cc.title = dnT("ui.imageText");
-    cc.cannotDelete = false;
-    cc.cannotEdit = false;
-
-    const table = cc.insertTable(1, 2, "End", [
-      [dnT("word.imageHere"), dnT("word.imageSideText")],
-    ]);
-    table.style = "Table Grid";
+    setCellParagraphStyle(created.table, 0, 1, "DN-Text-Content");
 
     await context.sync();
     setStatus(dnT("status.imgTextInserted"), "ok");
@@ -1016,18 +1038,15 @@ function insertImgText() {
 
 function insertImageCentered() {
   run(async function (context) {
-    const cc = await createBlockContentControl(
+    const created = await createWrappedTableBlock(
       context,
       "DN-imageCentered",
       dnT("ui.imageCentered"),
+      [[dnT("word.imageHere")], [dnT("word.imageCaptionOptional")]],
     );
-    const table = cc.insertTable(2, 1, "Start", [
-      [dnT("word.imageHere")],
-      [dnT("word.imageCaptionOptional")],
-    ]);
-    table.style = "Table Grid";
-    table.getCell(1, 0).body.paragraphs.getFirst().style =
-      "DN-Image-Legenda";
+
+    setCellParagraphStyle(created.table, 1, 0, "DN-Image-Legenda");
+
     await context.sync();
     setStatus(dnT("status.imageCenteredInserted"), "ok");
   });
@@ -1037,39 +1056,23 @@ function insertImageCentered() {
 
 function insertCallout(calloutType) {
   run(async function (context) {
-    const { target, type, position } =
-      await getSafeBlockInsertionTarget(context);
-    let cc;
+    const created = await createWrappedTableBlock(
+      context,
+      "DN-callout",
+      "Callout",
+      [[calloutType], [dnT("word.calloutTitle")], [dnT("word.calloutContent")]],
+    );
 
-    if (type === "ContentControl" && position === "After") {
-      const paragraphAfter = target.insertParagraph("", "After");
-      const insertionRange = paragraphAfter.getRange();
-      cc = insertionRange.insertContentControl();
-    } else {
-      cc = target.insertContentControl();
-    }
-
-    cc.tag = "DN-callout";
-    cc.title = "Callout";
-    cc.cannotDelete = false;
-    cc.cannotEdit = false;
-
-    const table = cc.insertTable(3, 1, "Start", [
-      [calloutType],
-      [dnT("word.calloutTitle")],
-      [dnT("word.calloutContent")],
-    ]);
-    table.style = "Table Grid";
-
-    table.getCell(0, 0).body.paragraphs.getFirst().style = "DN-Callout-Tipo";
-    table.getCell(1, 0).body.paragraphs.getFirst().style = "DN-Callout-Titulo";
-    table.getCell(2, 0).body.paragraphs.getFirst().style =
-      "DN-Callout-Conteudo";
+    setCellParagraphStyle(created.table, 0, 0, "DN-Callout-Tipo");
+    setCellParagraphStyle(created.table, 1, 0, "DN-Callout-Titulo");
+    setCellParagraphStyle(created.table, 2, 0, "DN-Callout-Conteudo");
 
     await context.sync();
     setStatus(
       dnT("status.calloutInserted", {
-        name: dnT("ui.callout" + calloutType[0].toUpperCase() + calloutType.slice(1)),
+        name: dnT(
+          "ui.callout" + calloutType[0].toUpperCase() + calloutType.slice(1),
+        ),
       }),
       "ok",
     );
@@ -1080,33 +1083,26 @@ function insertCallout(calloutType) {
 
 function insertVideo() {
   run(async function (context) {
-    const { target, type, position } =
-      await getSafeBlockInsertionTarget(context);
-    let cc;
+    const created = await createWrappedTableBlock(
+      context,
+      "DN-video",
+      dnT("ui.video"),
+      [
+        [
+          dnT("word.videoUrlInstruction"),
+          "https://www.youtube.com/watch?v=...",
+        ],
+        [
+          dnT("word.videoCaptionInstruction"),
+          dnT("word.videoCaptionPlaceholder"),
+        ],
+      ],
+    );
 
-    if (type === "ContentControl" && position === "After") {
-      const paragraphAfter = target.insertParagraph("", "After");
-      const insertionRange = paragraphAfter.getRange();
-      cc = insertionRange.insertContentControl();
-    } else {
-      cc = target.insertContentControl();
-    }
-
-    cc.tag = "DN-video";
-    cc.title = dnT("ui.video");
-    cc.cannotDelete = false;
-    cc.cannotEdit = false;
-
-    const table = cc.insertTable(2, 2, "Start", [
-      [dnT("word.videoUrlInstruction"), "https://www.youtube.com/watch?v=..."],
-      [dnT("word.videoCaptionInstruction"), dnT("word.videoCaptionPlaceholder")],
-    ]);
-    table.style = "Table Grid";
-
-    table.getCell(0, 0).body.paragraphs.getFirst().style = "DN-Video-Rotulo";
-    table.getCell(1, 0).body.paragraphs.getFirst().style = "DN-Video-Rotulo";
-    table.getCell(0, 1).body.paragraphs.getFirst().style = "DN-Video-Url";
-    table.getCell(1, 1).body.paragraphs.getFirst().style = "DN-Video-Legenda";
+    setCellParagraphStyle(created.table, 0, 0, "DN-Video-Rotulo");
+    setCellParagraphStyle(created.table, 1, 0, "DN-Video-Rotulo");
+    setCellParagraphStyle(created.table, 0, 1, "DN-Video-Url");
+    setCellParagraphStyle(created.table, 1, 1, "DN-Video-Legenda");
 
     await context.sync();
     setStatus(dnT("status.videoInserted"), "ok");
@@ -1117,32 +1113,18 @@ function insertVideo() {
 
 function insertCards() {
   run(async function (context) {
-    const { target, type, position } =
-      await getSafeBlockInsertionTarget(context);
-    let cc;
+    const created = await createWrappedTableBlock(
+      context,
+      "DN-cards",
+      dnT("ui.cards"),
+      [
+        [dnT("word.cardTitle"), ""],
+        [dnT("word.cardContent"), imagePlaceholder()],
+      ],
+    );
 
-    if (type === "ContentControl" && position === "After") {
-      const paragraphAfter = target.insertParagraph("", "After");
-      const insertionRange = paragraphAfter.getRange();
-      cc = insertionRange.insertContentControl();
-    } else {
-      cc = target.insertContentControl();
-    }
-
-    cc.tag = "DN-cards";
-    cc.title = dnT("ui.cards");
-    cc.cannotDelete = false;
-    cc.cannotEdit = false;
-
-    const t = cc.insertParagraph(dnT("word.cardTitle"), "Start");
-    t.style = "DN-Card-Titulo";
-
-    const table = cc.insertTable(1, 2, "End", [
-      [dnT("word.cardContent"), imagePlaceholder()],
-    ]);
-    table.style = "Table Grid";
-    table.getCell(0, 0).body.paragraphs.getFirst().style =
-      "DN-Card-Conteudo";
+    setCellParagraphStyle(created.table, 0, 0, "DN-Card-Titulo");
+    setCellParagraphStyle(created.table, 1, 0, "DN-Card-Conteudo");
 
     await context.sync();
     setStatus(dnT("status.cardsInserted"), "ok");
@@ -1163,8 +1145,7 @@ function addCardItem() {
       [dnT("word.cardContent"), imagePlaceholder()],
     ]);
     table.style = "Table Grid";
-    table.getCell(0, 0).body.paragraphs.getFirst().style =
-      "DN-Card-Conteudo";
+    table.getCell(0, 0).body.paragraphs.getFirst().style = "DN-Card-Conteudo";
 
     await context.sync();
     setStatus(dnT("status.cardAdded"), "ok");
@@ -1173,7 +1154,10 @@ function addCardItem() {
 
 function appendProcessStep(cc, stepNumber) {
   const table = cc.insertTable(4, 2, "End", [
-    [dnT("word.processStepLabel"), dnT("word.processStep", { number: stepNumber })],
+    [
+      dnT("word.processStepLabel"),
+      dnT("word.processStep", { number: stepNumber }),
+    ],
     [dnT("word.processTitleLabel"), dnT("word.processTitle")],
     [dnT("word.processImageLabel"), imagePlaceholder()],
     [dnT("word.processTextLabel"), dnT("word.processText")],
@@ -1186,8 +1170,22 @@ function appendProcessStep(cc, stepNumber) {
 
 function insertProcess() {
   run(async function (context) {
-    const cc = await createBlockContentControl(context, "DN-process", dnT("ui.process"));
-    appendProcessStep(cc, 1);
+    const created = await createWrappedTableBlock(
+      context,
+      "DN-process",
+      dnT("ui.process"),
+      [
+        [dnT("word.processStepLabel"), dnT("word.processStep", { number: 1 })],
+        [dnT("word.processTitleLabel"), dnT("word.processTitle")],
+        [dnT("word.processImageLabel"), imagePlaceholder()],
+        [dnT("word.processTextLabel"), dnT("word.processText")],
+      ],
+    );
+
+    setCellParagraphStyle(created.table, 0, 1, "DN-Process-Passo");
+    setCellParagraphStyle(created.table, 1, 1, "DN-Process-Titulo");
+    setCellParagraphStyle(created.table, 3, 1, "DN-Process-Texto");
+
     await context.sync();
     setStatus(dnT("status.processInserted"), "ok");
   });
@@ -1213,42 +1211,22 @@ function addProcessStep() {
 
 function insertFlipCard() {
   run(async function (context) {
-    const { target, type, position } =
-      await getSafeBlockInsertionTarget(context);
-    let cc;
+    const created = await createWrappedTableBlock(
+      context,
+      "DN-flipcard",
+      dnT("ui.flipcard"),
+      [
+        [dnT("word.flipFrontTitle"), ""],
+        [dnT("word.flipFrontContent"), imagePlaceholder()],
+        [dnT("word.flipBackTitle"), ""],
+        [dnT("word.flipBackContent"), imagePlaceholder()],
+      ],
+    );
 
-    if (type === "ContentControl" && position === "After") {
-      const paragraphAfter = target.insertParagraph("", "After");
-      const insertionRange = paragraphAfter.getRange();
-      cc = insertionRange.insertContentControl();
-    } else {
-      cc = target.insertContentControl();
-    }
-
-    cc.tag = "DN-flipcard";
-    cc.title = dnT("ui.flipcard");
-    cc.cannotDelete = false;
-    cc.cannotEdit = false;
-
-    const ft = cc.insertParagraph(dnT("word.flipFrontTitle"), "Start");
-    ft.style = "DN-Flip-Frente-Titulo";
-
-    const table1 = cc.insertTable(1, 2, "End", [
-      [dnT("word.flipFrontContent"), imagePlaceholder()],
-    ]);
-    table1.style = "Table Grid";
-    table1.getCell(0, 0).body.paragraphs.getFirst().style =
-      "DN-Flip-Frente-Conteudo";
-
-    const vt = cc.insertParagraph(dnT("word.flipBackTitle"), "End");
-    vt.style = "DN-Flip-Verso-Titulo";
-
-    const table2 = cc.insertTable(1, 2, "End", [
-      [dnT("word.flipBackContent"), imagePlaceholder()],
-    ]);
-    table2.style = "Table Grid";
-    table2.getCell(0, 0).body.paragraphs.getFirst().style =
-      "DN-Flip-Verso-Conteudo";
+    setCellParagraphStyle(created.table, 0, 0, "DN-Flip-Frente-Titulo");
+    setCellParagraphStyle(created.table, 1, 0, "DN-Flip-Frente-Conteudo");
+    setCellParagraphStyle(created.table, 2, 0, "DN-Flip-Verso-Titulo");
+    setCellParagraphStyle(created.table, 3, 0, "DN-Flip-Verso-Conteudo");
 
     await context.sync();
     setStatus(dnT("status.flipcardInserted"), "ok");
@@ -1291,50 +1269,32 @@ function addFlipCardItem() {
 
 function insertQuiz() {
   run(async function (context) {
-    const { target, type, position } =
-      await getSafeBlockInsertionTarget(context);
-    let cc;
-
-    if (type === "ContentControl" && position === "After") {
-      const paragraphAfter = target.insertParagraph("", "After");
-      const insertionRange = paragraphAfter.getRange();
-      cc = insertionRange.insertContentControl();
-    } else {
-      cc = target.insertContentControl();
-    }
-
-    cc.tag = "DN-quiz";
-    cc.title = dnT("ui.quiz");
-    cc.cannotDelete = false;
-    cc.cannotEdit = false;
-
-    const table = cc.insertTable(7, 2, "End", [
-      [dnT("word.quizTypeLabel"), "single"],
-      [dnT("word.quizQuestionLabel"), dnT("word.quizQuestion")],
-      [dnT("word.quizOptionLabel"), dnT("word.quizOption1")],
-      [dnT("word.quizOptionLabel"), dnT("word.quizOption2")],
-      [dnT("word.quizOptionLabel"), dnT("word.quizOption3")],
-      [dnT("word.quizCorrectFeedbackLabel"), dnT("word.quizCorrectFeedback")],
+    const created = await createWrappedTableBlock(
+      context,
+      "DN-quiz",
+      dnT("ui.quiz"),
       [
-        dnT("word.quizIncorrectFeedbackLabel"),
-        dnT("word.quizIncorrectFeedback"),
+        [dnT("word.quizTypeLabel"), "single"],
+        [dnT("word.quizQuestionLabel"), dnT("word.quizQuestion")],
+        [dnT("word.quizOptionLabel"), dnT("word.quizOption1")],
+        [dnT("word.quizOptionLabel"), dnT("word.quizOption2")],
+        [dnT("word.quizOptionLabel"), dnT("word.quizOption3")],
+        [dnT("word.quizCorrectFeedbackLabel"), dnT("word.quizCorrectFeedback")],
+        [
+          dnT("word.quizIncorrectFeedbackLabel"),
+          dnT("word.quizIncorrectFeedback"),
+        ],
       ],
-    ]);
+    );
 
-    table.style = "Table Grid";
-
-    table.getCell(0, 0).value = dnT("word.quizTypeHelp");
-    table.getCell(0, 1).body.paragraphs.getFirst().style = "DN-Quiz-Tipo";
-
-    table.getCell(1, 1).body.paragraphs.getFirst().style = "DN-Quiz-Pergunta";
-
-    table.getCell(2, 1).body.paragraphs.getFirst().style = "DN-Quiz-Opcao";
-    table.getCell(3, 1).body.paragraphs.getFirst().style = "DN-Quiz-OpcaoCerta";
-    table.getCell(4, 1).body.paragraphs.getFirst().style = "DN-Quiz-Opcao";
-
-    table.getCell(5, 1).body.paragraphs.getFirst().style = "DN-Quiz-FeedbackOk";
-    table.getCell(6, 1).body.paragraphs.getFirst().style =
-      "DN-Quiz-FeedbackErro";
+    created.table.getCell(0, 0).value = dnT("word.quizTypeHelp");
+    setCellParagraphStyle(created.table, 0, 1, "DN-Quiz-Tipo");
+    setCellParagraphStyle(created.table, 1, 1, "DN-Quiz-Pergunta");
+    setCellParagraphStyle(created.table, 2, 1, "DN-Quiz-Opcao");
+    setCellParagraphStyle(created.table, 3, 1, "DN-Quiz-OpcaoCerta");
+    setCellParagraphStyle(created.table, 4, 1, "DN-Quiz-Opcao");
+    setCellParagraphStyle(created.table, 5, 1, "DN-Quiz-FeedbackOk");
+    setCellParagraphStyle(created.table, 6, 1, "DN-Quiz-FeedbackErro");
 
     await context.sync();
     setStatus(dnT("status.quizInserted"), "ok");
@@ -1576,25 +1536,14 @@ function markQuizIncorrectAnswer() {
 
 function insertContinue() {
   run(async function (context) {
-    const { target, type, position } =
-      await getSafeBlockInsertionTarget(context);
-    let cc;
+    const created = await createWrappedTableBlock(
+      context,
+      "DN-continue",
+      dnT("ui.continueButton"),
+      [[dnT("word.continue")]],
+    );
 
-    if (type === "ContentControl" && position === "After") {
-      const paragraphAfter = target.insertParagraph("", "After");
-      const insertionRange = paragraphAfter.getRange();
-      cc = insertionRange.insertContentControl();
-    } else {
-      cc = target.insertContentControl();
-    }
-
-    cc.tag = "DN-continue";
-    cc.title = dnT("ui.continueButton");
-    cc.cannotDelete = false;
-    cc.cannotEdit = false;
-
-    const txt = cc.insertParagraph(dnT("word.continue"), "Start");
-    txt.style = "DN-Continue-Texto";
+    setCellParagraphStyle(created.table, 0, 0, "DN-Continue-Texto");
 
     await context.sync();
     setStatus(dnT("status.continueInserted"), "ok");
