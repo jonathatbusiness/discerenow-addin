@@ -1,9 +1,9 @@
 {
-  "version": "1.5.6",
-  "date": "2026-07-03",
-  "updateTxt": "Quiz options can now be marked as correct or incorrect in Multiple mode.",
+  "version": "1.5.7",
+  "date": "2026-07-06",
+  "updateTxt": "Video blocks now use a guided table for the URL and optional caption.",
   "updateTxtI18n": {
-    "pt-BR": "As opções do Quiz agora podem ser marcadas como corretas ou incorretas no modo Multiple.",
-    "en": "Quiz options can now be marked as correct or incorrect in Multiple mode."
+    "pt-BR": "Os blocos de vídeo agora usam uma tabela com instruções para a URL e a legenda opcional.",
+    "en": "Video blocks now use a guided table for the URL and optional caption."
   }
 }

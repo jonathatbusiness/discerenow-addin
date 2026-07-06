@@ -24,7 +24,7 @@ Office.onReady(function (info) {
 
 async function loadUpdateInfo() {
   try {
-    const response = await fetch("./update-log.json?v=1.5.6", { cache: "no-store" });
+    const response = await fetch("./update-log.json?v=1.5.7", { cache: "no-store" });
     if (!response.ok) return;
 
     dnUpdateInfo = await response.json();
@@ -447,6 +447,7 @@ async function ensureStyles() {
         color: "333333",
       },
       // Vídeo
+      { name: "DN-Video-Rotulo", fontSize: 10, bold: true, color: "666666" },
       { name: "DN-Video-Url", fontSize: 11, bold: false, color: "1565c0" },
       { name: "DN-Video-Legenda", fontSize: 11, bold: false, color: "666666" },
       // Cards
@@ -1093,14 +1094,16 @@ function insertVideo() {
     cc.cannotDelete = false;
     cc.cannotEdit = false;
 
-    const url = cc.insertParagraph(
-      "https://www.youtube.com/watch?v=...",
-      "Start",
-    );
-    url.style = "DN-Video-Url";
+    const table = cc.insertTable(2, 2, "Start", [
+      [dnT("word.videoUrlInstruction"), "https://www.youtube.com/watch?v=..."],
+      [dnT("word.videoCaptionInstruction"), dnT("word.videoCaptionPlaceholder")],
+    ]);
+    table.style = "Table Grid";
 
-    const legenda = cc.insertParagraph(dnT("word.videoCaption"), "End");
-    legenda.style = "DN-Video-Legenda";
+    table.getCell(0, 0).body.paragraphs.getFirst().style = "DN-Video-Rotulo";
+    table.getCell(1, 0).body.paragraphs.getFirst().style = "DN-Video-Rotulo";
+    table.getCell(0, 1).body.paragraphs.getFirst().style = "DN-Video-Url";
+    table.getCell(1, 1).body.paragraphs.getFirst().style = "DN-Video-Legenda";
 
     await context.sync();
     setStatus(dnT("status.videoInserted"), "ok");

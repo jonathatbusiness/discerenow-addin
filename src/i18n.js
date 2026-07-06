@@ -97,7 +97,11 @@
       "word.imageCaptionOptional": "Legenda da imagem (opcional)",
       "word.calloutTitle": "Título do destaque",
       "word.calloutContent": "Conteúdo do destaque...",
-      "word.videoCaption": "Legenda do vídeo (opcional)",
+      "word.videoUrlInstruction":
+        "URL do vídeo — cole o link completo do YouTube ou Vimeo",
+      "word.videoCaptionInstruction":
+        "Legenda — opcional; deixe em branco se não quiser exibi-la",
+      "word.videoCaptionPlaceholder": "Digite a legenda do vídeo...",
       "word.quizTypeLabel": "Tipo do quiz",
       "word.quizTypeHelp":
         'Tipo do quiz — use "single" para resposta única ou "multiple" para múltiplas respostas.',
@@ -143,7 +147,7 @@
       "status.imageCenteredInserted": "Imagem centralizada inserida.",
       "status.calloutInserted": "Destaque {name} inserido.",
       "status.videoInserted":
-        "Vídeo inserido. (1ª linha = URL do YouTube/Vimeo, 2ª = legenda)",
+        "Vídeo inserido. Preencha a URL e, se desejar, a legenda na tabela.",
       "status.cardsInserted": "Cards inserido.",
       "status.cardMissing":
         "Coloque o cursor dentro de um bloco Cards antes de adicionar um card.",
@@ -275,7 +279,11 @@
       "word.imageCaptionOptional": "Image caption (optional)",
       "word.calloutTitle": "Callout title",
       "word.calloutContent": "Callout content...",
-      "word.videoCaption": "Video caption (optional)",
+      "word.videoUrlInstruction":
+        "Video URL — paste the complete YouTube or Vimeo link",
+      "word.videoCaptionInstruction":
+        "Caption — optional; leave blank if you do not want to display one",
+      "word.videoCaptionPlaceholder": "Enter the video caption...",
       "word.quizTypeLabel": "Quiz type",
       "word.quizTypeHelp":
         'Quiz type — use "single" for single answer or "multiple" for multiple answers.',
@@ -321,7 +329,7 @@
       "status.imageCenteredInserted": "Centered image inserted.",
       "status.calloutInserted": "{name} callout inserted.",
       "status.videoInserted":
-        "Video inserted. (1st line = YouTube/Vimeo URL, 2nd = caption)",
+        "Video inserted. Fill in the URL and, optionally, the caption in the table.",
       "status.cardsInserted": "Cards inserted.",
       "status.cardMissing":
         "Place the cursor inside a Cards block before adding a card.",
