@@ -679,9 +679,10 @@ async function createWrappedTableBlock(context, tag, title, values) {
   const table = insertionRange.insertTable(
     rowCount,
     columnCount,
-    "Replace",
+    "Before",
     normalizedValues,
   );
+
   table.style = "Table Grid";
 
   const cc = table.getRange().insertContentControl();
