@@ -24,7 +24,7 @@ Office.onReady(function (info) {
 
 async function loadUpdateInfo() {
   try {
-    const response = await fetch("./update-log.json?v=1.6.0", {
+    const response = await fetch("./update-log.json?v=1.6.1", {
       cache: "no-store",
     });
     if (!response.ok) return;
@@ -917,13 +917,10 @@ async function getParentCCByTag(context, expectedTag) {
 
 async function getSafeBlockInsertionTarget(context) {
   const selection = context.document.getSelection();
-  const parentCc = selection.parentContentControlOrNullObject;
+  const containingCC = await getContainingContentControl(context);
 
-  parentCc.load("isNullObject");
-  await context.sync();
-
-  if (!parentCc.isNullObject) {
-    return { target: parentCc, type: "ContentControl", position: "After" };
+  if (containingCC) {
+    return { target: containingCC, type: "ContentControl", position: "After" };
   }
 
   return { target: selection, type: "Selection", position: "Replace" };

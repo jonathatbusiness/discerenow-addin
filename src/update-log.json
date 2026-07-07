@@ -1,9 +1,9 @@
 {
-  "version": "1.6.0",
+  "version": "1.6.1",
   "date": "2026-07-06",
-  "updateTxt": "Word blocks are now inserted as stable table-first content controls to preserve markers after reopening documents.",
+  "updateTxt": "Fixed insertion of new blocks from inside paragraph table-based content controls.",
   "updateTxtI18n": {
-    "pt-BR": "Os blocos do Word agora são inseridos como controles de conteúdo criados a partir de tabelas, preservando os marcadores ao reabrir documentos.",
-    "en": "Word blocks are now inserted as stable table-first content controls to preserve markers after reopening documents."
+    "pt-BR": "Corrige a inserção de novos blocos a partir de blocos de parágrafo criados como controles de conteúdo baseados em tabela.",
+    "en": "Fixed insertion of new blocks from inside paragraph table-based content controls."
   }
 }
