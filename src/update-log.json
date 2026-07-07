@@ -1,9 +1,9 @@
 {
-  "version": "1.6.1",
+  "version": "1.6.2",
   "date": "2026-07-06",
-  "updateTxt": "Fixed insertion of new blocks from inside paragraph table-based content controls.",
+  "updateTxt": "Fixed insertion of new blocks from inside paragraph table-based content controls. (fix #2)",
   "updateTxtI18n": {
-    "pt-BR": "Corrige a inserção de novos blocos a partir de blocos de parágrafo criados como controles de conteúdo baseados em tabela.",
-    "en": "Fixed insertion of new blocks from inside paragraph table-based content controls."
+    "pt-BR": "Corrige a inserção de novos blocos a partir de blocos de parágrafo criados como controles de conteúdo baseados em tabela. (correção #2)",
+    "en": "Fixed insertion of new blocks from inside paragraph table-based content controls. (fix #2)"
   }
 }

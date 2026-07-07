@@ -24,7 +24,7 @@ Office.onReady(function (info) {
 
 async function loadUpdateInfo() {
   try {
-    const response = await fetch("./update-log.json?v=1.6.1", {
+    const response = await fetch("./update-log.json?v=1.6.2", {
       cache: "no-store",
     });
     if (!response.ok) return;
@@ -541,24 +541,23 @@ async function ensureStyles() {
 
 async function getContainingContentControl(context) {
   const selection = context.document.getSelection();
-  const directParent = selection.parentContentControlOrNullObject;
-  directParent.load("isNullObject, tag");
+  let current = selection.parentContentControlOrNullObject;
+  current.load("isNullObject, tag");
   await context.sync();
-  if (!directParent.isNullObject) return directParent;
 
-  const surrounding = selection.getContentControls({
-    selectionMode: "Surrounding",
-  });
-  surrounding.load("items, tag");
-  await context.sync();
-  if (surrounding.items[0]) return surrounding.items[0];
+  let outermostDN = null;
 
-  const contained = selection.getContentControls();
-  contained.load("items, tag");
-  await context.sync();
-  return contained.items[0] || null;
+  while (!current.isNullObject) {
+    if (current.tag && current.tag.indexOf("DN-") === 0) {
+      outermostDN = current;
+    }
+    current = current.parentContentControlOrNullObject;
+    current.load("isNullObject, tag");
+    await context.sync();
+  }
+
+  return outermostDN;
 }
-
 function applyStructuralStyle(styleName, placeholderKey) {
   run(async function (context) {
     const selection = context.document.getSelection();
