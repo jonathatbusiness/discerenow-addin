@@ -1,9 +1,9 @@
 {
   "version": "1.6.3",
   "date": "2026-10-15",
-  "updateTxt": "Fixed the + actions for table-based blocks: new Cards, Accordion items, Tabs, Process steps, and FlipCards are now added as rows in the existing structure instead of being nested inside the last cell.",
+  "updateTxt": "Fixed the + actions for table-based blocks: new Cards, Accordion items, Tabs, Process steps, and FlipCards are now added as rows in the existing structure instead of being nested inside the last cell. Also fixed new block insertion from inside existing table-based blocks, preventing Invalid argument errors and placing the new block outside the current block.",
   "updateTxtI18n": {
-    "pt-BR": "Corrige as a\u00e7\u00f5es de + dos blocos baseados em tabela: novos Cards, itens de Acorde\u00e3o, Abas, etapas de Processo e FlipCards agora s\u00e3o adicionados como linhas na estrutura existente, em vez de serem aninhados dentro da \u00faltima c\u00e9lula.",
-    "en": "Fixed the + actions for table-based blocks: new Cards, Accordion items, Tabs, Process steps, and FlipCards are now added as rows in the existing structure instead of being nested inside the last cell."
+    "pt-BR": "Corrige as a\u00e7\u00f5es de + dos blocos baseados em tabela: novos Cards, itens de Acorde\u00e3o, Abas, etapas de Processo e FlipCards agora s\u00e3o adicionados como linhas na estrutura existente, em vez de serem aninhados dentro da \u00faltima c\u00e9lula. Tamb\u00e9m corrige a inser\u00e7\u00e3o de novos blocos a partir de blocos existentes baseados em tabela, evitando o erro Invalid argument e mantendo o novo bloco fora do bloco atual.",
+    "en": "Fixed the + actions for table-based blocks: new Cards, Accordion items, Tabs, Process steps, and FlipCards are now added as rows in the existing structure instead of being nested inside the last cell. Also fixed new block insertion from inside existing table-based blocks, preventing Invalid argument errors and placing the new block outside the current block."
   }
 }

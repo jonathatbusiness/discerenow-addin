@@ -655,6 +655,19 @@ async function getSafeBlockInsertionRange(context) {
   const { target, type, position } = await getSafeBlockInsertionTarget(context);
 
   if (type === "ContentControl" && position === "After") {
+    const tables = target.tables;
+    tables.load("items");
+    await context.sync();
+
+    // Table-based blocks cannot receive insertParagraph("After") directly
+    // through their wrapping Content Control when the selection is in a cell.
+    // Insert after the table itself so the new block stays at document level.
+    if (tables.items.length > 0) {
+      const table = tables.items[0];
+      const paragraphAfterTable = table.getRange().insertParagraph("", "After");
+      return paragraphAfterTable.getRange();
+    }
+
     const paragraphAfter = target.insertParagraph("", "After");
     return paragraphAfter.getRange();
   }
