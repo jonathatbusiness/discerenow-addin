@@ -24,7 +24,7 @@ Office.onReady(function (info) {
 
 async function loadUpdateInfo() {
   try {
-    const response = await fetch("./update-log.json?v=1.6.2", {
+    const response = await fetch("./update-log.json?v=1.6.3", {
       cache: "no-store",
     });
     if (!response.ok) return;
@@ -960,13 +960,22 @@ function addAccordionItem() {
       setStatus(dnT("status.accordionItemMissing"), "warning");
       return;
     }
-    const t = cc.insertParagraph(dnT("word.accordionTitle"), "End");
-    t.style = "DN-Accordion-Titulo";
+    const tables = cc.tables;
+    tables.load("items");
+    await context.sync();
+    if (tables.items.length === 0) return;
 
-    const table = cc.insertTable(1, 2, "End", [
+    const table = tables.items[0];
+    table.load("rowCount");
+    await context.sync();
+    const firstNewRow = table.rowCount;
+    table.addRows("End", 2, [
+      [dnT("word.accordionTitle"), ""],
       [dnT("word.accordionContent"), imagePlaceholder()],
     ]);
-    table.style = "Table Grid";
+    await context.sync();
+    setCellParagraphStyle(table, firstNewRow, 0, "DN-Accordion-Titulo");
+    setCellParagraphStyle(table, firstNewRow + 1, 0, "DN-Accordion-Conteudo");
 
     await context.sync();
     setStatus(dnT("status.accordionItemAdded"), "ok");
@@ -1002,13 +1011,22 @@ function addTabItem() {
       setStatus(dnT("status.tabItemMissing"), "warning");
       return;
     }
-    const t = cc.insertParagraph(dnT("word.tabTitle"), "End");
-    t.style = "DN-Tab-Titulo";
+    const tables = cc.tables;
+    tables.load("items");
+    await context.sync();
+    if (tables.items.length === 0) return;
 
-    const table = cc.insertTable(1, 2, "End", [
+    const table = tables.items[0];
+    table.load("rowCount");
+    await context.sync();
+    const firstNewRow = table.rowCount;
+    table.addRows("End", 2, [
+      [dnT("word.tabTitle"), ""],
       [dnT("word.tabContent"), imagePlaceholder()],
     ]);
-    table.style = "Table Grid";
+    await context.sync();
+    setCellParagraphStyle(table, firstNewRow, 0, "DN-Tab-Titulo");
+    setCellParagraphStyle(table, firstNewRow + 1, 0, "DN-Tab-Conteudo");
 
     await context.sync();
     setStatus(dnT("status.tabItemAdded"), "ok");
@@ -1135,22 +1153,31 @@ function addCardItem() {
       setStatus(dnT("status.cardMissing"), "warning");
       return;
     }
-    const t = cc.insertParagraph(dnT("word.cardTitle"), "End");
-    t.style = "DN-Card-Titulo";
+    const tables = cc.tables;
+    tables.load("items");
+    await context.sync();
+    if (tables.items.length === 0) return;
 
-    const table = cc.insertTable(1, 2, "End", [
+    const table = tables.items[0];
+    table.load("rowCount");
+    await context.sync();
+    const firstNewRow = table.rowCount;
+    table.addRows("End", 2, [
+      [dnT("word.cardTitle"), ""],
       [dnT("word.cardContent"), imagePlaceholder()],
     ]);
-    table.style = "Table Grid";
-    table.getCell(0, 0).body.paragraphs.getFirst().style = "DN-Card-Conteudo";
+    await context.sync();
+    setCellParagraphStyle(table, firstNewRow, 0, "DN-Card-Titulo");
+    setCellParagraphStyle(table, firstNewRow + 1, 0, "DN-Card-Conteudo");
 
     await context.sync();
     setStatus(dnT("status.cardAdded"), "ok");
   });
 }
 
-function appendProcessStep(cc, stepNumber) {
-  const table = cc.insertTable(4, 2, "End", [
+function appendProcessStep(table, stepNumber) {
+  const firstNewRow = table.rowCount;
+  table.addRows("End", 4, [
     [
       dnT("word.processStepLabel"),
       dnT("word.processStep", { number: stepNumber }),
@@ -1159,10 +1186,9 @@ function appendProcessStep(cc, stepNumber) {
     [dnT("word.processImageLabel"), imagePlaceholder()],
     [dnT("word.processTextLabel"), dnT("word.processText")],
   ]);
-  table.style = "Table Grid";
-  table.getCell(0, 1).body.paragraphs.getFirst().style = "DN-Process-Passo";
-  table.getCell(1, 1).body.paragraphs.getFirst().style = "DN-Process-Titulo";
-  table.getCell(3, 1).body.paragraphs.getFirst().style = "DN-Process-Texto";
+  setCellParagraphStyle(table, firstNewRow, 1, "DN-Process-Passo");
+  setCellParagraphStyle(table, firstNewRow + 1, 1, "DN-Process-Titulo");
+  setCellParagraphStyle(table, firstNewRow + 3, 1, "DN-Process-Texto");
 }
 
 function insertProcess() {
@@ -1198,7 +1224,14 @@ function addProcessStep() {
     const tables = cc.tables;
     tables.load("items");
     await context.sync();
-    appendProcessStep(cc, tables.items.length + 1);
+    if (tables.items.length === 0) {
+      setStatus(dnT("status.processStepMissing"), "warning");
+      return;
+    }
+    const table = tables.items[0];
+    table.load("rowCount");
+    await context.sync();
+    appendProcessStep(table, Math.floor(table.rowCount / 4) + 1);
     await context.sync();
     setStatus(dnT("status.processStepAdded"), "ok");
   });
@@ -1237,25 +1270,26 @@ function addFlipCardItem() {
       setStatus(dnT("status.flipcardMissing"), "warning");
       return;
     }
-    const ft = cc.insertParagraph(dnT("word.flipFrontTitle"), "End");
-    ft.style = "DN-Flip-Frente-Titulo";
+    const tables = cc.tables;
+    tables.load("items");
+    await context.sync();
+    if (tables.items.length === 0) return;
 
-    const table1 = cc.insertTable(1, 2, "End", [
+    const table = tables.items[0];
+    table.load("rowCount");
+    await context.sync();
+    const firstNewRow = table.rowCount;
+    table.addRows("End", 4, [
+      [dnT("word.flipFrontTitle"), ""],
       [dnT("word.flipFrontContent"), imagePlaceholder()],
-    ]);
-    table1.style = "Table Grid";
-    table1.getCell(0, 0).body.paragraphs.getFirst().style =
-      "DN-Flip-Frente-Conteudo";
-
-    const vt = cc.insertParagraph(dnT("word.flipBackTitle"), "End");
-    vt.style = "DN-Flip-Verso-Titulo";
-
-    const table2 = cc.insertTable(1, 2, "End", [
+      [dnT("word.flipBackTitle"), ""],
       [dnT("word.flipBackContent"), imagePlaceholder()],
     ]);
-    table2.style = "Table Grid";
-    table2.getCell(0, 0).body.paragraphs.getFirst().style =
-      "DN-Flip-Verso-Conteudo";
+    await context.sync();
+    setCellParagraphStyle(table, firstNewRow, 0, "DN-Flip-Frente-Titulo");
+    setCellParagraphStyle(table, firstNewRow + 1, 0, "DN-Flip-Frente-Conteudo");
+    setCellParagraphStyle(table, firstNewRow + 2, 0, "DN-Flip-Verso-Titulo");
+    setCellParagraphStyle(table, firstNewRow + 3, 0, "DN-Flip-Verso-Conteudo");
 
     await context.sync();
     setStatus(dnT("status.flipcardAdded"), "ok");
